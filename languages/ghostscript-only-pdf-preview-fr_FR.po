@@ -1,0 +1,177 @@
+# Copyright (C) 2017 gitlost
+# This file is distributed under the GPLv2.
+msgid ""
+msgstr ""
+"Project-Id-Version: GhostScript Only PDF Preview 0.9.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ghostscript-only-"
+"pdf-preview\n"
+"POT-Creation-Date: 2017-01-08 05:10+0000\n"
+"PO-Revision-Date: 2017-01-08 05:16+0000\n"
+"Last-Translator: gitlost <gitlost@gitlostbonger.com>\n"
+"Language-Team: \n"
+"Language: fr_FR\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.9\n"
+"X-Poedit-KeywordsList: __;_e;_x:1,2c;_ex:1,2c;_n:1,2;_nx:1,2,4c;_n_noop:1,2;"
+"_nx_noop:1,2,3c;esc_attr__;esc_html__;esc_attr_e;esc_html_e;esc_attr_x:1,2c;"
+"esc_html_x:1,2c\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-Basepath: ..\n"
+"X-Textdomain-Support: yes\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#. translators: %s: url to admin plugins page.
+#: ghostscript-only-pdf-preview.php:45
+msgid ""
+"The plugin \"GhostScript Only PDF Preview\" cannot be activated as it relies "
+"on the PHP function <code>exec</code>, which has been disabled on your "
+"system via the <code>php.ini</code> directive <code>disable_functions</"
+"code>. <a href=\"%s\">Return to Plugins page.</a>"
+msgstr ""
+"L&rsquo;extension &laquo;&nbsp;GhostScript Only PDF Preview&nbsp;&raquo; ne "
+"peut pas être activée parce qu&rsquo;elle dépend de la fonction de PHP "
+"<code>exec</code>, qui est désactivée sur votre système via la directive "
+"interne <code>disable_functions</code> du <code>php.ini</code>. <a href=\"%s"
+"\">Retournez sur la page des extensions.</a>"
+
+#. translators: %s: url to admin plugins page.
+#: ghostscript-only-pdf-preview.php:51
+msgid ""
+"The plugin \"GhostScript Only PDF Preview\" cannot be activated as it relies "
+"on the PHP function <code>exec</code> being enabled on your system. <a href="
+"\"%s\">Return to Plugins page.</a>"
+msgstr ""
+"L&rsquo;extension &laquo;&nbsp;GhostScript Only PDF Preview&nbsp;&raquo; ne "
+"peut pas être activée parce qu&rsquo;elle dépend de la fonction de PHP "
+"<code>exec</code>, qui est activée sur votre système. <a href=\"%s"
+"\">Retournez sur la page des extensions.</a>"
+
+#. translators: %s: url to admin plugins page.
+#: ghostscript-only-pdf-preview.php:64
+msgid ""
+"The plugin \"GhostScript Only PDF Preview\" cannot be activated as it relies "
+"on the PHP function <code>exec</code>, which has been disabled on your "
+"system via the suhosin extension directive <code>suhosin.executor.func."
+"blacklist</code>. <a href=\"%s\">Return to Plugins page.</a>"
+msgstr ""
+"L&rsquo;extension &laquo;&nbsp;GhostScript Only PDF Preview&nbsp;&raquo; ne "
+"peut pas être activée parce qu&rsquo;elle dépend de la fonction de PHP "
+"<code>exec</code>, qui est désactivée sur votre système via la directive "
+"d&rsquo;extension de suhosin <code>suhosin.executor.func.blacklist</code>. "
+"<a href=\"%s\">Retournez sur la page des extensions.</a>"
+
+#. translators: %s: url to admin plugins page.
+#: ghostscript-only-pdf-preview.php:76
+msgid ""
+"The plugin \"GhostScript Only PDF Preview\" cannot be activated as it is "
+"incompatible with the <code>php.ini</code> directive <code>safe_mode</code>, "
+"enabled on your system. <a href=\"%s\">Return to Plugins page.</a>"
+msgstr ""
+"L&rsquo;extension &laquo;&nbsp;GhostScript Only PDF Preview&nbsp;&raquo; ne "
+"peut pas être activée parce qu&rsquo;elle est incompatible avec la directive "
+"interne <code>safe_mode</code> du <code>php.ini</code>, qui est activée sur "
+"votre système. <a href=\"%s\">Retournez sur la page des extensions.</a>"
+
+#. translators: %1$s: lowest compatible WordPress version; %2$s: user's current
+#. WordPress version; %3$s: url to admin plugins page.
+#: ghostscript-only-pdf-preview.php:93
+msgid ""
+"The plugin \"GhostScript Only PDF Preview\" cannot be activated as it "
+"requires WordPress %1$s to work and you have WordPress %2$s. <a href=\"%3$s"
+"\">Return to Plugins page.</a>"
+msgstr ""
+"L&rsquo;extension &laquo;&nbsp;GhostScript Only PDF Preview&nbsp;&raquo; ne "
+"peut pas être activée parce qu&rsquo;elle nécessite WordPress %1$s et vous "
+"avez Wordpress %2$s. <a href=\"%3$s\">Retournez sur la page des extensions.</"
+"a>"
+
+#. translators: %1$s: highest WordPress version tested; %2$s: user's current
+#. WordPress version.
+#: ghostscript-only-pdf-preview.php:106
+msgid ""
+"<strong>Warning: untested!</strong> The plugin \"GhostScript Only PDF Preview"
+"\" has only been tested on WordPress versions up to %1$s. You have WordPress "
+"%2$s."
+msgstr ""
+"<strong>Attention&nbsp;: non-testé&nbsp;!</strong> L&rsquo;extension &laquo;"
+"&nbsp;GhostScript Only PDF Preview&nbsp;&raquo; n&rsquo;a été testée que sur "
+"des versions de WordPress justqu&rsquo;à %1$s. Vous avez WordPress version "
+"%2$s."
+
+#: ghostscript-only-pdf-preview.php:123
+msgid ""
+"<strong>Warning: no GhostScript!</strong> The plugin \"GhostScript Only PDF "
+"Preview\" cannot determine the server location of your GhostScript "
+"executable."
+msgstr ""
+"<strong>Attention&nbsp;: pas de GhostScript&nbsp;!</strong> L&rsquo;"
+"extension &laquo;&nbsp;GhostScript Only PDF Preview&nbsp;&raquo; ne peut pas "
+"déterminer l&rsquo;emplacement du serveur de votre exécutable GhostScript."
+
+#: includes/class-gopp-image-editor-gs.php:197
+msgid "Unsupported MIME type."
+msgstr "Type MIME non supporté."
+
+#: includes/class-gopp-image-editor-gs.php:208
+msgid "Image Editor Save Failed"
+msgstr "L&rsquo;enregistrement de l&rsquo;éditeur d&rsquo;images a échoué."
+
+#: includes/class-gopp-image-editor-gs.php:213
+msgid "Could not read image size."
+msgstr "Impossible de lire la taille de l&rsquo;image."
+
+#: includes/class-gopp-image-editor-gs.php:250
+msgid "Loading from URL not supported."
+msgstr "Chargement à partir de l'URL non pris en charge."
+
+#: includes/class-gopp-image-editor-gs.php:255
+#: includes/class-gopp-image-editor-gs.php:260
+msgid "Unsupported file name."
+msgstr "Nom du fichier non supporté."
+
+#: includes/class-gopp-image-editor-gs.php:266
+msgid "File doesn&#8217;t exist?"
+msgstr "Le fichier n&rsquo;existe pas&nbsp;?"
+
+#: includes/class-gopp-image-editor-gs.php:271
+msgid "File is not a PDF."
+msgstr "Le fichier n&rsquo;est pas un PDF ."
+
+#: includes/class-gopp-image-editor-gs.php:556
+msgid "Attempted to set PDF preview resolution to an invalid value."
+msgstr ""
+"Tentative de fixer la résolution d&rsquo;aperçu de miniature de PDF à une "
+"valeur non valide."
+
+#: includes/class-gopp-image-editor-gs.php:575
+#: includes/class-gopp-image-editor-gs.php:596
+#: includes/class-gopp-image-editor-gs.php:615
+#: includes/class-gopp-image-editor-gs.php:628
+#: includes/class-gopp-image-editor-gs.php:642
+#: includes/class-gopp-image-editor-gs.php:655
+msgid "Unsupported operation."
+msgstr "Opération non supportée."
+
+#. Plugin Name of the plugin/theme
+msgid "GhostScript Only PDF Preview"
+msgstr "GhostScript Only PDF Preview"
+
+#. Plugin URI of the plugin/theme
+msgid "https://github.com/gitlost/ghostscript-only-pdf-preview"
+msgstr "https://github.com/gitlost/ghostscript-only-pdf-preview"
+
+#. Description of the plugin/theme
+msgid "Uses GhostScript directly to generate PDF previews."
+msgstr ""
+"Utilise directement GhostScript pour générer les aperçus de miniature de PDF."
+
+#. Author of the plugin/theme
+msgid "gitlost"
+msgstr "gitlost"
+
+#. Author URI of the plugin/theme
+msgid "https://profiles.wordpress.org/gitlost"
+msgstr "https://profiles.wordpress.org/gitlost"
