@@ -3,9 +3,16 @@ language: php
 sudo: false
 
 php:
+- 7.1
 - 7.0
+- 5.2
+- 5.3
+- 5.4
+- 5.5
+- 5.6
 
 env:
+- WP_VERSION=nightly
 - WP_VERSION=latest
 
 matrix:
