@@ -18,6 +18,9 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		require_once ABSPATH . WPINC . '/class-wp-image-editor.php';
 		require_once dirname( dirname( __FILE__ ) ) . '/includes/class-gopp-image-editor-gs.php';
 
+		global $wp_version;
+		error_log( "wp_version=$wp_version" );
+
 		parent::setUp();
 	}
 
@@ -399,10 +402,6 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 	 * @ticket xxx
 	 */
 	public function test_alpha_pdf_preview() {
-		if ( ! wp_image_editor_supports( array( 'mime_type' => 'application/pdf' ) ) ) {
-			$this->markTestSkipped( 'Rendering PDFs is not supported on this system.' );
-		}
-
 		do_action( 'admin_init' );
 		$this->assertSame( 10, has_filter( 'wp_image_editors', 'gopp_plugin_wp_image_editors' ) );
 
