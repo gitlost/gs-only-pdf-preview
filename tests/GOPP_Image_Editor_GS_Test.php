@@ -101,19 +101,19 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 	 */
 	public function test_load() {
 		// Success.
-		$image_editor = new GOPP_Image_Editor_GS( DIR_TESTDATA . '/images/wordpress-gsoc-flyer.pdf' );
+		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/wordpress-gsoc-flyer.pdf' );
 		$output = $image_editor->load();
 		$this->assertTrue( $output );
 
 		// Not PDF.
-		$image_editor = new GOPP_Image_Editor_GS( DIR_TESTDATA . '/images/test-image.jpg' );
+		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/test-image.jpg' );
 		$output = $image_editor->load();
 		$this->assertInstanceOf( 'WP_Error', $output );
 
 		// Bad resolution.
 		add_filter( 'gopp_editor_set_resolution', array( $this, 'filter_gopp_editor_set_resolution' ) );
 		$this->resolution = 'x100';
-		$image_editor = new GOPP_Image_Editor_GS( DIR_TESTDATA . '/images/wordpress-gsoc-flyer.pdf' );
+		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/wordpress-gsoc-flyer.pdf' );
 		$output = $image_editor->load();
 		$this->assertInstanceOf( 'WP_Error', $output );
 		remove_filter( 'gopp_editor_set_resolution', array( $this, 'filter_gopp_editor_set_resolution' ) );
@@ -130,14 +130,14 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 	 */
 	public function test_save() {
 		// Fail destination file.
-		$image_editor = new GOPP_Image_Editor_GS( DIR_TESTDATA . '/images/wordpress-gsoc-flyer.pdf' );
+		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/wordpress-gsoc-flyer.pdf' );
 		$output = $image_editor->load();
 		$this->assertTrue( $output );
 		$output = $image_editor->save( 'non_existing_dir/donk.jpg' );
 		$this->assertInstanceOf( 'WP_Error', $output );
 
 		// Fail mime_type.
-		$image_editor = new GOPP_Image_Editor_GS( DIR_TESTDATA . '/images/wordpress-gsoc-flyer.pdf' );
+		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/wordpress-gsoc-flyer.pdf' );
 		$output = $image_editor->load();
 		$this->assertTrue( $output );
 		$output = $image_editor->save( '/tmp/test_save-gs-fail.jpg', 'application/pdf' );
@@ -145,7 +145,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 
 		// Success filename given.
 		$test_filename = '/tmp/test_save-gs.jpg';
-		$image_editor = new GOPP_Image_Editor_GS( DIR_TESTDATA . '/images/wordpress-gsoc-flyer.pdf' );
+		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/wordpress-gsoc-flyer.pdf' );
 		$output = $image_editor->load();
 		$this->assertTrue( $output );
 		$output = $image_editor->save( $test_filename, 'image/jpeg' );
@@ -160,7 +160,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 
 		// Success no filename given.
 		$test_filename = null;
-		$image_editor = new GOPP_Image_Editor_GS( DIR_TESTDATA . '/images/wordpress-gsoc-flyer.pdf' );
+		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/wordpress-gsoc-flyer.pdf' );
 		$output = $image_editor->load();
 		$this->assertTrue( $output );
 		$output = $image_editor->save( $test_filename, 'image/jpeg' );
@@ -192,8 +192,8 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 			array( 'space filename', false ), // File name containing space.
 			array( 'quote\'filename', false ), // File name containing single quote.
 			array( 'double_quote"filename', false ), // File name containing double quote.
-			array( DIR_TESTDATA . '/images/test-image.jpg', false ), // Not a PDF.
-			array( DIR_TESTDATA . '/images/wordpress-gsoc-flyer.pdf', true ), // Success.
+			array( dirname( __FILE__ ) . '/images/test-image.jpg', false ), // Not a PDF.
+			array( dirname( __FILE__ ) . '/images/wordpress-gsoc-flyer.pdf', true ), // Success.
 		);
 	}
 
@@ -406,7 +406,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		do_action( 'admin_init' );
 		$this->assertSame( 10, has_filter( 'wp_image_editors', 'gopp_plugin_wp_image_editors' ) );
 
-		$test_file = DIR_TESTDATA . '/images/test_alpha.pdf';
+		$test_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
 		$attachment_id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $attachment_id );
 
