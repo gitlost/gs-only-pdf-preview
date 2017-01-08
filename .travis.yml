@@ -25,9 +25,10 @@ install:
   
 before_script:
 - bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
+- bash echo WordPress $WP_VERSION
 
 script: 
-- WP_TESTS_DIR=/tmp/wordpress-tests-lib phpunit
+- WP_TESTS_DIR=/tmp/wordpress-tests-lib phpunit --verbose
 
 after_success:
 - if [[ ( $TRAVIS_PHP_VERSION = '7' || $TRAVIS_PHP_VERSION > '7' ) && $WP_VERSION = 'latest' ]] then
