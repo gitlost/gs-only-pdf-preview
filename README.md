@@ -27,7 +27,7 @@ The plugin by-passes (as far as PDF previews are concerned) #39216, and also by-
 
 The plugin requires the [PHP function `exec`](http://php.net/manual/en/function.exec.php) to be enabled on your system. So if the [PHP ini setting `disable_functions`](http://php.net/manual/en/ini.core.php#ini.disable-functions) includes `exec`, the plugin won't work. Neither will it work if the (somewhat outdated) [`suhosin` security extension](https://suhosin.org/stories/index.html) is installed and `exec` is [blacklisted](https://suhosin.org/stories/configuration.html#suhosin-executor-func-blacklist).
 
-Also, the plugin is incompatible with the [PHP ini setting `safe_mode`](http://php.net/manual/en/ini.sect.safe-mode.php#ini.safe-mode)], an old (and misnamed) setting that was deprecated in PHP 5.3.0 and removed in PHP 5.4.0.
+Also, the plugin is incompatible with the [PHP ini setting `safe_mode`](http://php.net/manual/en/ini.sect.safe-mode.php#ini.safe-mode), an old (and misnamed) setting that was deprecated in PHP 5.3.0 and removed in PHP 5.4.0.
 
 ### Security ###
 
