@@ -80,9 +80,8 @@ function gopp_plugin_activation_hook() {
 
 	global $wp_version;
 	$stripped_wp_version = substr( $wp_version, 0, strspn( $wp_version, '0123456789.' ) ); // Remove any trailing date stuff.
-	// Make WP version x.y.z compat.
 	if ( preg_match( '/^[0-9]+\.[0-9]+$/', $stripped_wp_version ) ) {
-		$stripped_wp_version .= '.0';
+		$stripped_wp_version .= '.0'; // Make WP version x.y.z compat.
 	}
 
 	// Must be on WP 4.7 at least.
