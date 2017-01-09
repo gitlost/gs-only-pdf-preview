@@ -246,6 +246,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertNotEmpty( $args['args'] );
 		$this->assertNotEmpty( $args['args'][0] );
 		$this->assertSame( 'updated', $args['args'][0][0] );
+		error_log( "args=" . print_r( $args, true ) );
 		$this->assertTrue( false !== stripos( $args['args'][0][1], '1 pdf' ) );
 
 		$this->assertSame( 1, count( self::$func_args['wp_redirect'] ) );
@@ -409,6 +410,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$_REQUEST = $_POST;
 		$this->assertTrue( 1 === wp_verify_nonce( $_POST['nonce'], 'gopp_media_row_action_' . $id ) );
 		$out = gopp_plugin_gopp_media_row_action();
+		error_log( "out=" . print_r( $out, true ) );
 		$this->assertTrue( false !== stripos( $out, 'success' ) );
 
 		$out = wp_set_current_user( 0 );
