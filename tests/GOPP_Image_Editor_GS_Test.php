@@ -120,12 +120,26 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		$output = $image_editor->load();
 		$this->assertInstanceOf( 'WP_Error', $output );
 		remove_filter( 'gopp_editor_set_resolution', array( $this, 'filter_gopp_editor_set_resolution' ) );
+
+		// Bad page.
+		add_filter( 'gopp_editor_set_page', array( $this, 'filter_gopp_editor_set_page' ) );
+		$this->page = -2;
+		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/wordpress-gsoc-flyer.pdf' );
+		$output = $image_editor->load();
+		$this->assertInstanceOf( 'WP_Error', $output );
+		remove_filter( 'gopp_editor_set_page', array( $this, 'filter_gopp_editor_set_page' ) );
 	}
 
 	protected $resolution = '100x100';
 
 	function filter_gopp_editor_set_resolution( $resolution ) {
 		return $this->resolution;
+	}
+
+	protected $page = 2;
+
+	function filter_gopp_editor_set_page( $page ) {
+		return $this->page;
 	}
 
 	/**
@@ -383,6 +397,37 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		$this->assertInstanceOf( 'WP_Error', $gs->rotate( 0.5 ) );
 		$this->assertInstanceOf( 'WP_Error', $gs->flip( true, false ) );
 		$this->assertInstanceOf( 'WP_Error', $gs->stream() );
+	}
+
+	/*
+	 * Test page.
+	 */
+	public function test_page() {
+		$gs = new GOPP_Image_Editor_GS( null );
+		$this->assertSame( 1, $gs->get_page() );
+
+		$page = 3;
+		$this->assertTrue( $gs->set_page( $page ) );
+		$this->assertSame( $page, $gs->get_page() );
+
+		$this->assertInstanceOf( 'WP_Error', $gs->set_page( 0 ) );
+		$this->assertSame( $page, $gs->get_page() );
+		$this->assertInstanceOf( 'WP_Error', $gs->set_page( -1 ) );
+		$this->assertSame( $page, $gs->get_page() );
+		$this->assertInstanceOf( 'WP_Error', $gs->set_page( '' ) );
+		$this->assertSame( $page, $gs->get_page() );
+
+		add_filter( 'gopp_editor_set_page', array( $this, 'filter_gopp_editor_set_page' ) );
+		$page = $this->page = 21;
+		$this->assertTrue( $gs->set_page() );
+		$this->assertSame( $this->page, $gs->get_page() );
+		$this->page = 'asdf';
+		$this->assertInstanceOf( 'WP_Error', $gs->set_page() );
+		$this->assertSame( $page, $gs->get_page() );
+		remove_filter( 'gopp_editor_set_page', array( $this, 'filter_gopp_editor_set_page' ) );
+
+		$gs->set_page( 1 );
+		$this->assertSame( 1, $gs->get_page() );
 	}
 
 	/**

@@ -25,6 +25,14 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	protected $resolution = '128x128';
 
 	/**
+	 * Page to render.
+	 *
+	 * @access protected
+	 * @var int
+	 */
+	protected $page = 1;
+
+	/**
 	 * Whether on Windows or not.
 	 *
 	 * @static
@@ -143,7 +151,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	}
 
 	/**
-	 * Checks validity and existence of file and sets mime type and calls `set_resolution` and `set_quality` (firing filters).
+	 * Checks validity and existence of file and sets mime type and calls `set_resolution` and `set_page` and `set_quality` (firing filters).
 	 *
 	 * @since 4.x
 	 * @access protected
@@ -151,18 +159,24 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @return true|WP_Error True if loaded; WP_Error on failure.
 	 */
 	public function load() {
-		$gs_valid = self::gs_valid( $this->file );
-		if ( true !== $gs_valid ) {
-			return new WP_Error( 'invalid_image', $gs_valid, $this->file );
+		$result = self::gs_valid( $this->file );
+		if ( true !== $result ) {
+			return new WP_Error( 'invalid_image', $result, $this->file );
 		}
 
 		list( $filename, $extension, $mime_type ) = $this->get_output_format( $this->file );
 		$this->mime_type = $mime_type;
 
 		// Allow chance for gopp_editor_set_resolution filter to fire by calling set_resolution() with null arg (mimicking set_quality() behavior).
-		$set_resolution = $this->set_resolution();
-		if ( true !== $set_resolution ) {
-			return $set_resolution;
+		$result = $this->set_resolution();
+		if ( true !== $result ) {
+			return $result;
+		}
+
+		// Similarly for page to render.
+		$result = $this->set_page();
+		if ( true !== $result ) {
+			return $result;
 		}
 
 		return $this->set_quality();
@@ -438,7 +452,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @return string
 	 */
 	protected function get_gs_args( $filename ) {
-		$ret = '-dBATCH -dFirstPage=1 -dLastPage=1 -dNOPAUSE -dNOPROMPT -dQUIET -dSAFER -q -sDEVICE=jpeg';
+		$ret = '-dBATCH -dNOPAUSE -dNOPROMPT -dQUIET -dSAFER -q -sDEVICE=jpeg';
 
 		if ( ( $quality = $this->get_quality() ) && preg_match( '/^[0-9]{1,2}$/', $quality ) ) {
 			$ret .= ' -dJPEGQ=' . $quality; // Nothing escape-worthy.
@@ -446,6 +460,13 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		if ( ( $resolution = $this->get_resolution() ) && preg_match( '/^[0-9]{1,5}x[0-9]{1,5}$/', $resolution ) ) {
 			$ret .= ' -r' . $resolution; // Nothing escape-worthy.
 		}
+
+		$page_arg = '-dFirstPage=1 -dLastPage=1';
+		if ( ( $page = intval( $this->get_page() ) ) > 0 ) {
+			$page_arg = "-dFirstPage=$page -dLastPage=$page"; // Nothing escape-worthy.
+		}
+		$ret .= ' ' . $page_arg;
+
 		$ret .= ' ' . self::escapeshellarg( '-sOutputFile=' . $filename );
 		if ( self::is_win() ) {
 			$ret .= ' -sstdout=NUL'; // Lessen noise.
@@ -557,6 +578,51 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			return true;
 		}
 		return new WP_Error( 'invalid_image_resolution', __( 'Attempted to set PDF preview resolution to an invalid value.', 'ghostscript-only-pdf-preview' ) );
+	}
+
+	/**
+	 * Gets the page to render for the preview.
+	 *
+	 * @since 4.x
+	 * @access public
+	 *
+	 * @return int $page The page to render.
+	 */
+	public function get_page() {
+		return $this->page;
+	}
+
+	/**
+	 * Sets the page to render for the preview.
+	 *
+	 * @since 4.x
+	 * @access public
+	 *
+	 * @param int $page Page number to render.
+	 *
+	 * @return true|WP_Error True if set successful; WP_Error on failure.
+	 */
+	public function set_page( $page = null ) {
+		if ( null === $page ) {
+			/**
+			 * Filters the default PDF preview page setting.
+			 *
+			 * Applies only during initial editor instantiation, or when set_page() is run
+			 * manually without the `$page` argument.
+			 *
+			 * set_page() has priority over the filter.
+			 *
+			 * @since 4.x
+			 *
+			 * @param int $page The page to render.
+			 */
+			$page = apply_filters( 'gopp_editor_set_page', $this->page );
+		}
+		if ( ( $page = intval( $page ) ) > 0 ) {
+			$this->page = $page;
+			return true;
+		}
+		return new WP_Error( 'invalid_image_page', __( 'Attempted to set PDF preview page to an invalid value.', 'ghostscript-only-pdf-preview' ) );
 	}
 
 	/**
