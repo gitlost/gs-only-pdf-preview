@@ -37,6 +37,12 @@ I believe these concerns are addressed here through screening of the file and it
 
 Unsurprisingly it's faster. Crude benchmarking (see the [script `perf_vs_imagick.php`](https://github.com/gitlost/ghostscript-only-pdf-preview/blob/master/perf/perf_vs_imagick.php)) suggest it's at least 40% faster. However the production of the preview is only a part of the overhead of uploading a PDF (and doesn't include producing the intermediate thumbnail sizes for instance) so any speed-up will probably not be that noticeable.
 
+= Tool =
+
+A primitive administration tool to regenerate (or generate, if they previously didn't have a preview) the previews of all PDFs uploaded to the system is included. Note that if you have a lot of PDFs you may experience the White Screen Of Death (WSOD) if the tool exceeds the [maximum execution time](http://php.net/manual/en/info.configuration.php#ini.max-execution-time) allowed. Note also that as the filenames of the previews don't (normally) change, you will probably have to refresh your browser (to clear the cache) to see the updated thumbnails.
+
+As a workaround for the possible WSOD issue above, and as a facility in itself, a "Regenerate preview" row action is added to PDF entries in the list mode of the Media Library, so that you can regenerate the previews of individual PDFs.
+
 = And =
 
 A google-cheating schoolboy French translation is supplied.
@@ -87,6 +93,8 @@ The filter can also be used just for performance reasons (especially on Windows 
 
 1. Before: upload of various PDFs with alpha channels and/or CMYK color spaces resulting in broken previews.
 2. After: upload of the same PDFs resulting in a result.
+3. Regenerate PDF Previews administration tool.
+4. Regenerate preview row action in list mode of Media Library.
 
 == Changelog ==
 

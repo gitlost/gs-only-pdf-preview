@@ -12,7 +12,7 @@ module.exports = function( grunt ) { //The wrapper function
 					'README.md': 'readme.txt'
 				},
 				options: {
-					'screenshot_url': 'https://ps.w.org/ghostscript-only-pdf-preview/assets/{screenshot}.png',
+					'screenshot_url': 'https://github.com/gitlost/{plugin}/raw/master/assets/{screenshot}.png', //'https://ps.w.org/{plugin}/assets/{screenshot}.png',
 					'post_convert': function ( readme ) {
 						return '[![Build Status](https://travis-ci.org/gitlost/ghostscript-only-pdf-preview.png?branch=master)](https://travis-ci.org/gitlost/ghostscript-only-pdf-preview)\n'
 							+ '[![codecov.io](http://codecov.io/github/gitlost/ghostscript-only-pdf-preview/coverage.svg?branch=master)](http://codecov.io/github/gitlost/ghostscript-only-pdf-preview?branch=master)\n'

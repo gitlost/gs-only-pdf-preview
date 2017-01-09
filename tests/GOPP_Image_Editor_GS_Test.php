@@ -1,5 +1,8 @@
 <?php
 
+global $wp_version;
+error_log( "wp_version=$wp_version" );
+
 /**
  * Test the WP_Image_Editor_GS class
  * @group image
@@ -17,9 +20,6 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		//require_once( ABSPATH . WPINC . '/class-wp-image-editor-gs.php' );
 		require_once ABSPATH . WPINC . '/class-wp-image-editor.php';
 		require_once dirname( dirname( __FILE__ ) ) . '/includes/class-gopp-image-editor-gs.php';
-
-		global $wp_version;
-		error_log( "wp_version=$wp_version" );
 
 		parent::setUp();
 	}

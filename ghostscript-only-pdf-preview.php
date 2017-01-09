@@ -26,6 +26,13 @@ load_plugin_textdomain( 'ghostscript-only-pdf-preview', false, basename( dirname
 
 register_activation_hook( __FILE__, 'gopp_plugin_activation_hook' );
 add_action( 'admin_init', 'gopp_plugin_admin_init' );
+if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
+	add_action( 'admin_menu', 'gopp_plugin_admin_menu' );
+	add_action( 'admin_enqueue_scripts', 'gopp_plugin_admin_enqueue_scripts' );
+	add_action( 'media_row_actions', 'gopp_plugin_media_row_actions', 100, 3 ); // Add after most others due to spinner.
+} else {
+	add_action( 'wp_ajax_gopp_media_row_action', 'gopp_plugin_gopp_media_row_action' );
+}
 
 /**
  * Called on plugin activation.
@@ -188,4 +195,294 @@ function gopp_plugin_admin_notices() {
 			}
 		}
 	}
+}
+
+define( 'GOPP_REGEN_PDF_PREVIEWS_SLUG', 'gopp-regen-pdf-previews' );
+global $gopp_plugin_hook_suffix;
+$gopp_plugin_hook_suffix = null;
+
+/**
+ * Called on 'admin_menu' action.
+ */
+function gopp_plugin_admin_menu() {
+	global $gopp_plugin_hook_suffix;
+	$gopp_plugin_hook_suffix = add_management_page( __( 'Regenerate PDF Previews', 'ghostscript-only-pdf-preview' ), __( 'Regen. PDF Previews', 'ghostscript-only-pdf-preview' ), 'manage_options', GOPP_REGEN_PDF_PREVIEWS_SLUG, 'gopp_plugin_regen_pdf_previews' );
+	if ( $gopp_plugin_hook_suffix ) {
+		add_action( 'load-' . $gopp_plugin_hook_suffix, 'gopp_plugin_load_regen_pdf_previews' );
+	}
+}
+
+/**
+ * Called on 'load-tools_page_GOPP_REGEN_PDF_PREVIEWS_SLUG' action.
+ */
+function gopp_plugin_load_regen_pdf_previews() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( __( 'Sorry, you are not allowed to access this page.', 'ghostscript-only-pdf-preview' ) );
+	}
+
+	if ( ! empty( $_REQUEST[GOPP_REGEN_PDF_PREVIEWS_SLUG] ) ) {
+
+		check_admin_referer( GOPP_REGEN_PDF_PREVIEWS_SLUG );
+
+		$redirect = admin_url( 'tools.php?page=' . GOPP_REGEN_PDF_PREVIEWS_SLUG );
+		$admin_notices = array();
+
+		global $wpdb;
+		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type = %s AND post_mime_type = %s", 'attachment', 'application/pdf' ) );
+		if ( ! $ids ) {
+			$admin_notices[] = array( 'error', __( 'No PDFs found', 'ghostscript-only-pdf-preview' ) );
+		} else {
+			$max_execution_time = count( $ids ) * 10;
+			if ( $max_execution_time > ini_get( 'max_execution_time' ) ) {
+				@ set_time_limit( $max_execution_time );
+			}
+			$num_updates = $num_fails = 0;
+			foreach ( $ids as $id ) {
+				$file = get_attached_file( $id );
+				if ( false === $file ) {
+					$num_fails++;
+				} else {
+					$meta = wp_generate_attachment_metadata( $id, $file );
+					if ( ! $meta ) {
+						$num_fails++;
+					} else {
+						// wp_update_attachment_metadata() returns false if nothing to update so check first.
+						$old_value = get_metadata( 'post', $id, '_wp_attachment_metadata' );
+						if ( $old_value && is_array( $old_value ) && 1 === count( $old_value ) && $old_value[0] === $meta ) {
+							$num_updates++;
+						} else {
+							if ( false === wp_update_attachment_metadata( $id, $meta ) ) {
+								$num_fails++;
+							} else {
+								$num_updates++;
+							}
+						}
+					}
+				}
+			}
+			if ( $num_updates ) {
+				/* translators: %s: formatted number of PDF previews regenerated. */
+				$admin_notices[] = array( 'updated', sprintf(
+					_n( '%s PDF preview regenerated.', '%s PDF previews regenerated.', $num_updates, 'ghostscript-only-pdf-preview' ), number_format_i18n( $num_updates )
+				) );
+			} else {
+				$admin_notices[] = array( 'updated', __( 'Nothing updated!', 'ghostscript-only-pdf-preview' ) );
+			}
+			if ( $num_fails ) {
+				/* translators: %s: formatted number of PDF previews that failed to regenerate. */
+				$admin_notices[] = array( 'warning', sprintf(
+					_n( '%s PDF preview not regenerated.', '%s PDF previews not regenerated.', $num_fails, 'ghostscript-only-pdf-preview' ), number_format_i18n( $num_fails )
+				) );
+			}
+		}
+
+		if ( $admin_notices ) {
+			set_transient( 'gopp_plugin_admin_notices', $admin_notices, 5 * MINUTE_IN_SECONDS );
+		}
+
+		wp_redirect( esc_url_raw( $redirect ) );
+		if ( defined( 'GOPP_TESTING' ) && GOPP_TESTING ) { // Allow for testing.
+			wp_die( $redirect, 'wp_redirect', $admin_notices );
+		}
+		exit;
+	}
+}
+
+/**
+ * Callback for regenerate PDF previews (admin tools menu).
+ */
+function gopp_plugin_regen_pdf_previews() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( __( 'Sorry, you are not allowed to access this page.', 'ghostscript-only-pdf-preview' ) );
+	}
+	global $wpdb;
+	$num_pdfs = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type = %s AND post_mime_type = %s", 'attachment', 'application/pdf' ) );
+	?>
+<div id="gopp_regen_pdf_previews" class="wrap">
+	<h1><?php _e( "GhostScript Only PDF Preview - Regenerate PDF Previews", 'ghostscript-only-pdf-preview' ); ?></h1>
+	<?php
+	if ( ! $num_pdfs ) {
+		?>
+		<p>
+			<?php _e( 'This tool is for regenerating the thumbnail previews of PDFs, but no PDFs have been uploaded, so it has nothing to do.', 'ghostscript-only-pdf-preview' ); ?>
+		</p>
+		<?php
+	} else {
+		// Test setting max execution time.
+		$max_execution_msg = '';
+		$max_execution_time = $num_pdfs * 10; // Allow 10 seconds per PDF.
+		if ( $max_execution_time > ini_get( 'max_execution_time' ) && ! @ set_time_limit( $max_execution_time ) ) {
+			$max_execution_msg = __( '<strong>Warning: cannot set max execution time!</strong> The maximum time allowed for a PHP script to run on your system could not be set, so you may experience the White Screen Of Death (WSOD) on trying this.', 'ghostscript-only-pdf-preview' );
+		}
+		?>
+		<form class="gopp_regen_pdf_previews_form" method="GET">
+			<input type="hidden" name="page" value="<?php echo GOPP_REGEN_PDF_PREVIEWS_SLUG; ?>">
+			<?php wp_nonce_field( GOPP_REGEN_PDF_PREVIEWS_SLUG ) ?>
+			<p class="gopp_regen_pdf_previews_form_hide">
+				<?php _e( 'This tool regenerates the thumbnail previews of PDFs uploaded to your system.', 'ghostscript-only-pdf-preview' ); ?>
+				<?php echo sprintf( _n( '%s PDF has been found.', '%s PDFs have been found.', $num_pdfs, 'ghostscript-only-pdf-preview' ), number_format_i18n( $num_pdfs ) ); ?>
+			</p>
+			<input id="<?php echo GOPP_REGEN_PDF_PREVIEWS_SLUG; ?>" class="button" name="<?php echo GOPP_REGEN_PDF_PREVIEWS_SLUG; ?>" value="<?php echo esc_attr( __( 'Regenerate PDF Previews', 'ghostscript-only-pdf-preview' ) ); ?>" type="submit">
+			<?php if ( $num_pdfs > 10 ) : ?>
+			<p>
+				<?php _e( 'Regenerating PDF previews can take a long time.', 'ghostscript-only-pdf-preview' ); ?>
+			</p>
+			<?php endif; ?>
+			<?php if ( $max_execution_msg ) : ?>
+			<p>
+				<?php echo $max_execution_msg; ?>
+			</p>
+			<?php endif; ?>
+		</form>
+		<?php
+	}
+
+	?>
+</div>
+	<?php
+}
+
+/**
+ * Called on 'admin_enqueue_scripts' action.
+ */
+function gopp_plugin_admin_enqueue_scripts( $hook_suffix ) {
+	global $gopp_plugin_hook_suffix;
+	if ( $gopp_plugin_hook_suffix === $hook_suffix ) {
+		add_action( 'admin_print_footer_scripts', 'gopp_plugin_admin_print_footer_scripts' );
+	} elseif ( 'upload.php' === $hook_suffix ) {
+		add_action( 'admin_print_footer_scripts', 'gopp_plugin_admin_print_footer_scripts_upload' );
+	}
+}
+
+/**
+ * Called on 'admin_print_footer_scripts' action.
+ */
+function gopp_plugin_admin_print_footer_scripts() {
+	$please_wait_msg = '<div class="notice notice-warning inline"><p>' . __( 'Please wait...', 'ghostscript-only-pdf-preview' ) . '<span class="spinner is-active" style="float:none;margin-top:0;"></span></p></div>';
+	?>
+<script type="text/javascript">
+/*jslint ass: true, nomen: true, plusplus: true, regexp: true, vars: true, white: true, indent: 4 */
+/*global jQuery */
+( function ( $ ) {
+	'use strict';
+	// jQuery ready.
+	$( function () {
+		var $wrap = $( '#gopp_regen_pdf_previews' ), $msgs = $( '.notice, .updated', $wrap ), $form = $( '.gopp_regen_pdf_previews_form', $wrap );
+		if ( $wrap.length ) {
+			$( 'input[type="submit"]', $form ).click( function ( e ) {
+				var $this = $( this ), $msg = $( <?php echo json_encode( $please_wait_msg ); ?> );
+				$this.hide();
+				$( '.gopp_regen_pdf_previews_form_hide', $wrap ).hide();
+				$msgs.hide();
+				$( 'h1', $wrap ).first().after( $msg );
+			} );
+		}
+	} );
+} )( jQuery );
+</script>
+	<?php
+}
+
+/**
+ * Called on 'admin_print_footer_scripts' action.
+ */
+function gopp_plugin_admin_print_footer_scripts_upload() {
+	?>
+<script type="text/javascript">
+/*jslint ass: true, nomen: true, plusplus: true, regexp: true, vars: true, white: true, indent: 4 */
+/*global jQuery, ajaxurl, gopp_plugin */
+var gopp_plugin = gopp_plugin || {}; // Our namespace.
+( function ( $ ) {
+	'use strict';
+
+	gopp_plugin.media_row_action = function ( e, id, nonce ) {
+		var $target = $( e.target ), $row_action_div = $target.parents( '.row-actions' ).first(), $spinner = $target.next();
+		$( '.gopp_response', $row_action_div.parent() ).remove();
+		$spinner.addClass( 'is-active' );
+		$.post( ajaxurl, {
+				action: 'gopp_media_row_action',
+				id: id,
+				nonce: nonce
+			}, function( response ) {
+				$spinner.removeClass( 'is-active' );
+				if ( response ) {
+					if ( response.error ) {
+						$( '<div class="notice error gopp_response"><p>' + response.error + '</p></div>' ).insertAfter( $row_action_div );
+					} else if ( response.msg ) {
+						$( '<div class="notice updated gopp_response"><p>' + response.msg + '</p></div>' ).insertAfter( $row_action_div );
+					}
+					if ( response.img ) {
+						$( '.has-media-icon .media-icon', $row_action_div.parent() ).html( response.img );
+					}
+				}
+			}, 'json'
+		);
+
+		return false;
+	};
+
+} )( jQuery );
+</script>
+	<?php
+}
+
+/**
+ * Called on 'media_row_actions' filter.
+ */
+function gopp_plugin_media_row_actions( $actions, $post, $detached ) {
+	if ( 'application/pdf' === $post->post_mime_type && current_user_can( 'manage_options' ) ) {
+		$actions['gopp_regen_pdf_preview'] = sprintf(
+			'<a href="#the-list" onclick="return gopp_plugin.media_row_action( event, %d, %s );" class="hide-if-no-js aria-button-if-js" aria-label="%s">%s</a><span class="spinner" style="float:none;margin-top:0;"></span>',
+			$post->ID,
+			esc_attr( json_encode( wp_create_nonce( 'gopp_media_row_action_' . $post->ID ) ) ),
+			/* translators: %s: attachment title */
+			esc_attr( sprintf( __( 'Regenerate the PDF preview for &#8220;%s&#8221;', 'ghostscript-only-pdf-preview' ), _draft_or_post_title() ) ),
+			esc_attr( __( 'Regenerate preview', 'ghostscript-only-pdf-preview' ) )
+		);
+	}
+	return $actions;
+}
+
+/**
+ * Ajax callback for media row action.
+ */
+function gopp_plugin_gopp_media_row_action() {
+	$ret = array( 'msg' => '', 'error' => false, 'img' => '' );
+
+	$id = isset( $_POST['id'] ) && is_string( $_POST['id'] ) ? intval( $_POST['id'] ) : '';
+
+	if ( ! check_ajax_referer( 'gopp_media_row_action_' . $id, 'nonce', false /*die*/ ) ) {
+		$ret['error'] = __( 'Invalid nonce.', 'ghostscript-only-pdf-preview' );
+	} else {
+		if ( ! $id ) {
+			$ret['error'] = __( 'Invalid ID.', 'ghostscript-only-pdf-preview' );
+		} else {
+			$file = get_attached_file( $id );
+			if ( false === $file ) {
+				$ret['error'] = __( 'Invalid ID.', 'ghostscript-only-pdf-preview' );
+			} else {
+				$meta = wp_generate_attachment_metadata( $id, $file );
+				if ( ! $meta ) {
+					$ret['error'] = __( 'Failed to generate the PDF preview.', 'ghostscript-only-pdf-preview' );
+				} else {
+					// wp_update_attachment_metadata() returns false if nothing to update so check first.
+					$old_value = get_metadata( 'post', $id, '_wp_attachment_metadata' );
+					if ( $old_value && is_array( $old_value ) && 1 === count( $old_value ) && $old_value[0] === $meta ) {
+						$ret['msg'] = __( 'Successfully regenerated the PDF preview. You will probably need to refresh your browser to see the updated thumbnail.', 'ghostscript-only-pdf-preview' );
+					} else {
+						if ( false === wp_update_attachment_metadata( $id, $meta ) ) {
+							$ret['error'] = __( 'Failed to generate the PDF preview.', 'ghostscript-only-pdf-preview' );
+						} else {
+							$ret['msg'] = __( 'Successfully regenerated the PDF preview. You will probably need to refresh your browser to see the updated thumbnail.', 'ghostscript-only-pdf-preview' );
+						}
+					}
+					if ( ! $ret['error'] ) {
+						$ret['img'] = wp_get_attachment_image( $id, array( 60, 60 ), true, array( 'alt' => '' ) );
+					}
+				}
+			}
+		}
+	}
+
+	wp_send_json( $ret );
 }
