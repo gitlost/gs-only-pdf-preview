@@ -114,14 +114,9 @@ function gopp_plugin_activation_hook() {
 		) );
 	}
 
-	if ( ! class_exists( 'GOPP_Image_Editor_GS' ) ) {
-		if ( ! class_exists( 'WP_Image_Editor' ) ) {
-			require ABSPATH . WPINC . '/class-wp-image-editor.php';
-		}
-		require dirname( __FILE__ ) . '/includes/class-gopp-image-editor-gs.php';
-	}
 
 	// Clear out any old transients.
+	gopp_plugin_load_gopp_image_editor_gs();
 	GOPP_Image_Editor_GS::clear();
 
 	// Check if GhostScript available.
@@ -131,6 +126,18 @@ function gopp_plugin_activation_hook() {
 
 	if ( $admin_notices ) {
 		set_transient( 'gopp_plugin_admin_notices', $admin_notices, 5 * MINUTE_IN_SECONDS );
+	}
+}
+
+/**
+ * Helper to load GOPP_Image_Editor_GS class.
+ */
+function gopp_plugin_load_gopp_image_editor_gs() {
+	if ( ! class_exists( 'GOPP_Image_Editor_GS' ) ) {
+		if ( ! class_exists( 'WP_Image_Editor' ) ) {
+			require ABSPATH . WPINC . '/class-wp-image-editor.php';
+		}
+		require dirname( __FILE__ ) . '/includes/class-gopp-image-editor-gs.php';
 	}
 }
 
@@ -151,9 +158,7 @@ function gopp_plugin_wp_image_editors( $image_editors ) {
 	if ( ! in_array( 'GOPP_Image_Editor_GS', $image_editors, true ) ) {
 		// Double-check that exec() is available and we're not in safe_mode.
 		if ( function_exists( 'exec' ) && ! ini_get( 'safe_mode' ) ) {
-			if ( ! class_exists( 'GOPP_Image_Editor_GS' ) ) {
-				require dirname( __FILE__ ) . '/includes/class-gopp-image-editor-gs.php';
-			}
+			gopp_plugin_load_gopp_image_editor_gs();
 			array_unshift( $image_editors, 'GOPP_Image_Editor_GS' );
 		}
 	}
@@ -438,14 +443,17 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 function gopp_plugin_media_row_actions( $actions, $post, $detached ) {
 	global $gopp_plugin_cap;
 	if ( 'application/pdf' === $post->post_mime_type && current_user_can( $gopp_plugin_cap ) ) {
-		$actions['gopp_regen_pdf_preview'] = sprintf(
-			'<a href="#the-list" onclick="return gopp_plugin.media_row_action( event, %d, %s );" class="hide-if-no-js aria-button-if-js" aria-label="%s">%s</a><span class="spinner" style="float:none;margin-top:0;"></span>',
-			$post->ID,
-			esc_attr( json_encode( wp_create_nonce( 'gopp_media_row_action_' . $post->ID ) ) ),
-			/* translators: %s: attachment title */
-			esc_attr( sprintf( __( 'Regenerate the PDF preview for &#8220;%s&#8221;', 'ghostscript-only-pdf-preview' ), _draft_or_post_title() ) ),
-			esc_attr( __( 'Regenerate preview', 'ghostscript-only-pdf-preview' ) )
-		);
+		gopp_plugin_load_gopp_image_editor_gs();
+		if ( GOPP_Image_Editor_GS::test( array( 'path' => get_attached_file( $post->ID ) ) ) ) {
+			$actions['gopp_regen_pdf_preview'] = sprintf(
+				'<a href="#the-list" onclick="return gopp_plugin.media_row_action( event, %d, %s );" class="hide-if-no-js aria-button-if-js" aria-label="%s">%s</a><span class="spinner" style="float:none;margin-top:0;"></span>',
+				$post->ID,
+				esc_attr( json_encode( wp_create_nonce( 'gopp_media_row_action_' . $post->ID ) ) ),
+				/* translators: %s: attachment title */
+				esc_attr( sprintf( __( 'Regenerate the PDF preview for &#8220;%s&#8221;', 'ghostscript-only-pdf-preview' ), _draft_or_post_title() ) ),
+				esc_attr( __( 'Regenerate preview', 'ghostscript-only-pdf-preview' ) )
+			);
+		}
 	}
 	return $actions;
 }

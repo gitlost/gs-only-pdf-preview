@@ -63,7 +63,7 @@ To install GhostScript, see [How to install Ghostscript](https://ghostscript.com
 
 = What filters are available? =
 
-Three plugin-specific filters are available:
+Four plugin-specific filters are available:
 
 * `gopp_editor_set_resolution` sets the resolution of the PDF preview.
 * `gopp_editor_set_page` sets the page to render for the PDF preview.
@@ -77,7 +77,7 @@ The `gopp_editor_set_resolution` filter is an analogue of the standard `wp_edito
 	}
 	add_filter( 'gopp_editor_set_resolution', 'mytheme_gopp_editor_set_resolution', 10, 2 );
 
-Similarly the `gopp_editor_set_page` filter allows one to override the default rendering of the first page:
+Similarly the `gopp_editor_set_page` filter allows one to override the default of rendering the first page:
 
 	function mytheme_gopp_editor_set_page( $page, $filename ) {
 		return 2; // Render the second page instead.

@@ -249,7 +249,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		}
 
 		// Check filename can't be interpreted by GhostScript as special - see https://ghostscript.com/doc/9.20/Use.htm#Options
-		if ( isset( $file[0] ) && '@' === $file[0] ) {
+		if ( preg_match( '/^[@|%-]/', $file ) ) {
 			return __( 'Unsupported file name.', 'ghostscript-only-pdf-preview' );
 		}
 
@@ -408,7 +408,11 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			if ( ! empty( $_SERVER['ProgramFiles(x86)'] ) && is_string( $_SERVER['ProgramFiles(x86)'] ) ) {
 				$program_dirs[] = stripslashes( $_SERVER['ProgramFiles(x86)'] );
 			}
-			$program_dirs = array_unique( $program_dirs );
+			if ( $program_dirs ) {
+				$program_dirs = array_unique( $program_dirs );
+			} else {
+				$program_dirs[] = 'C:\\Program Files';
+			}
 			foreach ( $program_dirs as $program_dir ) {
 				$gs_dir = glob( $program_dir . '\\gs\\gs*', GLOB_NOESCAPE );
 				if ( $gs_dir ) {
@@ -461,11 +465,11 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			$ret .= ' -r' . $resolution; // Nothing escape-worthy.
 		}
 
-		$page_arg = '-dFirstPage=1 -dLastPage=1';
 		if ( ( $page = intval( $this->get_page() ) ) > 0 ) {
-			$page_arg = "-dFirstPage=$page -dLastPage=$page"; // Nothing escape-worthy.
+			$ret .= " -dFirstPage=$page -dLastPage=$page"; // Nothing escape-worthy.
+		} else {
+			$ret .= ' -dFirstPage=1 -dLastPage=1';
 		}
-		$ret .= ' ' . $page_arg;
 
 		$ret .= ' ' . self::escapeshellarg( '-sOutputFile=' . $filename );
 		if ( self::is_win() ) {
@@ -508,7 +512,8 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		// Note that the only things we're really going to escape, given the strict base file name check,
 		// is the "WP_CONTENT_DIR/uploads" directory and the path to the GhostScript executable.
 		if ( self::is_win() ) {
-			$arg = '"' . str_replace( array( '%', '!', '"' ), ' ', $arg ) . '"';
+			// Note bang was not zapped in versions of PHP older than about Jul 2015.
+			$arg = '"' . str_replace( array( '%', '!', '"' ), ' ', $arg ) . '"'; // So will get "not found" error if any of these chars in directory path.
 		} else {
 			$arg = "'" . str_replace( "'", "'\\''", $arg ) . "'";
 		}

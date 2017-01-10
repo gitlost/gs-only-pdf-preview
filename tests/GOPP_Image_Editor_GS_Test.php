@@ -405,7 +405,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 	 * Test page.
 	 */
 	public function test_page() {
-		$gs = new GOPP_Image_Editor_GS( null );
+		$gs = new Test_GOPP_Image_Editor_GS( null );
 		$this->assertSame( 1, $gs->get_page() );
 
 		$page = 3;
@@ -427,6 +427,10 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		$this->assertInstanceOf( 'WP_Error', $gs->set_page() );
 		$this->assertSame( $page, $gs->get_page() );
 		remove_filter( 'gopp_editor_set_page', array( $this, 'filter_gopp_editor_set_page' ) );
+
+		$gs->public_set_page( -1 );
+		$args = $gs->public_get_gs_args( 'wow' );
+		$this->assertTrue( false !== stripos( $args, 'firstpage=1' ) );
 
 		$gs->set_page( 1 );
 		$this->assertSame( 1, $gs->get_page() );
@@ -477,4 +481,5 @@ class Test_GOPP_Image_Editor_GS extends GOPP_Image_Editor_GS {
 	public static function public_gs_cmd_win() { return parent::gs_cmd_win(); }
 	public function public_get_gs_args( $filename ) { return parent::get_gs_args( $filename ); }
 	public static function public_escapeshellarg( $arg ) { return parent::escapeshellarg( $arg ); }
+	public function public_set_page( $page ) { $this->page = $page; } // By-pass set_page() check.
 }

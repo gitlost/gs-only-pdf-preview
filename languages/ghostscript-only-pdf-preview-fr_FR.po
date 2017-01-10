@@ -5,8 +5,8 @@ msgstr ""
 "Project-Id-Version: GhostScript Only PDF Preview 0.9.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/ghostscript-only-"
 "pdf-preview\n"
-"POT-Creation-Date: 2017-01-10 11:24+0000\n"
-"PO-Revision-Date: 2017-01-10 11:24+0000\n"
+"POT-Creation-Date: 2017-01-10 15:47+0000\n"
+"PO-Revision-Date: 2017-01-10 15:47+0000\n"
 "Last-Translator: gitlost <gitlost@gitlostbonger.com>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -101,7 +101,7 @@ msgstr ""
 "des versions de WordPress justqu&rsquo;à %1$s. Vous avez WordPress version "
 "%2$s."
 
-#: ghostscript-only-pdf-preview.php:129
+#: ghostscript-only-pdf-preview.php:124
 msgid ""
 "<strong>Warning: no GhostScript!</strong> The plugin \"GhostScript Only PDF "
 "Preview\" cannot determine the server location of your GhostScript "
@@ -111,49 +111,49 @@ msgstr ""
 "extension &laquo;&nbsp;GhostScript Only PDF Preview&nbsp;&raquo; ne peut pas "
 "déterminer l&rsquo;emplacement du serveur de votre exécutable GhostScript."
 
-#: ghostscript-only-pdf-preview.php:213 ghostscript-only-pdf-preview.php:331
+#: ghostscript-only-pdf-preview.php:218 ghostscript-only-pdf-preview.php:336
 msgid "Regenerate PDF Previews"
 msgstr "Régénérer les aperçus de miniature de PDF"
 
-#: ghostscript-only-pdf-preview.php:213
+#: ghostscript-only-pdf-preview.php:218
 msgid "Regen. PDF Previews"
 msgstr "Régén. aperçus PDF"
 
-#: ghostscript-only-pdf-preview.php:225 ghostscript-only-pdf-preview.php:302
-#: ghostscript-only-pdf-preview.php:461
+#: ghostscript-only-pdf-preview.php:230 ghostscript-only-pdf-preview.php:307
+#: ghostscript-only-pdf-preview.php:469
 msgid "Sorry, you are not allowed to access this page."
 msgstr ""
 "Désolé, vous n&rsquo;avez pas l&rsquo;autorisation d&rsquo;accéder à cette "
 "page. "
 
-#: ghostscript-only-pdf-preview.php:238
+#: ghostscript-only-pdf-preview.php:243
 msgid "No PDFs found"
 msgstr "Aucun fichier PDF trouvé"
 
 #. translators: %s: formatted number of PDF previews regenerated.
-#: ghostscript-only-pdf-preview.php:271
+#: ghostscript-only-pdf-preview.php:276
 msgid "%s PDF preview regenerated."
 msgid_plural "%s PDF previews regenerated."
 msgstr[0] "%s aperçu de miniature de PDF régénéré."
 msgstr[1] "%s aperçus de miniature de PDF régénérés."
 
-#: ghostscript-only-pdf-preview.php:274
+#: ghostscript-only-pdf-preview.php:279
 msgid "Nothing updated!"
 msgstr "Rien mis à jour&nbsp;!"
 
 #. translators: %s: formatted number of PDF previews that failed to regenerate.
-#: ghostscript-only-pdf-preview.php:279
+#: ghostscript-only-pdf-preview.php:284
 msgid "%s PDF preview not regenerated."
 msgid_plural "%s PDF previews not regenerated."
 msgstr[0] "%s aperçu de miniature de PDF non régénéré."
 msgstr[1] "%s aperçus de miniature de PDF non régénérés."
 
-#: ghostscript-only-pdf-preview.php:308
+#: ghostscript-only-pdf-preview.php:313
 msgid "GhostScript Only PDF Preview - Regenerate PDF Previews"
 msgstr ""
 "GhostScript Only PDF Preview -  Régénérer les aperçus de miniature de PDF."
 
-#: ghostscript-only-pdf-preview.php:313
+#: ghostscript-only-pdf-preview.php:318
 msgid ""
 "This tool is for regenerating the thumbnail previews of PDFs, but no PDFs "
 "have been uploaded, so it has nothing to do."
@@ -161,7 +161,7 @@ msgstr ""
 "Cet outil sert à régénérer les aperçus de miniature de PDF, mais aucun "
 "fichier PDF n&rsquo;a été téléchargé, donc il n&rsquo;a rien à faire."
 
-#: ghostscript-only-pdf-preview.php:321
+#: ghostscript-only-pdf-preview.php:326
 msgid ""
 "<strong>Warning: cannot set max execution time!</strong> The maximum time "
 "allowed for a PHP script to run on your system could not be set, so you may "
@@ -172,50 +172,50 @@ msgstr ""
 "s&rsquo;exécuter sur votre système n&rsquo;a pu pas être régler, vous pouvez "
 "donc éprouver l&rsquo;écran blanc de mort (WSOD) en essayant ceci."
 
-#: ghostscript-only-pdf-preview.php:328
+#: ghostscript-only-pdf-preview.php:333
 msgid ""
 "This tool regenerates the thumbnail previews of PDFs uploaded to your system."
 msgstr ""
 "Cet outil régénère les aperçus de miniature de fichiers PDF téléchargés sur "
 "votre système."
 
-#: ghostscript-only-pdf-preview.php:329
+#: ghostscript-only-pdf-preview.php:334
 msgid "%s PDF has been found."
 msgid_plural "%s PDFs have been found."
 msgstr[0] "%s PDF a été trouvé."
 msgstr[1] "%s PDFs ont été trouvés."
 
-#: ghostscript-only-pdf-preview.php:334
+#: ghostscript-only-pdf-preview.php:339
 msgid "Regenerating PDF previews can take a long time."
 msgstr ""
 "Régénérer les aperçus de miniature de PDF peut prendre un certain temps."
 
-#: ghostscript-only-pdf-preview.php:367
+#: ghostscript-only-pdf-preview.php:372
 msgid "Please wait..."
 msgstr "S&rsquo;il vous plaît attendre..."
 
 #. translators: %s: attachment title
-#: ghostscript-only-pdf-preview.php:446
+#: ghostscript-only-pdf-preview.php:453
 msgid "Regenerate the PDF preview for &#8220;%s&#8221;"
 msgstr "Régénérer l&rsquo;aperçu de miniature de PDF pour &#8220;%s&#8221;"
 
-#: ghostscript-only-pdf-preview.php:447
+#: ghostscript-only-pdf-preview.php:454
 msgid "Regenerate preview"
 msgstr "Régénérer l&rsquo;aperçu"
 
-#: ghostscript-only-pdf-preview.php:466
+#: ghostscript-only-pdf-preview.php:474
 msgid "Invalid nonce."
 msgstr "Nonce invalide."
 
-#: ghostscript-only-pdf-preview.php:469 ghostscript-only-pdf-preview.php:473
+#: ghostscript-only-pdf-preview.php:477 ghostscript-only-pdf-preview.php:481
 msgid "Invalid ID."
 msgstr "Identifiant invalide."
 
-#: ghostscript-only-pdf-preview.php:477 ghostscript-only-pdf-preview.php:484
+#: ghostscript-only-pdf-preview.php:485 ghostscript-only-pdf-preview.php:492
 msgid "Failed to generate the PDF preview."
 msgstr "Échec de générer l&rsquo;aperçu de miniature de PDF."
 
-#: ghostscript-only-pdf-preview.php:482
+#: ghostscript-only-pdf-preview.php:490
 msgid ""
 "Successfully regenerated the PDF preview. You will probably need to refresh "
 "your browser to see the updated thumbnail."
@@ -252,24 +252,24 @@ msgstr "Le fichier n&rsquo;existe pas&nbsp;?"
 msgid "File is not a PDF."
 msgstr "Le fichier n&rsquo;est pas un PDF ."
 
-#: includes/class-gopp-image-editor-gs.php:594
+#: includes/class-gopp-image-editor-gs.php:599
 msgid "Attempted to set PDF preview resolution to an invalid value."
 msgstr ""
 "Tentative de fixer la résolution d&rsquo;aperçu de miniature de PDF à une "
 "valeur non valide."
 
-#: includes/class-gopp-image-editor-gs.php:640
+#: includes/class-gopp-image-editor-gs.php:645
 msgid "Attempted to set PDF preview page to an invalid value."
 msgstr ""
 "Tentative de fixer la page d&rsquo;aperçu de miniature de PDF à une valeur "
 "non valide."
 
-#: includes/class-gopp-image-editor-gs.php:659
-#: includes/class-gopp-image-editor-gs.php:680
-#: includes/class-gopp-image-editor-gs.php:699
-#: includes/class-gopp-image-editor-gs.php:712
-#: includes/class-gopp-image-editor-gs.php:726
-#: includes/class-gopp-image-editor-gs.php:739
+#: includes/class-gopp-image-editor-gs.php:664
+#: includes/class-gopp-image-editor-gs.php:685
+#: includes/class-gopp-image-editor-gs.php:704
+#: includes/class-gopp-image-editor-gs.php:717
+#: includes/class-gopp-image-editor-gs.php:731
+#: includes/class-gopp-image-editor-gs.php:744
 msgid "Unsupported operation."
 msgstr "Opération non supportée."
 
