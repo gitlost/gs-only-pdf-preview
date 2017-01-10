@@ -190,6 +190,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		do_action( 'admin_init' );
 		$this->assertSame( 10, has_filter( 'wp_image_editors', 'gopp_plugin_wp_image_editors' ) );
+		GOPP_Image_Editor_GS::clear();
 
 		// Do nothing.
 		self::clear_func_args();
@@ -281,6 +282,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		do_action( 'admin_init' );
 		$this->assertSame( 10, has_filter( 'wp_image_editors', 'gopp_plugin_wp_image_editors' ) );
+		GOPP_Image_Editor_GS::clear();
 
 		// No pdfs.
 		ob_start();
@@ -386,6 +388,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		do_action( 'admin_init' );
 		$this->assertSame( 10, has_filter( 'wp_image_editors', 'gopp_plugin_wp_image_editors' ) );
+		GOPP_Image_Editor_GS::clear();
 
 		$out = gopp_plugin_gopp_media_row_action();
 		$this->assertTrue( false !== stripos( $out, 'invalid nonce' ) );
