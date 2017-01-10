@@ -235,9 +235,6 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$attachment_id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $attachment_id );
 
-		$check_file = get_attached_file( $attachment_id );
-		$this->assertTrue( file_exists( $check_file ) );
-
 		self::clear_func_args();
 		try {
 			gopp_plugin_load_regen_pdf_previews();
@@ -248,6 +245,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$args = self::$func_args['wp_die'][0];
 		$this->assertSame( 'wp_redirect', $args['title'] );
 		$this->assertNotEmpty( $args['args'] );
+		$this->assertSame( 1, count( $args['args'] ) );
 		$this->assertNotEmpty( $args['args'][0] );
 		$this->assertSame( 'updated', $args['args'][0][0] );
 		$this->assertTrue( false !== stripos( $args['args'][0][1], '1 pdf' ) );
@@ -259,6 +257,37 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertSame( 1, count( $admin_notices ) );
 		$this->assertSame( 2, count( $admin_notices[0] ) );
 		$this->assertSame( 'updated', $admin_notices[0][0] );
+		delete_transient( 'gopp_plugin_admin_notices' );
+
+		// Fail.
+		$file = get_attached_file( $attachment_id );
+		unlink( $file );
+
+		self::clear_func_args();
+		try {
+			gopp_plugin_load_regen_pdf_previews();
+		} catch ( WPDieException $e ) {
+			unset( $e );
+		}
+		$this->assertSame( 1, count( self::$func_args['wp_die'] ) );
+		$args = self::$func_args['wp_die'][0];
+		$this->assertSame( 'wp_redirect', $args['title'] );
+		$this->assertNotEmpty( $args['args'] );
+		$this->assertSame( 2, count( $args['args'] ) );
+		$this->assertNotEmpty( $args['args'][0] );
+		$this->assertSame( 'updated', $args['args'][0][0] );
+		$this->assertTrue( false !== stripos( $args['args'][0][1], 'nothing' ) );
+		$this->assertNotEmpty( $args['args'][1] );
+		$this->assertSame( 'warning', $args['args'][1][0] );
+		$this->assertTrue( false !== stripos( $args['args'][1][1], '1 PDF' ) );
+
+		$admin_notices = get_transient( 'gopp_plugin_admin_notices' );
+		error_log( "admin_notices=" . print_r( $admin_notices, true ) );
+		$this->assertSame( 2, count( $admin_notices ) );
+		$this->assertSame( 2, count( $admin_notices[0] ) );
+		$this->assertSame( 'updated', $admin_notices[0][0] );
+		$this->assertSame( 2, count( $admin_notices[1] ) );
+		$this->assertSame( 'warning', $admin_notices[1][0] );
 		delete_transient( 'gopp_plugin_admin_notices' );
 
 		$out = wp_set_current_user( 0 );
@@ -403,13 +432,13 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertTrue( false !== stripos( $out, 'invalid id' ) );
 
 		// Non-existent id.
-		$id = '1';
+		$id = '999999';
 		$_POST['id'] = $id;
 		$_POST['nonce'] = wp_create_nonce( 'gopp_media_row_action_' . $id );
 		$_REQUEST = $_POST;
 		$this->assertTrue( 1 === wp_verify_nonce( $_POST['nonce'], 'gopp_media_row_action_' . $id ) );
 		$out = gopp_plugin_gopp_media_row_action();
-		$this->assertTrue( false !== stripos( $out, 'failed' ) );
+		$this->assertTrue( false !== stripos( $out, 'invalid id' ) );
 
 		// Success.
 		$test_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
@@ -422,6 +451,12 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertTrue( 1 === wp_verify_nonce( $_POST['nonce'], 'gopp_media_row_action_' . $id ) );
 		$out = gopp_plugin_gopp_media_row_action();
 		$this->assertTrue( false !== stripos( $out, 'success' ) );
+
+		// Fail.
+		$file = get_attached_file( $id );
+		unlink( $file );
+		$out = gopp_plugin_gopp_media_row_action();
+		$this->assertTrue( false !== stripos( $out, 'failed' ) );
 
 		$out = wp_set_current_user( 0 );
 	}

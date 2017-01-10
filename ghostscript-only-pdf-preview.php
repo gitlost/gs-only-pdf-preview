@@ -244,7 +244,7 @@ function gopp_plugin_load_regen_pdf_previews() {
 			$num_updates = $num_fails = 0;
 			foreach ( $ids as $id ) {
 				$file = get_attached_file( $id );
-				if ( false === $file ) {
+				if ( false === $file || '' === $file ) {
 					$num_fails++;
 				} else {
 					$meta = wp_generate_attachment_metadata( $id, $file );
@@ -469,7 +469,7 @@ function gopp_plugin_gopp_media_row_action() {
 				$ret['error'] = __( 'Invalid ID.', 'ghostscript-only-pdf-preview' );
 			} else {
 				$file = get_attached_file( $id );
-				if ( false === $file ) {
+				if ( false === $file || '' === $file ) {
 					$ret['error'] = __( 'Invalid ID.', 'ghostscript-only-pdf-preview' );
 				} else {
 					$meta = wp_generate_attachment_metadata( $id, $file );
