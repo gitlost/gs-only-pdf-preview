@@ -6,6 +6,10 @@
  * @subpackage Image_Editor
  */
 
+if ( ! defined( 'GOPP_IMAGE_EDITOR_GS_TRANSIENT_EXPIRATION' ) ) {
+	define( 'GOPP_IMAGE_EDITOR_GS_TRANSIENT_EXPIRATION', DAY_IN_SECONDS );
+}
+
 /**
  * WordPress Image Editor Class for producing JPEG from PDF using GhostScript.
  *
@@ -60,15 +64,6 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	protected static $gs_cmd_path = null;
 
 	/**
-	 * Expiration (in seconds) used for transients.
-	 *
-	 * @static
-	 * @access protected
-	 * @var int
-	 */
-	protected static $transient_expiration = DAY_IN_SECONDS;
-
-	/**
 	 * Checks to see if current environment supports GhostScript.
 	 *
 	 * @since 4.x
@@ -109,7 +104,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 					}
 
 					if ( self::$have_gs ) {
-						set_transient( 'gopp_image_have_gs', 1, self::$transient_expiration );
+						set_transient( 'gopp_image_have_gs', 1, GOPP_IMAGE_EDITOR_GS_TRANSIENT_EXPIRATION );
 					}
 				}
 			}
@@ -254,7 +249,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		}
 
 		// Check filename can't be interpreted by GhostScript as special - see https://ghostscript.com/doc/9.20/Use.htm#Options
-		if ( preg_match( '/^[@]/', $file ) ) {
+		if ( isset( $file[0] ) && '@' === $file[0] ) {
 			return __( 'Unsupported file name.', 'ghostscript-only-pdf-preview' );
 		}
 
@@ -441,7 +436,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		}
 
 		if ( $win_path ) {
-			set_transient( 'gopp_image_gs_cmd_win', $win_path, self::$transient_expiration );
+			set_transient( 'gopp_image_gs_cmd_win', $win_path, GOPP_IMAGE_EDITOR_GS_TRANSIENT_EXPIRATION );
 			return $win_path;
 		}
 		return 'gswin64c.exe'; // Resort to PATH.
@@ -457,7 +452,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @return string
 	 */
 	protected function get_gs_args( $filename ) {
-		$ret = '-dBATCH -dNOPAUSE -dNOPROMPT -dQUIET -dSAFER -q -sDEVICE=jpeg';
+		$ret = $this->initial_gs_args();
 
 		if ( ( $quality = $this->get_quality() ) && preg_match( '/^[0-9]{1,2}$/', $quality ) ) {
 			$ret .= ' -dJPEGQ=' . $quality; // Nothing escape-worthy.
@@ -482,6 +477,19 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		$ret .= ' ' . self::escapeshellarg( $this->file );
 
 		return $ret;
+	}
+
+	/**
+	 * The initial non-varying arguments for the main invocation of GhostScript.
+	 *
+	 * @since 4.x
+	 * @access protected
+	 *
+	 * @return string
+	 */
+	protected function initial_gs_args() {
+		// -dAlignToPixels=0 combined with -dGraphicAlphaBits=4 and -dTextAlphaBits=4 enables anti-aliasing.
+		return '-dAlignToPixels=0 -dBATCH -dGraphicAlphaBits=4 -dNOPAUSE -dNOPROMPT -dQUIET -dSAFER -dTextAlphaBits=4 -q -sDEVICE=jpeg';
 	}
 
 	/**

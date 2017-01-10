@@ -185,49 +185,49 @@ msgid ""
 "your browser to see the updated thumbnail."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:199
+#: includes/class-gopp-image-editor-gs.php:194
 msgid "Unsupported MIME type."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:210
+#: includes/class-gopp-image-editor-gs.php:205
 msgid "Image Editor Save Failed"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:215
+#: includes/class-gopp-image-editor-gs.php:210
 msgid "Could not read image size."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:253
+#: includes/class-gopp-image-editor-gs.php:248
 msgid "Loading from URL not supported."
 msgstr ""
 
+#: includes/class-gopp-image-editor-gs.php:253
 #: includes/class-gopp-image-editor-gs.php:258
-#: includes/class-gopp-image-editor-gs.php:263
 msgid "Unsupported file name."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:273
+#: includes/class-gopp-image-editor-gs.php:268
 msgid "File doesn&#8217;t exist?"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:278
+#: includes/class-gopp-image-editor-gs.php:273
 msgid "File is not a PDF."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:586
+#: includes/class-gopp-image-editor-gs.php:594
 msgid "Attempted to set PDF preview resolution to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:632
+#: includes/class-gopp-image-editor-gs.php:640
 msgid "Attempted to set PDF preview page to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:651
-#: includes/class-gopp-image-editor-gs.php:672
-#: includes/class-gopp-image-editor-gs.php:691
-#: includes/class-gopp-image-editor-gs.php:704
-#: includes/class-gopp-image-editor-gs.php:718
-#: includes/class-gopp-image-editor-gs.php:731
+#: includes/class-gopp-image-editor-gs.php:659
+#: includes/class-gopp-image-editor-gs.php:680
+#: includes/class-gopp-image-editor-gs.php:699
+#: includes/class-gopp-image-editor-gs.php:712
+#: includes/class-gopp-image-editor-gs.php:726
+#: includes/class-gopp-image-editor-gs.php:739
 msgid "Unsupported operation."
 msgstr ""
 

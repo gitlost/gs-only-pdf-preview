@@ -28,6 +28,7 @@ $pdfs = array(
 	$dirname . '/data/Contents-CR-51-2.pdf',
 	$dirname . '/data/contents-hs-issue-41.pdf',
 );
+$cnt_pdfs = count( $pdfs );
 
 $tots_g = 0;
 $tots_i = 0;
@@ -52,9 +53,12 @@ for ( $i = 0; $i < $loop_num; $i++ ) {
 	}
 }
 
-error_log( " g=" . sprintf( '%.10f', $tots_g ) );
-error_log( " i=" . sprintf( '%.10f', $tots_i ) );
-error_log( " g:i=" . sprintf( '%.10f', $tots_i ? $tots_g / $tots_i : 0 ) );
-error_log( " i:g=" . sprintf( '%.10f', $tots_g ? $tots_i / $tots_g : 0 ) );
+error_log( "loop_num=$loop_num, cnt_pdfs=$cnt_pdfs" );
+error_log( "     g=" . sprintf( '%.10f', $tots_g ) );
+error_log( "     i=" . sprintf( '%.10f', $tots_i ) );
+error_log( "   g:i=" . sprintf( '%.10f', $tots_i ? $tots_g / $tots_i : 0 ) );
+error_log( "   i:g=" . sprintf( '%.10f', $tots_g ? $tots_i / $tots_g : 0 ) );
+error_log( " avg g=" . sprintf( '%.10f', ( $loop_num * $cnt_pdfs ) ? $tots_g / ( $loop_num * $cnt_pdfs ) : 0 ) ); 
+error_log( " avg i=" . sprintf( '%.10f', ( $loop_num * $cnt_pdfs ) ? $tots_i / ( $loop_num * $cnt_pdfs ) : 0 ) ); 
 
 error_log( ")===end " . $basename );
