@@ -234,6 +234,10 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$attachment_id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $attachment_id );
 
+		$check_file = get_attached_file( $attachment_id );
+		error_log( "test_gopp_plugin_load_regen_pdf_previews: check_file=$check_file" );
+		$this->assertTrue( file_exists( $check_file ) );
+
 		self::clear_func_args();
 		try {
 			gopp_plugin_load_regen_pdf_previews();
@@ -246,7 +250,6 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertNotEmpty( $args['args'] );
 		$this->assertNotEmpty( $args['args'][0] );
 		$this->assertSame( 'updated', $args['args'][0][0] );
-		error_log( "args=" . print_r( $args, true ) );
 		$this->assertTrue( false !== stripos( $args['args'][0][1], '1 pdf' ) );
 
 		$this->assertSame( 1, count( self::$func_args['wp_redirect'] ) );
@@ -416,7 +419,6 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$_REQUEST = $_POST;
 		$this->assertTrue( 1 === wp_verify_nonce( $_POST['nonce'], 'gopp_media_row_action_' . $id ) );
 		$out = gopp_plugin_gopp_media_row_action();
-		error_log( "out=" . print_r( $out, true ) );
 		$this->assertTrue( false !== stripos( $out, 'success' ) );
 
 		$out = wp_set_current_user( 0 );

@@ -271,6 +271,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		// Check magic bytes (and existence).
 		$fp = @ fopen( $file, 'r' );
 		if ( false === $fp ) {
+			error_log( "gs_valid failed to open file=$file" );
 			return $last_ret = __( 'File doesn&#8217;t exist?', 'ghostscript-only-pdf-preview' );
 		}
 		$magic_bytes = fread( $fp, 10 ); // Max 10 chars: %PDF-NN.NN
