@@ -87,7 +87,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			 *
 			 * @since 4.x
 			 *
-			 * @param string self::$have_gs Whether GhostScript available. Default null.
+			 * @param string $have_gs Whether GhostScript available. Default null.
 			 */
 			$shortcircuit_have_gs = apply_filters( 'gopp_image_have_gs', self::$have_gs );
 			if ( null !== $shortcircuit_have_gs ) {
@@ -295,8 +295,8 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			 *
 			 * @since 4.x
 			 *
-			 * @param string self::$gs_cmd_path The path to the GhostScript executable. Default null.
-			 * @param bool self::is_win() True if running on Windows.
+			 * @param string $gs_cmd_path The path to the GhostScript executable. Default null.
+			 * @param bool   $is_win      True if running on Windows.
 			 */
 			$shortcircuit_path = apply_filters( 'gopp_image_gs_cmd_path', self::$gs_cmd_path, self::is_win() );
 			if ( $shortcircuit_path ) {
@@ -570,8 +570,9 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			 * @since 4.x
 			 *
 			 * @param string $resolution Resolution as "widthxheight" string.
+			 * @param string $filename   The PDF file name.
 			 */
-			$resolution = apply_filters( 'gopp_editor_set_resolution', $this->resolution );
+			$resolution = apply_filters( 'gopp_editor_set_resolution', $this->resolution, $this->file );
 		}
 		if ( preg_match( '/^([0-9]{1,5})x([0-9]{1,5})$/', $resolution, $matches ) && $matches[1] > 0 && $matches[2] > 0 ) {
 			$this->resolution = $resolution;
@@ -614,9 +615,10 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			 *
 			 * @since 4.x
 			 *
-			 * @param int $page The page to render.
+			 * @param int    $page     The page to render.
+			 * @param string $filename The PDF file name.
 			 */
-			$page = apply_filters( 'gopp_editor_set_page', $this->page );
+			$page = apply_filters( 'gopp_editor_set_page', $this->page, $this->file );
 		}
 		if ( ( $page = intval( $page ) ) > 0 ) {
 			$this->page = $page;

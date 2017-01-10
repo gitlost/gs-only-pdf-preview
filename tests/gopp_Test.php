@@ -230,7 +230,9 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertSame( 10, has_filter( 'wp_image_editors', 'gopp_plugin_wp_image_editors' ) );
 
 		// Do with one pdf.
-		$test_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
+		$orig_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
+		$test_file = '/tmp/test_alpha.pdf';
+		copy( $orig_file, $test_file );
 		$attachment_id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $attachment_id );
 

@@ -246,10 +246,12 @@ function gopp_plugin_load_regen_pdf_previews() {
 				$file = get_attached_file( $id );
 				if ( false === $file ) {
 					$num_fails++;
+					error_log( "gopp_plugin_load_regen_pdf_previews: fail get_attached_file id=$id" );
 				} else {
 					$meta = wp_generate_attachment_metadata( $id, $file );
 					if ( ! $meta ) {
 						$num_fails++;
+						error_log( "gopp_plugin_load_regen_pdf_previews: fail wp_generate_attachment_metadata id=$id, file=$file" );
 					} else {
 						// wp_update_attachment_metadata() returns false if nothing to update so check first.
 						$old_value = get_metadata( 'post', $id, '_wp_attachment_metadata' );
@@ -257,6 +259,7 @@ function gopp_plugin_load_regen_pdf_previews() {
 							$num_updates++;
 						} else {
 							if ( false === wp_update_attachment_metadata( $id, $meta ) ) {
+								error_log( "gopp_plugin_load_regen_pdf_previews: fail wp_update_attachment_metadata id=$id, file=$file, $meta=" . print_r( $meta, true ) );
 								$num_fails++;
 							} else {
 								$num_updates++;

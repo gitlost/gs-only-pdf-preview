@@ -72,17 +72,17 @@ Three plugin-specific filters are available:
 
 The `gopp_editor_set_resolution` filter is an analogue of the standard `wp_editor_set_quality` filter, and allows one to override the default resolution ("128x128") used for the PDF preview by returning a string formatted "widthxheight". For instance, in your theme's "functions.php":
 
-	function mytheme_gopp_editor_set_resolution( $resolution ) {
+	function mytheme_gopp_editor_set_resolution( $resolution, $filename ) {
 		return '100x100';
 	}
-	add_filter( 'gopp_editor_set_resolution', 'mytheme_gopp_editor_set_resolution' );
+	add_filter( 'gopp_editor_set_resolution', 'mytheme_gopp_editor_set_resolution', 10, 2 );
 
 Similarly the `gopp_editor_set_page` filter allows one to override the default rendering of the first page:
 
-	function mytheme_gopp_editor_set_page( $page ) {
+	function mytheme_gopp_editor_set_page( $page, $filename ) {
 		return 2; // Render the second page instead.
 	}
-	add_filter( 'gopp_editor_set_page', 'mytheme_gopp_editor_set_page' );
+	add_filter( 'gopp_editor_set_page', 'mytheme_gopp_editor_set_page', 10, 2 );
 
 The `gopp_image_have_gs` filter can be used to improve performance (saves a test shell command) if you know the GhostScript installation on your server works:
 
