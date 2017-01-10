@@ -157,6 +157,7 @@ function gopp_plugin_wp_image_editors( $image_editors ) {
 			array_unshift( $image_editors, 'GOPP_Image_Editor_GS' );
 		}
 	}
+	error_log( "gopp_plugin_wp_image_editors: image_editors=" . print_r( $image_editors, true ) );
 	return $image_editors;
 }
 
