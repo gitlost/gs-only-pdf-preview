@@ -114,7 +114,6 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 				}
 			}
 		}
-		error_log( "GOPP_Image_Editor_GS::test have_gs=" . self::$have_gs . ", args=" . print_r( $args, true ) );
 
 		if ( ! self::$have_gs ) {
 			return false;
@@ -133,7 +132,6 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			return false;
 		}
 
-		error_log( "GOPP_Image_Editor_GS::test return true" );
 		return true;
 	}
 

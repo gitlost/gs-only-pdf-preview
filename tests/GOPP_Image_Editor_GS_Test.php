@@ -76,6 +76,11 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		GOPP_Image_Editor_GS::clear();
 		$output = GOPP_Image_Editor_GS::test( array( 'methods' => array( 'resize' ) ) );
 		$this->assertFalse( $output );
+
+		// Bad path.
+		GOPP_Image_Editor_GS::clear();
+		$output = GOPP_Image_Editor_GS::test( array( 'path' => '@file' ) );
+		$this->assertFalse( $output );
 	}
 
 	function filter_gopp_image_have_gs_true( $gs_cmd_path ) {

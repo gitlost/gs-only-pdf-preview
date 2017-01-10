@@ -236,7 +236,6 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertNotEmpty( $attachment_id );
 
 		$check_file = get_attached_file( $attachment_id );
-		error_log( "test_gopp_plugin_load_regen_pdf_previews: check_file=$check_file" );
 		$this->assertTrue( file_exists( $check_file ) );
 
 		self::clear_func_args();

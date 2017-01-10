@@ -246,28 +246,10 @@ function gopp_plugin_load_regen_pdf_previews() {
 				$file = get_attached_file( $id );
 				if ( false === $file ) {
 					$num_fails++;
-					error_log( "gopp_plugin_load_regen_pdf_previews: fail get_attached_file id=$id" );
 				} else {
 					$meta = wp_generate_attachment_metadata( $id, $file );
 					if ( ! $meta ) {
 						$num_fails++;
-						error_log( "gopp_plugin_load_regen_pdf_previews: fail wp_generate_attachment_metadata id=$id, file=$file" );
-						$editor = wp_get_image_editor( $file );
-						if ( is_wp_error( $editor ) ) { // No support for this type of file
-							error_log( "gopp_plugin_load_regen_pdf_previews: wp_error wp_get_image_editor editor=" . print_r( $editor, true ) );
-						} else {
-							$uploaded = $editor->save( $file, 'image/jpeg' );
-							unset( $editor );
-							if ( is_wp_error( $uploaded ) ) {
-								error_log( "gopp_plugin_load_regen_pdf_previews: wp_error save uploaded=" . print_r( $uploaded, true ) );
-							} else {
-								$editor = wp_get_image_editor( $uploaded['path'] );
-								unset( $uploaded['path'] );
-								if ( is_wp_error( $editor ) ) {
-									error_log( "gopp_plugin_load_regen_pdf_previews: wp_error wp_get_image_editor 2 uploaded['path']={$uploaded['path']}, editor=" . print_r( $editor, true ) );
-								}
-							}
-						}
 					} else {
 						// wp_update_attachment_metadata() returns false if nothing to update so check first.
 						$old_value = get_metadata( 'post', $id, '_wp_attachment_metadata' );
@@ -275,7 +257,6 @@ function gopp_plugin_load_regen_pdf_previews() {
 							$num_updates++;
 						} else {
 							if ( false === wp_update_attachment_metadata( $id, $meta ) ) {
-								error_log( "gopp_plugin_load_regen_pdf_previews: fail wp_update_attachment_metadata id=$id, file=$file, $meta=" . print_r( $meta, true ) );
 								$num_fails++;
 							} else {
 								$num_updates++;
@@ -497,14 +478,10 @@ function gopp_plugin_gopp_media_row_action() {
 					} else {
 						// wp_update_attachment_metadata() returns false if nothing to update so check first.
 						$old_value = get_metadata( 'post', $id, '_wp_attachment_metadata' );
-						if ( $old_value && is_array( $old_value ) && 1 === count( $old_value ) && $old_value[0] === $meta ) {
+						if ( ( $old_value && is_array( $old_value ) && 1 === count( $old_value ) && $old_value[0] === $meta ) || false !== wp_update_attachment_metadata( $id, $meta ) ) {
 							$ret['msg'] = __( 'Successfully regenerated the PDF preview. You will probably need to refresh your browser to see the updated thumbnail.', 'ghostscript-only-pdf-preview' );
 						} else {
-							if ( false === wp_update_attachment_metadata( $id, $meta ) ) {
-								$ret['error'] = __( 'Failed to generate the PDF preview.', 'ghostscript-only-pdf-preview' );
-							} else {
-								$ret['msg'] = __( 'Successfully regenerated the PDF preview. You will probably need to refresh your browser to see the updated thumbnail.', 'ghostscript-only-pdf-preview' );
-							}
+							$ret['error'] = __( 'Failed to generate the PDF preview.', 'ghostscript-only-pdf-preview' );
 						}
 						if ( ! $ret['error'] ) {
 							$ret['img'] = wp_get_attachment_image( $id, array( 60, 60 ), true, array( 'alt' => '' ) );
