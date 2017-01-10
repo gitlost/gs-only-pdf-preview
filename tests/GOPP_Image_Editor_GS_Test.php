@@ -76,11 +76,6 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		GOPP_Image_Editor_GS::clear();
 		$output = GOPP_Image_Editor_GS::test( array( 'methods' => array( 'resize' ) ) );
 		$this->assertFalse( $output );
-
-		// Bad path.
-		GOPP_Image_Editor_GS::clear();
-		$output = GOPP_Image_Editor_GS::test( array( 'path' => 'wow' ) );
-		$this->assertFalse( $output );
 	}
 
 	function filter_gopp_image_have_gs_true( $gs_cmd_path ) {
@@ -195,22 +190,24 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 	 * Test gs_valid().
 	 * @dataProvider data_gs_valid
 	 */
-	public function test_gs_valid( $path, $expected ) {
-		GOPP_Image_Editor_GS::clear();
-		$output = GOPP_Image_Editor_GS::test( array( 'path' => $path ) );
+	public function test_gs_valid( $path, $no_read_check, $expected ) {
+		Test_GOPP_Image_Editor_GS::clear();
+		$output = Test_GOPP_Image_Editor_GS::public_gs_valid( $path, $no_read_check );
 		$this->assertSame( $expected, $output );
 	}
 
 	public function data_gs_valid() {
 		return array(
-			array( 'non_existent', false ), // Non-existent.
-			array( 'http://external', false ), // Non-local.
-			array( '@args_file', false ), // GhostScript argument file.
-			array( 'space filename', false ), // File name containing space.
-			array( 'quote\'filename', false ), // File name containing single quote.
-			array( 'double_quote"filename', false ), // File name containing double quote.
-			array( dirname( __FILE__ ) . '/images/test-image.jpg', false ), // Not a PDF.
-			array( dirname( __FILE__ ) . '/images/wordpress-gsoc-flyer.pdf', true ), // Success.
+			array( 'non_existent', false, 'File doesn&#8217;t exist?' ), // Non-existent.
+			array( 'non_existent', true, true ), // Non-existent.
+			array( 'http://external', false, 'Loading from URL not supported.' ), // Non-local.
+			array( '@args_file', false, 'Unsupported file name.' ), // GhostScript argument file.
+			array( 'space filename', false, 'Unsupported file name.' ), // File name containing space.
+			array( 'quote\'filename', false, 'Unsupported file name.' ), // File name containing single quote.
+			array( 'double_quote"filename', false, 'Unsupported file name.' ), // File name containing double quote.
+			array( dirname( __FILE__ ) . '/images/test-image.jpg', false, 'File is not a PDF.' ), // Not a PDF.
+			array( dirname( __FILE__ ) . '/images/test-image.jpg', true, true ), // Not a PDF.
+			array( dirname( __FILE__ ) . '/images/wordpress-gsoc-flyer.pdf', false, true ), // Success.
 		);
 	}
 
@@ -470,6 +467,7 @@ require_once ABSPATH . WPINC . '/class-wp-image-editor.php';
 require_once dirname( dirname( __FILE__ ) ) . '/includes/class-gopp-image-editor-gs.php';
 class Test_GOPP_Image_Editor_GS extends GOPP_Image_Editor_GS {
 	public static function public_set_is_win( $is_win ) { self::$is_win = $is_win; }
+	public static function public_gs_valid( $file, $no_read_check = false ) { return parent::gs_valid( $file, $no_read_check ); }
 	public static function public_gs_cmd( $args ) { return parent::gs_cmd( $args ); }
 	public static function public_gs_cmd_win() { return parent::gs_cmd_win(); }
 	public function public_get_gs_args( $filename ) { return parent::get_gs_args( $filename ); }
