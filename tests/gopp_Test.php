@@ -188,6 +188,9 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		$out = wp_set_current_user( 1 ); // Need manage_options cap to add load-XXX
 
+		do_action( 'admin_init' );
+		$this->assertSame( 10, has_filter( 'wp_image_editors', 'gopp_plugin_wp_image_editors' ) );
+
 		// Do nothing.
 		self::clear_func_args();
 		try {
@@ -226,13 +229,8 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertSame( 'error', $admin_notices[0][0] );
 		delete_transient( 'gopp_plugin_admin_notices' );
 
-		do_action( 'admin_init' );
-		$this->assertSame( 10, has_filter( 'wp_image_editors', 'gopp_plugin_wp_image_editors' ) );
-
 		// Do with one pdf.
-		$orig_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
-		$test_file = '/tmp/test_alpha.pdf';
-		copy( $orig_file, $test_file );
+		$test_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
 		$attachment_id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $attachment_id );
 
@@ -277,6 +275,9 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertSame( 1, count( self::$func_args['wp_die'] ) );
 
 		$out = wp_set_current_user( 1 ); // Need manage_options cap.
+
+		do_action( 'admin_init' );
+		$this->assertSame( 10, has_filter( 'wp_image_editors', 'gopp_plugin_wp_image_editors' ) );
 
 		// No pdfs.
 		ob_start();
@@ -379,6 +380,9 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertTrue( false !== stripos( $out, 'allowed' ) );
 
 		$out = wp_set_current_user( 1 ); // Need manage_options cap.
+
+		do_action( 'admin_init' );
+		$this->assertSame( 10, has_filter( 'wp_image_editors', 'gopp_plugin_wp_image_editors' ) );
 
 		$out = gopp_plugin_gopp_media_row_action();
 		$this->assertTrue( false !== stripos( $out, 'invalid nonce' ) );

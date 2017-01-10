@@ -247,33 +247,39 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @return bool|String Returns true if valid; returns error message string if invalid.
 	 */
 	protected static function gs_valid( $file ) {
+		static $last_ret = null, $last_file;
+		if ( null !== $last_ret && $file === $last_file ) {
+			return $last_ret;
+		}
+		$last_file = $file;
+
 		// Loading from URL not currently supported.
 		if ( preg_match( '|^https?://|', $file ) ) {
-			return __( 'Loading from URL not supported.', 'ghostscript-only-pdf-preview' );
+			return $last_ret = __( 'Loading from URL not supported.', 'ghostscript-only-pdf-preview' );
 		}
 
 		// Check filename can't be interpreted by GhostScript as special - see https://ghostscript.com/doc/9.20/Use.htm#Options
 		if ( preg_match( '/^[@]/', $file ) ) {
-			return __( 'Unsupported file name.', 'ghostscript-only-pdf-preview' );
+			return $last_ret = __( 'Unsupported file name.', 'ghostscript-only-pdf-preview' );
 		}
 
 		// Check for suspect chars in base filename - same as $special_chars in sanitize_file_name() with ctrls, space and del added.
 		if ( preg_match( '/[?\[\]\/\\\\=<>:;,\'"&$#*()|~`!{}%+\x00-\x20\x7f]/', wp_basename( $file ) ) ) {
-			return __( 'Unsupported file name.', 'ghostscript-only-pdf-preview' );
+			return $last_ret = __( 'Unsupported file name.', 'ghostscript-only-pdf-preview' );
 		}
 
 		// Check magic bytes (and existence).
 		$fp = @ fopen( $file, 'r' );
 		if ( false === $fp ) {
-			return __( 'File doesn&#8217;t exist?', 'ghostscript-only-pdf-preview' );
+			return $last_ret = __( 'File doesn&#8217;t exist?', 'ghostscript-only-pdf-preview' );
 		}
 		$magic_bytes = fread( $fp, 10 ); // Max 10 chars: %PDF-NN.NN
 		fclose( $fp );
 		if ( ! preg_match( '/^%PDF-[0-9]{1,2}\.[0-9]{1,2}/', $magic_bytes ) ) {
-			return __( 'File is not a PDF.', 'ghostscript-only-pdf-preview' );
+			return $last_ret = __( 'File is not a PDF.', 'ghostscript-only-pdf-preview' );
 		}
 
-		return true;
+		return $last_ret = true;
 	}
 
 	/**

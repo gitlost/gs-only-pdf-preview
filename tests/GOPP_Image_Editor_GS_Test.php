@@ -444,7 +444,6 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 
 	/**
 	 * ticket 39216
-	 * @ticket xxx
 	 */
 	public function test_alpha_pdf_preview() {
 		do_action( 'admin_init' );
