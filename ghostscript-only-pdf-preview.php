@@ -36,6 +36,7 @@ if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
 
 /**
  * Called on plugin activation.
+ * Checks that `exec` available and "safe_mode" not set. Checks WP versions. Checks GhostScript available.
  */
 function gopp_plugin_activation_hook() {
 
@@ -143,9 +144,11 @@ function gopp_plugin_load_gopp_image_editor_gs() {
 
 /**
  * Called on 'admin_init' action.
+ * Adds the "wp_image_editors" filter and the transient-based admin notices action.
  */
 function gopp_plugin_admin_init() {
 	add_filter( 'wp_image_editors', 'gopp_plugin_wp_image_editors' );
+
 	$admin_notices_action = is_network_admin() ? 'network_admin_notices' : ( is_user_admin() ? 'user_admin_notices' : 'admin_notices' );
 	add_action( $admin_notices_action, 'gopp_plugin_admin_notices' );
 }
@@ -167,7 +170,7 @@ function gopp_plugin_wp_image_editors( $image_editors ) {
 
 /**
  * Called on 'network_admin_notices', 'user_admin_notices' or 'admin_notices' action.
- * Output any messages.
+ * Outputs any messages.
  */
 function gopp_plugin_admin_notices() {
 
@@ -204,14 +207,18 @@ function gopp_plugin_admin_notices() {
 
 define( 'GOPP_REGEN_PDF_PREVIEWS_SLUG', 'gopp-regen-pdf-previews' );
 
-global $gopp_plugin_hook_suffix;
+global $gopp_plugin_hook_suffix; // As returned by `add_management_page`.
 $gopp_plugin_hook_suffix = null;
 
-global $gopp_plugin_cap;
+global $gopp_plugin_cap; // What capability is needed to regenerate PDF previews.
 $gopp_plugin_cap = 'manage_options';
+
+global $gopp_plugin_per_pdf_secs; // Seconds to allow for regenerating the preview of each PDF in the "Regen. PDF Previews" administraion tool.
+$gopp_plugin_per_pdf_secs = 20;
 
 /**
  * Called on 'admin_menu' action.
+ * Adds the "Regen. PDF Previews" administration tool.
  */
 function gopp_plugin_admin_menu() {
 	global $gopp_plugin_hook_suffix, $gopp_plugin_cap;
@@ -223,9 +230,10 @@ function gopp_plugin_admin_menu() {
 
 /**
  * Called on 'load-tools_page_GOPP_REGEN_PDF_PREVIEWS_SLUG' action.
+ * Does the work of the "Regen. PDF Previews" administration tool. Just loops through all uploaded PDFs.
  */
 function gopp_plugin_load_regen_pdf_previews() {
-	global $gopp_plugin_cap;
+	global $gopp_plugin_cap, $gopp_plugin_per_pdf_secs;
 	if ( ! current_user_can( $gopp_plugin_cap ) ) {
 		wp_die( __( 'Sorry, you are not allowed to access this page.', 'ghostscript-only-pdf-preview' ) );
 	}
@@ -242,12 +250,10 @@ function gopp_plugin_load_regen_pdf_previews() {
 		if ( ! $ids ) {
 			$admin_notices[] = array( 'error', __( 'No PDFs found', 'ghostscript-only-pdf-preview' ) );
 		} else {
-			$max_execution_time = count( $ids ) * 10;
-			if ( $max_execution_time > ini_get( 'max_execution_time' ) ) {
-				@ set_time_limit( $max_execution_time );
-			}
+			$time = microtime( true );
+			gopp_plugin_set_time_limit( count( $ids ) * $gopp_plugin_per_pdf_secs );
 			$num_updates = $num_fails = 0;
-			foreach ( $ids as $id ) {
+			foreach ( $ids as $idx => $id ) {
 				$file = get_attached_file( $id );
 				if ( false === $file || '' === $file ) {
 					$num_fails++;
@@ -258,32 +264,31 @@ function gopp_plugin_load_regen_pdf_previews() {
 					} else {
 						// wp_update_attachment_metadata() returns false if nothing to update so check first.
 						$old_value = get_metadata( 'post', $id, '_wp_attachment_metadata' );
-						if ( $old_value && is_array( $old_value ) && 1 === count( $old_value ) && $old_value[0] === $meta ) {
+						if ( ( $old_value && is_array( $old_value ) && 1 === count( $old_value ) && $old_value[0] === $meta ) || false !== wp_update_attachment_metadata( $id, $meta ) ) {
 							$num_updates++;
 						} else {
-							if ( false === wp_update_attachment_metadata( $id, $meta ) ) {
-								$num_fails++;
-							} else {
-								$num_updates++;
-							}
+							$num_fails++;
 						}
 					}
 				}
 			}
+			$time = microtime( true ) - $time;
 			if ( $num_updates ) {
-				/* translators: %s: formatted number of PDF previews regenerated. */
 				$admin_notices[] = array( 'updated', sprintf(
-					_n( '%s PDF preview regenerated.', '%s PDF previews regenerated.', $num_updates, 'ghostscript-only-pdf-preview' ), number_format_i18n( $num_updates )
+					/* translators: %1$s: formatted number of PDF previews regenerated; %2$s: formatted number of seconds it took. */
+					_n( '%1$s PDF preview regenerated in %2$s seconds.', '%1$s PDF previews regenerated in %2$s seconds.', $num_updates, 'ghostscript-only-pdf-preview' ),
+						number_format_i18n( $num_updates ), number_format_i18n( $time )
 				) );
 			} else {
 				$admin_notices[] = array( 'updated', __( 'Nothing updated!', 'ghostscript-only-pdf-preview' ) );
 			}
 			if ( $num_fails ) {
-				/* translators: %s: formatted number of PDF previews that failed to regenerate. */
 				$admin_notices[] = array( 'warning', sprintf(
+					/* translators: %s: formatted number of PDF previews that failed to regenerate. */
 					_n( '%s PDF preview not regenerated.', '%s PDF previews not regenerated.', $num_fails, 'ghostscript-only-pdf-preview' ), number_format_i18n( $num_fails )
 				) );
 			}
+			$admin_notices[] = array( 'notice', __( 'You can go again below if you want.', 'ghostscript-only-pdf-preview' ) );
 		}
 
 		if ( $admin_notices ) {
@@ -299,10 +304,22 @@ function gopp_plugin_load_regen_pdf_previews() {
 }
 
 /**
+ * Helper to set the max_execution_time.
+ */
+function gopp_plugin_set_time_limit( $time_limit ) {
+	$max_execution_time = ini_get( 'max_execution_time' );
+	if ( $max_execution_time && $time_limit > $max_execution_time ) {
+		return @ set_time_limit( $time_limit );
+	}
+	return null;
+}
+
+/**
  * Callback for regenerate PDF previews (admin tools menu).
+ * Outputs the front page of "Regen. PDF Previews" administration tool. Basically a single button.
  */
 function gopp_plugin_regen_pdf_previews() {
-	global $gopp_plugin_cap;
+	global $gopp_plugin_cap, $gopp_plugin_per_pdf_secs;
 	if ( ! current_user_can( $gopp_plugin_cap ) ) {
 		wp_die( __( 'Sorry, you are not allowed to access this page.', 'ghostscript-only-pdf-preview' ) );
 	}
@@ -321,8 +338,7 @@ function gopp_plugin_regen_pdf_previews() {
 	} else {
 		// Test setting max execution time.
 		$max_execution_msg = '';
-		$max_execution_time = $num_pdfs * 10; // Allow 10 seconds per PDF.
-		if ( $max_execution_time > ini_get( 'max_execution_time' ) && ! @ set_time_limit( $max_execution_time ) ) {
+		if ( false === gopp_plugin_set_time_limit( $num_pdfs * $gopp_plugin_per_pdf_secs ) ) {
 			$max_execution_msg = __( '<strong>Warning: cannot set max execution time!</strong> The maximum time allowed for a PHP script to run on your system could not be set, so you may experience the White Screen Of Death (WSOD) on trying this.', 'ghostscript-only-pdf-preview' );
 		}
 		?>
@@ -330,13 +346,21 @@ function gopp_plugin_regen_pdf_previews() {
 			<input type="hidden" name="page" value="<?php echo GOPP_REGEN_PDF_PREVIEWS_SLUG; ?>" />
 			<?php wp_nonce_field( GOPP_REGEN_PDF_PREVIEWS_SLUG ) ?>
 			<p class="gopp_regen_pdf_previews_form_hide">
-				<?php _e( 'This tool regenerates the thumbnail previews of PDFs uploaded to your system.', 'ghostscript-only-pdf-preview' ); ?>
-				<?php echo sprintf( _n( '%s PDF has been found.', '%s PDFs have been found.', $num_pdfs, 'ghostscript-only-pdf-preview' ), number_format_i18n( $num_pdfs ) ); ?>
+				<?php _e( 'Regenerate the thumbnail previews of PDFs uploaded to your system.', 'ghostscript-only-pdf-preview' ); ?>
+			</p>
+			<p class="gopp_regen_pdf_previews_form_hide">
+				<?php
+					/* translators: %s: formatted number of PDFs found. */
+					echo sprintf( _n( '<strong>%s</strong> PDF has been found.', '<strong>%s</strong> PDFs have been found.', $num_pdfs, 'ghostscript-only-pdf-preview' ), number_format_i18n( $num_pdfs ) );
+				?>
 			</p>
 			<input id="<?php echo GOPP_REGEN_PDF_PREVIEWS_SLUG; ?>" class="button" name="<?php echo GOPP_REGEN_PDF_PREVIEWS_SLUG; ?>" value="<?php echo esc_attr( __( 'Regenerate PDF Previews', 'ghostscript-only-pdf-preview' ) ); ?>" type="submit" />
 			<?php if ( $num_pdfs > 10 ) : ?>
 			<p>
-				<?php _e( 'Regenerating PDF previews can take a long time.', 'ghostscript-only-pdf-preview' ); ?>
+				<?php echo sprintf(
+						/* translators: %s: formatted number (greater than 10) of PDFs found. */
+						__( 'Regenerating %s PDF previews can take a long time.', 'ghostscript-only-pdf-preview' ), number_format_i18n( $num_pdfs )
+					); ?>
 			</p>
 			<?php endif; ?>
 			<?php if ( $max_execution_msg ) : ?>
@@ -367,6 +391,7 @@ function gopp_plugin_admin_enqueue_scripts( $hook_suffix ) {
 
 /**
  * Called on 'admin_print_footer_scripts' action.
+ * Some basic UI feedback for the "Regen. PDFs Previews" administration tool when the button is clicked.
  */
 function gopp_plugin_admin_print_footer_scripts() {
 	$please_wait_msg = '<div class="notice notice-warning inline"><p>' . __( 'Please wait...', 'ghostscript-only-pdf-preview' ) . '<span class="spinner is-active" style="float:none;margin-top:0;"></span></p></div>';
@@ -396,6 +421,7 @@ function gopp_plugin_admin_print_footer_scripts() {
 
 /**
  * Called on 'admin_print_footer_scripts' action.
+ * UI and ajax call for the "Regenerate preview" row action added to the list mode of the Media Library.
  */
 function gopp_plugin_admin_print_footer_scripts_upload() {
 	?>
@@ -439,6 +465,7 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 
 /**
  * Called on 'media_row_actions' filter.
+ * Adds the "Regenerate preview" link to PDF rows in list mode of the Media Library.
  */
 function gopp_plugin_media_row_actions( $actions, $post, $detached ) {
 	global $gopp_plugin_cap;
@@ -460,6 +487,7 @@ function gopp_plugin_media_row_actions( $actions, $post, $detached ) {
 
 /**
  * Ajax callback for media row action.
+ * Does the work of the "Regenerate preview" row action.
  */
 function gopp_plugin_gopp_media_row_action() {
 	$ret = array( 'msg' => '', 'error' => false, 'img' => '' );
@@ -476,6 +504,7 @@ function gopp_plugin_gopp_media_row_action() {
 			if ( ! $id ) {
 				$ret['error'] = __( 'Invalid ID.', 'ghostscript-only-pdf-preview' );
 			} else {
+				gopp_plugin_set_time_limit( 300 ); // Allow 5 minutes.
 				$file = get_attached_file( $id );
 				if ( false === $file || '' === $file ) {
 					$ret['error'] = __( 'Invalid ID.', 'ghostscript-only-pdf-preview' );
@@ -488,11 +517,9 @@ function gopp_plugin_gopp_media_row_action() {
 						$old_value = get_metadata( 'post', $id, '_wp_attachment_metadata' );
 						if ( ( $old_value && is_array( $old_value ) && 1 === count( $old_value ) && $old_value[0] === $meta ) || false !== wp_update_attachment_metadata( $id, $meta ) ) {
 							$ret['msg'] = __( 'Successfully regenerated the PDF preview. You will probably need to refresh your browser to see the updated thumbnail.', 'ghostscript-only-pdf-preview' );
+							$ret['img'] = wp_get_attachment_image( $id, array( 60, 60 ), true, array( 'alt' => '' ) );
 						} else {
 							$ret['error'] = __( 'Failed to generate the PDF preview.', 'ghostscript-only-pdf-preview' );
-						}
-						if ( ! $ret['error'] ) {
-							$ret['img'] = wp_get_attachment_image( $id, array( 60, 60 ), true, array( 'alt' => '' ) );
 						}
 					}
 				}

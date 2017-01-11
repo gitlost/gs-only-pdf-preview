@@ -245,18 +245,22 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$args = self::$func_args['wp_die'][0];
 		$this->assertSame( 'wp_redirect', $args['title'] );
 		$this->assertNotEmpty( $args['args'] );
-		$this->assertSame( 1, count( $args['args'] ) );
+		$this->assertSame( 2, count( $args['args'] ) );
 		$this->assertNotEmpty( $args['args'][0] );
 		$this->assertSame( 'updated', $args['args'][0][0] );
 		$this->assertTrue( false !== stripos( $args['args'][0][1], '1 pdf' ) );
+		$this->assertNotEmpty( $args['args'][1] );
+		$this->assertSame( 'notice', $args['args'][1][0] );
 
 		$this->assertSame( 1, count( self::$func_args['wp_redirect'] ) );
 		$this->assertNotEmpty( self::$func_args['wp_redirect'][0] );
 
 		$admin_notices = get_transient( 'gopp_plugin_admin_notices' );
-		$this->assertSame( 1, count( $admin_notices ) );
+		$this->assertSame( 2, count( $admin_notices ) );
 		$this->assertSame( 2, count( $admin_notices[0] ) );
 		$this->assertSame( 'updated', $admin_notices[0][0] );
+		$this->assertSame( 2, count( $admin_notices[1] ) );
+		$this->assertSame( 'notice', $admin_notices[1][0] );
 		delete_transient( 'gopp_plugin_admin_notices' );
 
 		// Fail.
@@ -273,21 +277,24 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$args = self::$func_args['wp_die'][0];
 		$this->assertSame( 'wp_redirect', $args['title'] );
 		$this->assertNotEmpty( $args['args'] );
-		$this->assertSame( 2, count( $args['args'] ) );
+		$this->assertSame( 3, count( $args['args'] ) );
 		$this->assertNotEmpty( $args['args'][0] );
 		$this->assertSame( 'updated', $args['args'][0][0] );
 		$this->assertTrue( false !== stripos( $args['args'][0][1], 'nothing' ) );
 		$this->assertNotEmpty( $args['args'][1] );
 		$this->assertSame( 'warning', $args['args'][1][0] );
 		$this->assertTrue( false !== stripos( $args['args'][1][1], '1 PDF' ) );
+		$this->assertNotEmpty( $args['args'][2] );
+		$this->assertSame( 'notice', $args['args'][2][0] );
 
 		$admin_notices = get_transient( 'gopp_plugin_admin_notices' );
-		error_log( "admin_notices=" . print_r( $admin_notices, true ) );
-		$this->assertSame( 2, count( $admin_notices ) );
+		$this->assertSame( 3, count( $admin_notices ) );
 		$this->assertSame( 2, count( $admin_notices[0] ) );
 		$this->assertSame( 'updated', $admin_notices[0][0] );
 		$this->assertSame( 2, count( $admin_notices[1] ) );
 		$this->assertSame( 'warning', $admin_notices[1][0] );
+		$this->assertSame( 2, count( $admin_notices[2] ) );
+		$this->assertSame( 'notice', $admin_notices[2][0] );
 		delete_transient( 'gopp_plugin_admin_notices' );
 
 		$out = wp_set_current_user( 0 );
@@ -328,7 +335,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		ob_start();
 		gopp_plugin_regen_pdf_previews();
 		$out = ob_get_clean();
-		$this->assertTrue( false !== stripos( $out, '1 PDF' ) );
+		$this->assertTrue( false !== stripos( $out, '<strong>1</strong> PDF' ) );
 		$this->assertTrue( false !== stripos( $out, 'gopp_regen_pdf_previews_form' ) );
 		$this->assertSame( force_balance_tags( $out ), $out );
 

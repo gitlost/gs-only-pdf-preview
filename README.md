@@ -39,6 +39,16 @@ I believe these concerns are addressed here through screening of the file and it
 
 Unsurprisingly it's faster. Crude benchmarking (see the [script `perf_vs_imagick.php`](https://github.com/gitlost/ghostscript-only-pdf-preview/blob/master/perf/perf_vs_imagick.php)) suggest it's at least 40% faster. However the production of the preview is only a part of the overhead of uploading a PDF (and doesn't include producing the intermediate thumbnail sizes for instance) so any speed-up will probably not be that noticeable.
 
+On jpeg thumbnail size it appears to be comparable, maybe a bit larger on average. To mitigate this the default jpeg quality for the PDF preview has been lowered to 70 (from 82), which results in some extra "ringing" (speckles around letters) but the previews tested remain very readable. Note that this only affects the "full" PDF thumbnail - the immediate sized thumbnails as produced by `Imagick` or `GD` and any other non-PDF images remain at the standard jpeg quality of 82. Use the standard [WP filter `wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) to override this, for instance to restore the quality to 82 you could add to your theme's "functions.php":
+
+	function mytheme_wp_editor_set_quality( $quality, $mime_type ) {
+		if ( 'application/pdf' === $mime_type ) {
+			$quality = 82;
+		}
+		return $quality;
+	}
+	add_filter( 'wp_editor_set_quality', 'mytheme_wp_editor_set_quality', 10, 2 );
+
 ### Tool ###
 
 A primitive administration tool to regenerate (or generate, if they previously didn't have a preview) the previews of all PDFs uploaded to the system is included. Note that if you have a lot of PDFs you may experience the White Screen Of Death (WSOD) if the tool exceeds the [maximum execution time](http://php.net/manual/en/info.configuration.php#ini.max-execution-time) allowed. Note also that as the filenames of the previews don't (normally) change, you will probably have to refresh your browser (to clear the cache) to see the updated thumbnails.
@@ -57,9 +67,11 @@ The project is on [github](https://github.com/gitlost/ghostscript-only-pdf-previ
 
 Install the plugin in the standard way via the 'Plugins' menu in WordPress and then activate.
 
-To install GhostScript, see [How to install Ghostscript](https://ghostscript.com/doc/9.20/Install.htm) on the official GhostScript site. For Ubuntu users, there's a package:
+To install GhostScript, see [How to install Ghostscript](https://ghostscript.com/doc/current/Install.htm) on the official GhostScript site. For Ubuntu users, there's a package:
 
 	sudo apt-get install ghostscript
+
+For Windows, there's an installer available at the [GhostScript download page](https://ghostscript.com/download/gsdnld.html).
 
 ## Frequently Asked Questions ##
 
@@ -72,10 +84,10 @@ Four plugin-specific filters are available:
 * `gopp_image_have_gs` short-circuits the test (via the shell) to see if GhostScript is installed on your system.
 * `gopp_image_gs_cmd_path` short-circuits the determination of the path of the GhostScript executable on your system.
 
-The `gopp_editor_set_resolution` filter is an analogue of the standard `wp_editor_set_quality` filter, and allows one to override the default resolution ("128x128") used for the PDF preview by returning a string formatted "widthxheight". For instance, in your theme's "functions.php":
+The `gopp_editor_set_resolution` filter is an analogue of the standard [`wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) filter, and allows one to override the default resolution of 128 DPI used for the PDF preview. For instance, in your theme's "functions.php":
 
 	function mytheme_gopp_editor_set_resolution( $resolution, $filename ) {
-		return '100x100';
+		return 100;
 	}
 	add_filter( 'gopp_editor_set_resolution', 'mytheme_gopp_editor_set_resolution', 10, 2 );
 

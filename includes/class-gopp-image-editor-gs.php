@@ -21,12 +21,20 @@ if ( ! defined( 'GOPP_IMAGE_EDITOR_GS_TRANSIENT_EXPIRATION' ) ) {
 class GOPP_Image_Editor_GS extends WP_Image_Editor {
 
 	/**
+	 * Override the default quality to lessen file size.
+	 *
+	 * @access protected
+	 * @var int
+	 */
+	protected $default_quality = 70;
+
+	/**
 	 * Resolution of output JPEG.
 	 *
 	 * @access protected
-	 * @var string
+	 * @var int
 	 */
-	protected $resolution = '128x128';
+	protected $resolution = 128;
 
 	/**
 	 * Page to render.
@@ -210,7 +218,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			return new WP_Error( 'image_save_error', __( 'Could not read image size.', 'ghostscript-only-pdf-preview' ) );
 		}
 
-		// Transmogrify into the JPEG file.
+		// For form's sake, transmogrify into the JPEG file.
 		$this->file = $filename;
 		$this->mime_type = $mime_type;
 		$this->update_size( $size[0], $size[1] );
@@ -458,10 +466,10 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	protected function get_gs_args( $filename ) {
 		$ret = $this->initial_gs_args();
 
-		if ( ( $quality = $this->get_quality() ) && preg_match( '/^[0-9]{1,2}$/', $quality ) ) {
+		if ( ( $quality = intval( $this->get_quality() ) ) > 0 && $quality <= 100 ) {
 			$ret .= ' -dJPEGQ=' . $quality; // Nothing escape-worthy.
 		}
-		if ( ( $resolution = $this->get_resolution() ) && preg_match( '/^[0-9]{1,5}x[0-9]{1,5}$/', $resolution ) ) {
+		if ( ( $resolution = intval( $this->get_resolution() ) ) > 0 ) {
 			$ret .= ' -r' . $resolution; // Nothing escape-worthy.
 		}
 
@@ -492,8 +500,8 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @return string
 	 */
 	protected function initial_gs_args() {
-		// -dAlignToPixels=0 combined with -dGraphicAlphaBits=4 and -dTextAlphaBits=4 enables anti-aliasing.
-		return '-dAlignToPixels=0 -dBATCH -dGraphicAlphaBits=4 -dNOPAUSE -dNOPROMPT -dQUIET -dSAFER -dTextAlphaBits=4 -q -sDEVICE=jpeg';
+		// -dAlignToPixels=0 combined with -dGraphicsAlphaBits=4 and -dTextAlphaBits=4 enables anti-aliasing. -dGridFitTT=2 enables font autohinting.
+		return '-dAlignToPixels=0 -dBATCH -dDOINTERPOLATE -dGraphicsAlphaBits=4 -dGridFitTT=2 -dNOPAUSE -dNOPROMPT -dQUIET -dSAFER -dTextAlphaBits=4 -q -sDEVICE=jpeg';
 	}
 
 	/**
@@ -558,7 +566,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @since 4.x
 	 * @access public
 	 *
-	 * @return string $resolution Resolution of preview as "widthxheight" string.
+	 * @return int $resolution Resolution of preview.
 	 */
 	public function get_resolution() {
 		return $this->resolution;
@@ -566,12 +574,11 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 
 	/**
 	 * Sets the resolution to use for the preview.
-	 * Maximum resolution is "99999x99999".
 	 *
 	 * @since 4.x
 	 * @access public
 	 *
-	 * @param string $resolution Resolution to use for preview as "widthxheight" string.
+	 * @param int $resolution Resolution to use for preview.
 	 *
 	 * @return true|WP_Error True if set successful; WP_Error on failure.
 	 */
@@ -587,12 +594,12 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			 *
 			 * @since 4.x
 			 *
-			 * @param string $resolution Resolution as "widthxheight" string.
+			 * @param int    $resolution Resolution (DPI) of the PDF preview thumbnail.
 			 * @param string $filename   The PDF file name.
 			 */
 			$resolution = apply_filters( 'gopp_editor_set_resolution', $this->resolution, $this->file );
 		}
-		if ( preg_match( '/^([0-9]{1,5})x([0-9]{1,5})$/', $resolution, $matches ) && $matches[1] > 0 && $matches[2] > 0 ) {
+		if ( ( $resolution = intval( $resolution ) ) > 0 ) {
 			$this->resolution = $resolution;
 			return true;
 		}

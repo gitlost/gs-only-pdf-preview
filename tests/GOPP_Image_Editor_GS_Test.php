@@ -115,7 +115,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 
 		// Bad resolution.
 		add_filter( 'gopp_editor_set_resolution', array( $this, 'filter_gopp_editor_set_resolution' ) );
-		$this->resolution = 'x100';
+		$this->resolution = 0;
 		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/wordpress-gsoc-flyer.pdf' );
 		$output = $image_editor->load();
 		$this->assertInstanceOf( 'WP_Error', $output );
@@ -130,7 +130,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		remove_filter( 'gopp_editor_set_page', array( $this, 'filter_gopp_editor_set_page' ) );
 	}
 
-	protected $resolution = '100x100';
+	protected $resolution = 100;
 
 	function filter_gopp_editor_set_resolution( $resolution ) {
 		return $this->resolution;
@@ -167,6 +167,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		$this->assertTrue( $output );
 		$output = $image_editor->save( $test_filename, 'image/jpeg' );
 		$this->assertNotEmpty( $output );
+		$this->assertTrue( is_array( $output ) );
 		$this->assertSame( $test_filename, $output['path'] );
 		$this->assertTrue( is_file( $output['path'] ) );
 		$this->assertNotEmpty( $output['file'] );
@@ -345,47 +346,31 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 	 */
 	public function test_resolution() {
 		$gs = new GOPP_Image_Editor_GS( null );
-		$this->assertSame( '128x128', $gs->get_resolution() );
+		$this->assertSame( 128, $gs->get_resolution() );
 
-		$resolution = '999x99';
+		$resolution = 999;
 		$this->assertTrue( $gs->set_resolution( $resolution ) );
 		$this->assertSame( $resolution, $gs->get_resolution() );
-		$resolution = '72x72';
-		$this->assertTrue( $gs->set_resolution( $resolution ) );
-		$this->assertSame( $resolution, $gs->get_resolution() );
-		$resolution = '1x1'; // Min.
-		$this->assertTrue( $gs->set_resolution( $resolution ) );
-		$this->assertSame( $resolution, $gs->get_resolution() );
-		$resolution = '99999x99999'; // Max.
+		$resolution = 1; // Min.
 		$this->assertTrue( $gs->set_resolution( $resolution ) );
 		$this->assertSame( $resolution, $gs->get_resolution() );
 
-		$this->assertInstanceOf( 'WP_Error', $gs->set_resolution( '0x0' ) );
+		$this->assertInstanceOf( 'WP_Error', $gs->set_resolution( 0 ) );
 		$this->assertSame( $resolution, $gs->get_resolution() );
-		$this->assertInstanceOf( 'WP_Error', $gs->set_resolution( '128x0' ) );
-		$this->assertSame( $resolution, $gs->get_resolution() );
-		$this->assertInstanceOf( 'WP_Error', $gs->set_resolution( '0x128' ) );
-		$this->assertSame( $resolution, $gs->get_resolution() );
-		$this->assertInstanceOf( 'WP_Error', $gs->set_resolution( '100000x1000' ) );
-		$this->assertSame( $resolution, $gs->get_resolution() );
-		$this->assertInstanceOf( 'WP_Error', $gs->set_resolution( '100x' ) );
-		$this->assertSame( $resolution, $gs->get_resolution() );
-		$this->assertInstanceOf( 'WP_Error', $gs->set_resolution( 'x100' ) );
-		$this->assertSame( $resolution, $gs->get_resolution() );
-		$this->assertInstanceOf( 'WP_Error', $gs->set_resolution( '100xa' ) );
+		$this->assertInstanceOf( 'WP_Error', $gs->set_resolution( -3 ) );
 		$this->assertSame( $resolution, $gs->get_resolution() );
 
 		add_filter( 'gopp_editor_set_resolution', array( $this, 'filter_gopp_editor_set_resolution' ) );
-		$resolution = $this->resolution = '100x100';
+		$resolution = $this->resolution = 100;
 		$this->assertTrue( $gs->set_resolution() );
 		$this->assertSame( $this->resolution, $gs->get_resolution() );
-		$this->resolution = 'x100';
+		$this->resolution = -4;
 		$this->assertInstanceOf( 'WP_Error', $gs->set_resolution() );
 		$this->assertSame( $resolution, $gs->get_resolution() );
 		remove_filter( 'gopp_editor_set_resolution', array( $this, 'filter_gopp_editor_set_resolution' ) );
 
-		$gs->set_resolution( '128x128' );
-		$this->assertSame( '128x128', $gs->get_resolution() );
+		$gs->set_resolution( 128 );
+		$this->assertSame( 128, $gs->get_resolution() );
 	}
 
 	/**
