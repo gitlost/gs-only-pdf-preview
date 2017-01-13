@@ -2,8 +2,8 @@
 Contributors: gitlost
 Tags: GhostScript, PDF, PDF Preview, GhostScript Only
 Requires at least: 4.7.0
-Tested up to: 4.7.0
-Stable tag: 0.9.0
+Tested up to: 4.7.1
+Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -11,15 +11,15 @@ Uses GhostScript directly to generate PDF previews.
 
 == Description ==
 
-The plugin pre-empts the standard WordPress 4.7.0 PDF preview process (which uses the PHP extension `Imagick`) to call GhostScript directly to produce the preview.
+The plugin pre-empts the standard WordPress 4.7 PDF preview production process (which uses the PHP extension `Imagick`) to call GhostScript directly to produce the preview.
 
 This means that only GhostScript is required on the server. Neither the PHP module `Imagick` nor the server package `ImageMagick` is needed or used (though it's fine if they're installed anyway, and if they are they'll be used by WP (unless you override it) to produce the intermediate sizes of the preview).
 
 = Background =
 
-The plugin was prompted by the demonstration `WP_Image_Editor_Imagick_External` class uploaded to the WP Trac ticket [#39262 Fall back to ImageMagick command line when the pecl imagic is not available on the server](https://core.trac.wordpress.org/ticket/39262) by [Hristo Pandjarov](https://profiles.wordpress.org/hristo-sg), and by the wish to solve the WP Trac ticket [#39216 PDFs with non-opaque alpha channels can result in previews with black backgrounds.](https://core.trac.wordpress.org/ticket/39216), which particularly affects PDFs with CMYK color spaces (common in the printing world).
+The plugin was prompted by the demonstration `WP_Image_Editor_Imagick_External` class uploaded to the WP Trac ticket [#39262 Fall back to ImageMagick command line when the pecl imagic is not available on the server](https://core.trac.wordpress.org/ticket/39262) by [Hristo Pandjarov](https://profiles.wordpress.org/hristo-sg), and by the wish to solve the WP Trac ticket [#39216 PDFs with non-opaque alpha channels can result in previews with black backgrounds.](https://core.trac.wordpress.org/ticket/39216), which particularly affects PDFs with CMYK color spaces (common in the print world).
 
-The plugin by-passes (as far as PDF previews are concerned) #39216, and also by-passes the related issue [#39331 unsharpMaskImage in Imagick's thumbnail_image is not compatible with CMYK jpegs.](https://core.trac.wordpress.org/ticket/39331), as the preview jpegs produced directly by GhostScript always use sRGB color spaces.
+The plugin by-passes (as far as PDF previews are concerned) #39216, and also by-passes the related issue [#39331 unsharpMaskImage in Imagick's thumbnail_image is not compatible with CMYK jpegs.](https://core.trac.wordpress.org/ticket/39331), as the preview jpegs produced directly by GhostScript use sRGB color spaces.
 
 = Limitations =
 
@@ -35,9 +35,9 @@ I believe these concerns are addressed here through screening of the file and it
 
 = Performance =
 
-Unsurprisingly it's faster. Crude benchmarking (see the [script `perf_vs_imagick.php`](https://github.com/gitlost/ghostscript-only-pdf-preview/blob/master/perf/perf_vs_imagick.php)) suggest it's at least 40% faster. However the production of the preview is only a part of the overhead of uploading a PDF (and doesn't include producing the intermediate thumbnail sizes for instance) so any speed-up will probably not be that noticeable.
+Unsurprisingly it's faster. Crude benchmarking (see the [script `perf_vs_imagick.php`](https://github.com/gitlost/ghostscript-only-pdf-preview/blob/master/perf/perf_vs_imagick.php)) suggest it's around 40% faster. However the production of the preview is only a part of the overhead of uploading a PDF (and doesn't include producing the intermediate thumbnail sizes for instance) so any speed-up will probably not be that noticeable.
 
-On jpeg thumbnail size it appears to be comparable, maybe a bit larger on average. To mitigate this the default jpeg quality for the PDF preview has been lowered to 70 (from 82), which results in some extra "ringing" (speckles around letters) but the previews tested remain very readable. Note that this only affects the "full" PDF thumbnail - the immediate sized thumbnails as produced by `Imagick` or `GD` and any other non-PDF images remain at the standard jpeg quality of 82. Use the standard [WP filter `wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) to override this, for instance to restore the quality to 82 you could add to your theme's "functions.php":
+On jpeg thumbnail size it appears to be comparable, maybe a bit larger on average. To mitigate this the default jpeg quality for the PDF preview has been lowered to 70 (from 82), which results in some extra "ringing" (speckles around letters) but the previews tested remain very readable. Note that this only affects the "full" PDF thumbnail - the intermediate-sized thumbnails as produced by `Imagick` or `GD` and any other non-PDF images remain at the standard jpeg quality of 82. Use the [WP filter `wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) to override this, for instance to restore the quality to 82 you could add to your theme's "functions.php":
 
 	function mytheme_wp_editor_set_quality( $quality, $mime_type ) {
 		if ( 'application/pdf' === $mime_type ) {
@@ -49,9 +49,9 @@ On jpeg thumbnail size it appears to be comparable, maybe a bit larger on averag
 
 = Tool =
 
-A primitive administration tool to regenerate (or generate, if they previously didn't have a preview) the previews of all PDFs uploaded to the system is included. Note that if you have a lot of PDFs you may experience the White Screen Of Death (WSOD) if the tool exceeds the [maximum execution time](http://php.net/manual/en/info.configuration.php#ini.max-execution-time) allowed. Note also that as the filenames of the previews don't (normally) change, you will probably have to refresh your browser (to clear the cache) to see the updated thumbnails.
+A basic administration tool to regenerate (or generate, if they previously didn't have a preview) the previews of all PDFs uploaded to the system is included. Note that if you have a lot of PDFs you may experience the White Screen Of Death (WSOD) if the tool exceeds the [maximum execution time](http://php.net/manual/en/info.configuration.php#ini.max-execution-time) allowed. Note also that as the filenames of the previews don't (normally) change, you will probably have to refresh your browser to see the updated thumbnails.
 
-As a workaround for the possible WSOD issue above, and as a facility in itself, a "Regenerate preview" row action is added to PDF entries in the list mode of the Media Library, so that you can regenerate the previews of individual PDFs.
+As workarounds for the possible WSOD issue above, and as facilities in themselves, a "Regenerate PDF Previews" bulk action is added to the list mode of the Media Library, and a "Regenerate preview" row action is added to each PDF entry in the list. So previews can be regenerated in batches or individually instead.
 
 = And =
 
@@ -114,14 +114,18 @@ The filter can also be used just for performance reasons (especially on Windows 
 1. Before: upload of various PDFs with alpha channels and/or CMYK color spaces resulting in broken previews.
 2. After: upload of the same PDFs resulting in a result.
 3. Regenerate PDF Previews administration tool.
-4. Regenerate preview row action in list mode of Media Library.
+4. Regenerate PDF Previews bulk action in list mode of Media Library.
+5. Regenerate preview row action in list mode of Media Library.
 
 == Changelog ==
+
+= 1.0.0 (13 Jan 2017) =
+* Initial release.
 
 = 0.9.0 (8 Jan 2017) =
 * Initial github version.
 
 == Upgrade Notice ==
 
-= 0.9.0 =
+= 1.0.0 =
 Improved PDF preview experience.

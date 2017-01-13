@@ -3,7 +3,7 @@
  * Plugin Name: GhostScript Only PDF Preview
  * Plugin URI: https://github.com/gitlost/ghostscript-only-pdf-preview
  * Description: Uses GhostScript directly to generate PDF previews.
- * Version: 0.9.0
+ * Version: 1.0.0
  * Author: gitlost
  * Author URI: https://profiles.wordpress.org/gitlost
  * License: GPLv2
@@ -15,245 +15,339 @@
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-if ( ! defined( 'GOPP_PLUGIN_VERSION' ) ) {
-	// These need to be synced with "readme.txt".
-	define( 'GOPP_PLUGIN_VERSION', '0.9.0' ); // Sync also "package.json" and "language/ghostscript-only-pdf-preview.pot".
-	define( 'GOPP_PLUGIN_WP_AT_LEAST_VERSION', '4.7.0' );
-	define( 'GOPP_PLUGIN_WP_UP_TO_VERSION', '4.7.0' );
-}
-
-load_plugin_textdomain( 'ghostscript-only-pdf-preview', false, basename( dirname( __FILE__ ) ) . '/languages' );
-
-register_activation_hook( __FILE__, 'gopp_plugin_activation_hook' );
-add_action( 'admin_init', 'gopp_plugin_admin_init' );
-if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
-	add_action( 'admin_menu', 'gopp_plugin_admin_menu' );
-	add_action( 'admin_enqueue_scripts', 'gopp_plugin_admin_enqueue_scripts' );
-	add_action( 'media_row_actions', 'gopp_plugin_media_row_actions', 100, 3 ); // Add after most others due to spinner.
-} else {
-	add_action( 'wp_ajax_gopp_media_row_action', 'gopp_plugin_gopp_media_row_action' );
-}
-
-/**
- * Called on plugin activation.
- * Checks that `exec` available and "safe_mode" not set. Checks WP versions. Checks GhostScript available.
- */
-function gopp_plugin_activation_hook() {
-
-	// Disabling conditions.
-
-	$plugin_basename = plugin_basename( __FILE__ );
-
-	// Must have exec() available (ie hasn't been disabled by the PHP_INI_SYSTEM directive "disable_functions").
-	if ( ! function_exists( 'exec' ) ) {
-		deactivate_plugins( $plugin_basename );
-		if ( in_array( 'exec', array_map( 'trim', explode( ',', strtolower( ini_get( 'disable_functions' ) ) ) ), true ) ) {
-			$msg = sprintf(
-				/* translators: %s: url to admin plugins page. */
-				__( 'The plugin "GhostScript Only PDF Preview" cannot be activated as it relies on the PHP function <code>exec</code>, which has been disabled on your system via the <code>php.ini</code> directive <code>disable_functions</code>. <a href="%s">Return to Plugins page.</a>', 'ghostscript-only-pdf-preview' ),
-				esc_url( self_admin_url( 'plugins.php' ) )
-			);
-		} else {
-			$msg = sprintf(
-				/* translators: %s: url to admin plugins page. */
-				__( 'The plugin "GhostScript Only PDF Preview" cannot be activated as it relies on the PHP function <code>exec</code> being enabled on your system. <a href="%s">Return to Plugins page.</a>', 'ghostscript-only-pdf-preview' ),
-				esc_url( self_admin_url( 'plugins.php' ) )
-			);
-		}
-		wp_die( $msg );
-	}
-
-	// If the (somewhat out-dated) suhosin extension is loaded, then need to check its function blacklist also, as it doesn't reflect in function_exists().
-	// Theoretically should first check whether the function whitelist exists and whether exec() is not in it, as it overrides the blacklist, but it's unlikely to be used.
-	if ( extension_loaded( 'suhosin' ) && in_array( 'exec', array_map( 'trim', explode( ',', strtolower( ini_get( 'suhosin.executor.func.blacklist' ) ) ) ), true ) ) {
-		deactivate_plugins( $plugin_basename );
-		$msg = sprintf(
-			/* translators: %s: url to admin plugins page. */
-			__( 'The plugin "GhostScript Only PDF Preview" cannot be activated as it relies on the PHP function <code>exec</code>, which has been disabled on your system via the suhosin extension directive <code>suhosin.executor.func.blacklist</code>. <a href="%s">Return to Plugins page.</a>', 'ghostscript-only-pdf-preview' ),
-			esc_url( self_admin_url( 'plugins.php' ) )
-		);
-		wp_die( $msg );
-	}
-
-	// Not compatible with safe_mode, which was deprecated in PHP 5.3.0 & removed in 5.4.0. See http://php.net/manual/en/features.safe-mode.php
-	// In particular safe_mode puts the exec() command string through escapeshellcmd(), which ironically makes individual elements put through escapeshellarg() (as we do) unsafe.
-	if ( ini_get( 'safe_mode' ) ) {
-		deactivate_plugins( $plugin_basename );
-		wp_die( sprintf(
-			/* translators: %s: url to admin plugins page. */
-			__( 'The plugin "GhostScript Only PDF Preview" cannot be activated as it is incompatible with the <code>php.ini</code> directive <code>safe_mode</code>, enabled on your system. <a href="%s">Return to Plugins page.</a>', 'ghostscript-only-pdf-preview' ),
-			esc_url( self_admin_url( 'plugins.php' ) )
-		) );
-	}
-
-	global $wp_version;
-	$stripped_wp_version = substr( $wp_version, 0, strspn( $wp_version, '0123456789.' ) ); // Remove any trailing date stuff.
-	if ( preg_match( '/^[0-9]+\.[0-9]+$/', $stripped_wp_version ) ) {
-		$stripped_wp_version .= '.0'; // Make WP version x.y.z compat.
-	}
-
-	// Must be on WP 4.7 at least.
-	if ( version_compare( $stripped_wp_version, GOPP_PLUGIN_WP_AT_LEAST_VERSION, '<' ) ) {
-		deactivate_plugins( $plugin_basename );
-		wp_die( sprintf(
-			/* translators: %1$s: lowest compatible WordPress version; %2$s: user's current WordPress version; %3$s: url to admin plugins page. */
-			__( 'The plugin "GhostScript Only PDF Preview" cannot be activated as it requires WordPress %1$s to work and you have WordPress %2$s. <a href="%3$s">Return to Plugins page.</a>', 'ghostscript-only-pdf-preview' ),
-			GOPP_PLUGIN_WP_AT_LEAST_VERSION, $wp_version, esc_url( self_admin_url( 'plugins.php' ) )
-		) );
-	}
-
-	// Warnings.
-
-	$admin_notices = array();
-
-	// Check tested version.
-	if ( version_compare( $stripped_wp_version, GOPP_PLUGIN_WP_UP_TO_VERSION, '>' ) ) {
-		$admin_notices[] = array( 'warning', sprintf(
-			/* translators: %1$s: highest WordPress version tested; %2$s: user's current WordPress version. */
-			__( '<strong>Warning: untested!</strong> The plugin "GhostScript Only PDF Preview" has only been tested on WordPress versions up to %1$s. You have WordPress %2$s.', 'ghostscript-only-pdf-preview' ),
-			GOPP_PLUGIN_WP_UP_TO_VERSION, $wp_version
-		) );
-	}
-
-
-	// Clear out any old transients.
-	gopp_plugin_load_gopp_image_editor_gs();
-	GOPP_Image_Editor_GS::clear();
-
-	// Check if GhostScript available.
-	if ( ! GOPP_Image_Editor_GS::test( array() ) ) {
-		$admin_notices[] = array( 'warning', __( '<strong>Warning: no GhostScript!</strong> The plugin "GhostScript Only PDF Preview" cannot determine the server location of your GhostScript executable.', 'ghostscript-only-pdf-preview' ) );
-	}
-
-	if ( $admin_notices ) {
-		set_transient( 'gopp_plugin_admin_notices', $admin_notices, 5 * MINUTE_IN_SECONDS );
-	}
-}
-
-/**
- * Helper to load GOPP_Image_Editor_GS class.
- */
-function gopp_plugin_load_gopp_image_editor_gs() {
-	if ( ! class_exists( 'GOPP_Image_Editor_GS' ) ) {
-		if ( ! class_exists( 'WP_Image_Editor' ) ) {
-			require ABSPATH . WPINC . '/class-wp-image-editor.php';
-		}
-		require dirname( __FILE__ ) . '/includes/class-gopp-image-editor-gs.php';
-	}
-}
-
-/**
- * Called on 'admin_init' action.
- * Adds the "wp_image_editors" filter and the transient-based admin notices action.
- */
-function gopp_plugin_admin_init() {
-	add_filter( 'wp_image_editors', 'gopp_plugin_wp_image_editors' );
-
-	$admin_notices_action = is_network_admin() ? 'network_admin_notices' : ( is_user_admin() ? 'user_admin_notices' : 'admin_notices' );
-	add_action( $admin_notices_action, 'gopp_plugin_admin_notices' );
-}
-
-/**
- * Called on 'wp_image_editors' action.
- * Adds GhostScript `GOPP_Image_Editor_GS` class to head of image editors list.
- */
-function gopp_plugin_wp_image_editors( $image_editors ) {
-	if ( ! in_array( 'GOPP_Image_Editor_GS', $image_editors, true ) ) {
-		// Double-check that exec() is available and we're not in safe_mode.
-		if ( function_exists( 'exec' ) && ! ini_get( 'safe_mode' ) ) {
-			gopp_plugin_load_gopp_image_editor_gs();
-			array_unshift( $image_editors, 'GOPP_Image_Editor_GS' );
-		}
-	}
-	return $image_editors;
-}
-
-/**
- * Called on 'network_admin_notices', 'user_admin_notices' or 'admin_notices' action.
- * Outputs any messages.
- */
-function gopp_plugin_admin_notices() {
-
-	$admin_notices = get_transient( 'gopp_plugin_admin_notices' );
-	if ( false !== $admin_notices ) {
-		delete_transient( 'gopp_plugin_admin_notices' );
-	}
-	if ( $admin_notices ) {
-
-		foreach ( $admin_notices as $admin_notice ) {
-			list( $type, $notice ) = $admin_notice;
-			if ( 'error' === $type ) {
-				?>
-					<div class="notice error is-dismissible">
-						<p><?php echo $notice; ?></p>
-					</div>
-				<?php
-			} elseif ( 'updated' === $type ) {
-				?>
-					<div class="notice updated is-dismissible">
-						<p><?php echo $notice; ?></p>
-					</div>
-				<?php
-			} else {
-				?>
-					<div class="notice notice-<?php echo $type; ?> is-dismissible">
-						<p><?php echo $notice; ?></p>
-					</div>
-				<?php
-			}
-		}
-	}
-}
+// These need to be synced with "readme.txt".
+define( 'GOPP_PLUGIN_VERSION', '1.0.0' ); // Sync also "package.json" and "language/ghostscript-only-pdf-preview.pot".
+define( 'GOPP_PLUGIN_WP_AT_LEAST_VERSION', '4.7.0' );
+define( 'GOPP_PLUGIN_WP_UP_TO_VERSION', '4.7.1' );
 
 define( 'GOPP_REGEN_PDF_PREVIEWS_SLUG', 'gopp-regen-pdf-previews' );
 
-global $gopp_plugin_hook_suffix; // As returned by `add_management_page`.
-$gopp_plugin_hook_suffix = null;
-
-global $gopp_plugin_cap; // What capability is needed to regenerate PDF previews.
-$gopp_plugin_cap = 'manage_options';
-
-global $gopp_plugin_per_pdf_secs; // Seconds to allow for regenerating the preview of each PDF in the "Regen. PDF Previews" administraion tool.
-$gopp_plugin_per_pdf_secs = 20;
-
 /**
- * Called on 'admin_menu' action.
- * Adds the "Regen. PDF Previews" administration tool.
+ * Plugin as pseudo-namespace static class.
  */
-function gopp_plugin_admin_menu() {
-	global $gopp_plugin_hook_suffix, $gopp_plugin_cap;
-	$gopp_plugin_hook_suffix = add_management_page( __( 'Regenerate PDF Previews', 'ghostscript-only-pdf-preview' ), __( 'Regen. PDF Previews', 'ghostscript-only-pdf-preview' ), $gopp_plugin_cap, GOPP_REGEN_PDF_PREVIEWS_SLUG, 'gopp_plugin_regen_pdf_previews' );
-	if ( $gopp_plugin_hook_suffix ) {
-		add_action( 'load-' . $gopp_plugin_hook_suffix, 'gopp_plugin_load_regen_pdf_previews' );
+class GhostScript_Only_PDF_Preview {
+
+	static $hook_suffix = null; // As returned by `add_management_page`.
+	static $cap = 'manage_options'; // What capability is needed to regenerate PDF previews.
+	static $per_pdf_secs = 20; // Seconds to allow for regenerating the preview of each PDF in the "Regen. PDF Previews" administraion tool.
+	static $min_time_limit = 300; // Minimum seconds to set max execution time to on doing regeneration.
+	static $poll_interval = 2; // How often to poll for progress info in seconds.
+	static $timing_dec_places = 1; // Number of decimal places to show on time (in seconds) taken.
+
+	/**
+	 * Static constructor.
+	 */
+	static function main() {
+		load_plugin_textdomain( 'ghostscript-only-pdf-preview', false, basename( dirname( __FILE__ ) ) . '/languages' );
+
+		// Add always in case of front-end use.
+		add_filter( 'wp_image_editors', array( __CLASS__, 'wp_image_editors' ) );
+
+		if ( is_admin() ) {
+			register_activation_hook( __FILE__, array( __CLASS__, 'activation_hook' ) );
+			if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
+				add_action( 'admin_init', array( __CLASS__, 'admin_init' ) );
+				add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
+				add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
+
+				add_filter( 'bulk_actions-upload', array( __CLASS__, 'bulk_actions_upload' ) );
+				add_filter( 'handle_bulk_actions-upload', array( __CLASS__, 'handle_bulk_actions_upload' ), 10, 3 );
+				add_filter( 'removable_query_args', array( __CLASS__, 'removable_query_args' ) );
+
+				add_action( 'current_screen', array( __CLASS__, 'current_screen' ) );
+				add_action( 'media_row_actions', array( __CLASS__, 'media_row_actions' ), 100, 3 ); // Add after (most) others due to spinner.
+			}
+			add_action( 'wp_ajax_gopp_media_row_action', array( __CLASS__, 'gopp_media_row_action' ) );
+			add_action( 'wp_ajax_gopp_poll_regen_pdf_previews', array( __CLASS__,  'gopp_poll_regen_pdf_previews' ) );
+		}
 	}
-}
 
-/**
- * Called on 'load-tools_page_GOPP_REGEN_PDF_PREVIEWS_SLUG' action.
- * Does the work of the "Regen. PDF Previews" administration tool. Just loops through all uploaded PDFs.
- */
-function gopp_plugin_load_regen_pdf_previews() {
-	global $gopp_plugin_cap, $gopp_plugin_per_pdf_secs;
-	if ( ! current_user_can( $gopp_plugin_cap ) ) {
-		wp_die( __( 'Sorry, you are not allowed to access this page.', 'ghostscript-only-pdf-preview' ) );
+	/**
+	 * Called on 'wp_image_editors' action.
+	 * Adds GhostScript `GOPP_Image_Editor_GS` class to head of image editors list.
+	 */
+	static function wp_image_editors( $image_editors ) {
+		if ( ! in_array( 'GOPP_Image_Editor_GS', $image_editors, true ) ) {
+			// Quick double-check that exec() is available and we're not in safe_mode.
+			if ( function_exists( 'exec' ) && ! ini_get( 'safe_mode' ) ) {
+				self::load_gopp_image_editor_gs();
+				array_unshift( $image_editors, 'GOPP_Image_Editor_GS' );
+			}
+		}
+		return $image_editors;
 	}
 
-	if ( ! empty( $_REQUEST[GOPP_REGEN_PDF_PREVIEWS_SLUG] ) ) {
+	/**
+	 * Called on plugin activation.
+	 * Checks that `exec` available and "safe_mode" not set. Checks WP versions. Checks GhostScript available.
+	 */
+	static function activation_hook() {
 
-		check_admin_referer( GOPP_REGEN_PDF_PREVIEWS_SLUG );
+		// Disabling conditions.
 
-		$redirect = admin_url( 'tools.php?page=' . GOPP_REGEN_PDF_PREVIEWS_SLUG );
+		$plugin_basename = plugin_basename( __FILE__ );
+
+		// Must have exec() available (ie hasn't been disabled by the PHP_INI_SYSTEM directive "disable_functions").
+		if ( ! function_exists( 'exec' ) ) {
+			deactivate_plugins( $plugin_basename );
+			if ( in_array( 'exec', array_map( 'trim', explode( ',', strtolower( ini_get( 'disable_functions' ) ) ) ), true ) ) {
+				$msg = sprintf(
+					/* translators: %s: url to admin plugins page. */
+					__( 'The plugin "GhostScript Only PDF Preview" cannot be activated as it relies on the PHP function <code>exec</code>, which has been disabled on your system via the <code>php.ini</code> directive <code>disable_functions</code>. <a href="%s">Return to Plugins page.</a>', 'ghostscript-only-pdf-preview' ),
+					esc_url( self_admin_url( 'plugins.php' ) )
+				);
+			} else {
+				$msg = sprintf(
+					/* translators: %s: url to admin plugins page. */
+					__( 'The plugin "GhostScript Only PDF Preview" cannot be activated as it relies on the PHP function <code>exec</code> being enabled on your system. <a href="%s">Return to Plugins page.</a>', 'ghostscript-only-pdf-preview' ),
+					esc_url( self_admin_url( 'plugins.php' ) )
+				);
+			}
+			wp_die( $msg );
+		}
+
+		// If the (somewhat out-dated) suhosin extension is loaded, then need to check its function blacklist also, as it doesn't reflect in function_exists().
+		// Theoretically should first check whether the function whitelist exists and whether exec() is not in it, as it overrides the blacklist, but it's unlikely to be used.
+		if ( extension_loaded( 'suhosin' ) && in_array( 'exec', array_map( 'trim', explode( ',', strtolower( ini_get( 'suhosin.executor.func.blacklist' ) ) ) ), true ) ) {
+			deactivate_plugins( $plugin_basename );
+			$msg = sprintf(
+				/* translators: %s: url to admin plugins page. */
+				__( 'The plugin "GhostScript Only PDF Preview" cannot be activated as it relies on the PHP function <code>exec</code>, which has been disabled on your system via the suhosin extension directive <code>suhosin.executor.func.blacklist</code>. <a href="%s">Return to Plugins page.</a>', 'ghostscript-only-pdf-preview' ),
+				esc_url( self_admin_url( 'plugins.php' ) )
+			);
+			wp_die( $msg );
+		}
+
+		// Not compatible with safe_mode, which was deprecated in PHP 5.3.0 & removed in 5.4.0. See http://php.net/manual/en/features.safe-mode.php
+		// In particular safe_mode puts the exec() command string through escapeshellcmd(), which ironically makes individual elements put through escapeshellarg() (as we do) unsafe.
+		if ( ini_get( 'safe_mode' ) ) {
+			deactivate_plugins( $plugin_basename );
+			wp_die( sprintf(
+				/* translators: %s: url to admin plugins page. */
+				__( 'The plugin "GhostScript Only PDF Preview" cannot be activated as it is incompatible with the <code>php.ini</code> directive <code>safe_mode</code>, enabled on your system. <a href="%s">Return to Plugins page.</a>', 'ghostscript-only-pdf-preview' ),
+				esc_url( self_admin_url( 'plugins.php' ) )
+			) );
+		}
+
+		global $wp_version;
+		$stripped_wp_version = substr( $wp_version, 0, strspn( $wp_version, '0123456789.' ) ); // Remove any trailing date stuff.
+		if ( preg_match( '/^[0-9]+\.[0-9]+$/', $stripped_wp_version ) ) {
+			$stripped_wp_version .= '.0'; // Make WP version x.y.z compat.
+		}
+
+		// Must be on WP 4.7 at least.
+		if ( version_compare( $stripped_wp_version, GOPP_PLUGIN_WP_AT_LEAST_VERSION, '<' ) ) {
+			deactivate_plugins( $plugin_basename );
+			wp_die( sprintf(
+				/* translators: %1$s: lowest compatible WordPress version; %2$s: user's current WordPress version; %3$s: url to admin plugins page. */
+				__( 'The plugin "GhostScript Only PDF Preview" cannot be activated as it requires WordPress %1$s to work and you have WordPress %2$s. <a href="%3$s">Return to Plugins page.</a>', 'ghostscript-only-pdf-preview' ),
+				GOPP_PLUGIN_WP_AT_LEAST_VERSION, $wp_version, esc_url( self_admin_url( 'plugins.php' ) )
+			) );
+		}
+
+		// Warnings.
+
 		$admin_notices = array();
 
-		global $wpdb;
-		$ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type = %s AND post_mime_type = %s", 'attachment', 'application/pdf' ) );
-		if ( ! $ids ) {
-			$admin_notices[] = array( 'error', __( 'No PDFs found', 'ghostscript-only-pdf-preview' ) );
-		} else {
+		// Check tested version.
+		if ( version_compare( $stripped_wp_version, GOPP_PLUGIN_WP_UP_TO_VERSION, '>' ) ) {
+			$admin_notices[] = array( 'warning', sprintf(
+				/* translators: %1$s: highest WordPress version tested; %2$s: user's current WordPress version. */
+				__( '<strong>Warning: untested!</strong> The plugin "GhostScript Only PDF Preview" has only been tested on WordPress versions up to %1$s. You have WordPress %2$s.', 'ghostscript-only-pdf-preview' ),
+				GOPP_PLUGIN_WP_UP_TO_VERSION, $wp_version
+			) );
+		}
+
+
+		// Clear out any old transients.
+		self::load_gopp_image_editor_gs();
+		GOPP_Image_Editor_GS::clear();
+
+		// Check if GhostScript available.
+		if ( ! GOPP_Image_Editor_GS::test( array() ) ) {
+			$admin_notices[] = array( 'warning', __( '<strong>Warning: no GhostScript!</strong> The plugin "GhostScript Only PDF Preview" cannot determine the server location of your GhostScript executable.', 'ghostscript-only-pdf-preview' ) );
+		}
+
+		if ( $admin_notices ) {
+			set_transient( 'gopp_plugin_admin_notices', $admin_notices, 5 * MINUTE_IN_SECONDS );
+		}
+	}
+
+	/**
+	 * Helper to load GOPP_Image_Editor_GS class.
+	 */
+	static function load_gopp_image_editor_gs() {
+		if ( ! class_exists( 'GOPP_Image_Editor_GS' ) ) {
+			if ( ! class_exists( 'WP_Image_Editor' ) ) {
+				require ABSPATH . WPINC . '/class-wp-image-editor.php';
+			}
+			require dirname( __FILE__ ) . '/includes/class-gopp-image-editor-gs.php';
+		}
+	}
+
+	/**
+	 * Called on 'admin_init' action.
+	 * Adds the admin notices action.
+	 */
+	static function admin_init() {
+		$admin_notices_action = is_network_admin() ? 'network_admin_notices' : ( is_user_admin() ? 'user_admin_notices' : 'admin_notices' );
+		add_action( $admin_notices_action, array( __CLASS__, 'admin_notices' ) );
+	}
+
+	/**
+	 * Called on 'network_admin_notices', 'user_admin_notices' or 'admin_notices' action.
+	 * Outputs any messages in transient or query arg.
+	 */
+	static function admin_notices() {
+
+		$admin_notices = get_transient( 'gopp_plugin_admin_notices' );
+		if ( false !== $admin_notices ) {
+			delete_transient( 'gopp_plugin_admin_notices' );
+		}
+		if ( ! is_array( $admin_notices ) ) {
+			$admin_notices = array();
+		}
+
+		$current_screen = get_current_screen();
+		$current_screen_id = $current_screen ? $current_screen->id : null;
+		$is_tool = $current_screen_id === self::$hook_suffix;
+		if ( ( $is_tool || 'upload' === $current_screen_id ) && ! empty( $_REQUEST['gopp_rpp'] ) && is_string( $_REQUEST['gopp_rpp'] ) ) {
+			if ( preg_match( '/^([0-9]+)_([0-9]+)_([0-9]+)_([0-9.]+)+$/', $_REQUEST['gopp_rpp'], $matches ) ) {
+				$cnt = intval( $matches[1] );
+				$num_updates = intval( $matches[2] );
+				$num_fails = intval( $matches[3] );
+				$time = floatval( $matches[4] );
+				if ( $cnt < 0 || $num_updates < 0 || $num_fails < 0 || $cnt < $num_updates + $num_fails || $time < 0 ) {
+					$admin_notices[] = array( 'error', __( 'Invalid arguments!', 'ghostscript-only-pdf-preview' ) );
+				} else {
+					if ( 0 === $cnt ) {
+						// The standard WP behaviour is to be silent on doing bulk action with nothing selected.
+						if ( $is_tool ) {
+							$admin_notices[] = array( 'error', __( 'No PDFs found!', 'ghostscript-only-pdf-preview' ) );
+						}
+					} else {
+						if ( $num_updates ) {
+							$admin_notices[] = array( 'updated', sprintf(
+								/* translators: %1$s: formatted number of PDF previews regenerated; %2$s: formatted number of seconds to one decimal place it took. */
+								_n( '%1$s PDF preview regenerated in %2$s seconds.', '%1$s PDF previews regenerated in %2$s seconds.', $num_updates, 'ghostscript-only-pdf-preview' ),
+									number_format_i18n( $num_updates ), number_format_i18n( $time, self::$timing_dec_places )
+							) );
+							if ( $cnt > $num_updates + $num_fails ) {
+								$admin_notices[] = array( 'warning', sprintf(
+									/* translators: %s: formatted number of non-PDFs ignored. */
+									_n( '%s non-PDF ignored.', '%s non-PDFs ignored.', $cnt, 'ghostscript-only-pdf-preview' ), number_format_i18n( $cnt - ( $num_updates + $num_fails ) )
+								) );
+							}
+						} else {
+							if ( $num_fails ) {
+								$admin_notices[] = array( 'warning', __( 'Nothing updated!', 'ghostscript-only-pdf-preview' ) );
+							} else {
+								$admin_notices[] = array( 'warning', sprintf(
+									/* translators: %s: formatted number of non-PDFs ignored. */
+									_n( 'Nothing updateable! %s non-PDF ignored.', 'Nothing updateable! %s non-PDFs ignored.', $cnt, 'ghostscript-only-pdf-preview' ), number_format_i18n( $cnt )
+								) );
+							}
+						}
+						if ( $num_fails ) {
+							$admin_notices[] = array( 'error', sprintf(
+								/* translators: %s: formatted number of PDF previews that failed to regenerate. */
+								_n( '%s PDF preview not regenerated.', '%s PDF previews not regenerated.', $num_fails, 'ghostscript-only-pdf-preview' ), number_format_i18n( $num_fails )
+							) );
+						}
+					}
+				}
+				if ( $is_tool ) {
+					$admin_notices[] = array( 'info', __( 'You can go again below if you want.', 'ghostscript-only-pdf-preview' ) );
+				}
+			}
+		}
+
+		if ( $admin_notices ) {
+
+			foreach ( $admin_notices as $admin_notice ) {
+				list( $type, $notice ) = $admin_notice;
+				if ( 'error' === $type ) {
+					?>
+						<div class="notice error is-dismissible">
+							<p><?php echo $notice; ?></p>
+						</div>
+					<?php
+				} elseif ( 'updated' === $type ) {
+					?>
+						<div class="notice updated is-dismissible">
+							<p><?php echo $notice; ?></p>
+						</div>
+					<?php
+				} else {
+					?>
+						<div class="notice notice-<?php echo $type; ?> is-dismissible">
+							<p><?php echo $notice; ?></p>
+						</div>
+					<?php
+				}
+			}
+		}
+	}
+
+	/**
+	 * Called on 'admin_menu' action.
+	 * Adds the "Regen. PDF Previews" administration tool.
+	 */
+	static function admin_menu() {
+		self::$hook_suffix = add_management_page(
+			__( 'Regenerate PDF Previews', 'ghostscript-only-pdf-preview' ), __( 'Regen. PDF Previews', 'ghostscript-only-pdf-preview' ),
+			self::$cap, GOPP_REGEN_PDF_PREVIEWS_SLUG, array( __CLASS__, 'regen_pdf_previews' )
+		);
+		if ( self::$hook_suffix ) {
+			add_action( 'load-' . self::$hook_suffix, array( __CLASS__, 'load_regen_pdf_previews' ) );
+		}
+	}
+
+	/**
+	 * Called on 'load-tools_page_GOPP_REGEN_PDF_PREVIEWS_SLUG' action.
+	 * Does the work of the "Regen. PDF Previews" administration tool. Just loops through all uploaded PDFs.
+	 */
+	static function load_regen_pdf_previews() {
+		if ( ! current_user_can( self::$cap ) ) {
+			wp_die( __( 'Sorry, you are not allowed to access this page.', 'ghostscript-only-pdf-preview' ) );
+		}
+
+		if ( ! empty( $_REQUEST[GOPP_REGEN_PDF_PREVIEWS_SLUG] ) ) {
+
+			check_admin_referer( GOPP_REGEN_PDF_PREVIEWS_SLUG );
+
+			global $wpdb;
+			$ids = $wpdb->get_col( $wpdb->prepare( "SELECT ID FROM {$wpdb->posts} WHERE post_type = %s AND post_mime_type = %s", 'attachment', 'application/pdf' ) );
+
+			list( $cnt, $num_updates, $num_fails, $time ) = self::do_regen_pdf_previews( $ids );
+
+			$redirect = add_query_arg( 'gopp_rpp', "{$cnt}_{$num_updates}_{$num_fails}_{$time}", admin_url( 'tools.php?page=' . GOPP_REGEN_PDF_PREVIEWS_SLUG ) );
+
+			wp_redirect( esc_url_raw( $redirect ) );
+			if ( defined( 'GOPP_TESTING' ) && GOPP_TESTING ) { // Allow for testing.
+				wp_die( $redirect, 'wp_redirect', array( $cnt, $num_updates, $num_fails, $time ) );
+			}
+			exit;
+		}
+	}
+
+	/**
+	 * Does the actual PDF preview regenerate.
+	 */
+	static function do_regen_pdf_previews( $ids, $check_mime_type = false, $do_transient = true ) {
+
+		$cnt = $num_updates = $num_fails = $time = 0;
+		if ( $ids ) {
 			$time = microtime( true );
-			gopp_plugin_set_time_limit( count( $ids ) * $gopp_plugin_per_pdf_secs );
-			$num_updates = $num_fails = 0;
+			$cnt = count( $ids );
+			self::set_time_limit( max( $cnt * self::$per_pdf_secs, self::$min_time_limit ) );
+			if ( $do_transient ) {
+				delete_transient( 'gopp_plugin_poll_rpp' );
+			}
 			foreach ( $ids as $idx => $id ) {
+				if ( $check_mime_type && 'application/pdf' !== get_post_mime_type( $id ) ) {
+					continue;
+				}
 				$file = get_attached_file( $id );
 				if ( false === $file || '' === $file ) {
 					$num_fails++;
@@ -271,160 +365,167 @@ function gopp_plugin_load_regen_pdf_previews() {
 						}
 					}
 				}
+				if ( $do_transient && ( $sub_time = round( microtime( true ) - $time ) ) && 0 === $sub_time % self::$poll_interval ) {
+					set_transient( 'gopp_plugin_poll_rpp', array( $cnt, $idx ), self::$poll_interval + 2 ); // Allow some comms time.
+				}
 			}
-			$time = microtime( true ) - $time;
-			if ( $num_updates ) {
-				$admin_notices[] = array( 'updated', sprintf(
-					/* translators: %1$s: formatted number of PDF previews regenerated; %2$s: formatted number of seconds it took. */
-					_n( '%1$s PDF preview regenerated in %2$s seconds.', '%1$s PDF previews regenerated in %2$s seconds.', $num_updates, 'ghostscript-only-pdf-preview' ),
-						number_format_i18n( $num_updates ), number_format_i18n( $time )
-				) );
-			} else {
-				$admin_notices[] = array( 'updated', __( 'Nothing updated!', 'ghostscript-only-pdf-preview' ) );
+			if ( $do_transient ) {
+				delete_transient( 'gopp_plugin_poll_rpp' );
 			}
-			if ( $num_fails ) {
-				$admin_notices[] = array( 'warning', sprintf(
-					/* translators: %s: formatted number of PDF previews that failed to regenerate. */
-					_n( '%s PDF preview not regenerated.', '%s PDF previews not regenerated.', $num_fails, 'ghostscript-only-pdf-preview' ), number_format_i18n( $num_fails )
-				) );
-			}
-			$admin_notices[] = array( 'notice', __( 'You can go again below if you want.', 'ghostscript-only-pdf-preview' ) );
+			$time = round( microtime( true ) - $time, self::$timing_dec_places );
 		}
+		return array( $cnt, $num_updates, $num_fails, $time );
+	}
 
-		if ( $admin_notices ) {
-			set_transient( 'gopp_plugin_admin_notices', $admin_notices, 5 * MINUTE_IN_SECONDS );
+	/**
+	 * Helper to set the max_execution_time.
+	 */
+	static function set_time_limit( $time_limit ) {
+		$max_execution_time = ini_get( 'max_execution_time' );
+		if ( $max_execution_time && $time_limit > $max_execution_time ) {
+			return @ set_time_limit( $time_limit );
 		}
+		return null;
+	}
 
-		wp_redirect( esc_url_raw( $redirect ) );
-		if ( defined( 'GOPP_TESTING' ) && GOPP_TESTING ) { // Allow for testing.
-			wp_die( $redirect, 'wp_redirect', $admin_notices );
+	/**
+	 * Callback for regenerate PDF previews (admin tools menu).
+	 * Outputs the front page of the "Regen. PDF Previews" administration tool. Basically a single button with some guff.
+	 */
+	static function regen_pdf_previews() {
+		if ( ! current_user_can( self::$cap ) ) {
+			wp_die( __( 'Sorry, you are not allowed to access this page.', 'ghostscript-only-pdf-preview' ) );
 		}
-		exit;
-	}
-}
-
-/**
- * Helper to set the max_execution_time.
- */
-function gopp_plugin_set_time_limit( $time_limit ) {
-	$max_execution_time = ini_get( 'max_execution_time' );
-	if ( $max_execution_time && $time_limit > $max_execution_time ) {
-		return @ set_time_limit( $time_limit );
-	}
-	return null;
-}
-
-/**
- * Callback for regenerate PDF previews (admin tools menu).
- * Outputs the front page of "Regen. PDF Previews" administration tool. Basically a single button.
- */
-function gopp_plugin_regen_pdf_previews() {
-	global $gopp_plugin_cap, $gopp_plugin_per_pdf_secs;
-	if ( ! current_user_can( $gopp_plugin_cap ) ) {
-		wp_die( __( 'Sorry, you are not allowed to access this page.', 'ghostscript-only-pdf-preview' ) );
-	}
-	global $wpdb;
-	$num_pdfs = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type = %s AND post_mime_type = %s", 'attachment', 'application/pdf' ) );
-	?>
-<div id="gopp_regen_pdf_previews" class="wrap">
-	<h1><?php _e( "GhostScript Only PDF Preview - Regenerate PDF Previews", 'ghostscript-only-pdf-preview' ); ?></h1>
-	<?php
-	if ( ! $num_pdfs ) {
+		global $wpdb;
+		$cnt = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type = %s AND post_mime_type = %s", 'attachment', 'application/pdf' ) );
 		?>
-		<p>
-			<?php _e( 'This tool is for regenerating the thumbnail previews of PDFs, but no PDFs have been uploaded, so it has nothing to do.', 'ghostscript-only-pdf-preview' ); ?>
-		</p>
+	<div id="gopp_regen_pdf_previews" class="wrap">
+		<h1><?php _e( "GhostScript Only PDF Preview - Regenerate PDF Previews", 'ghostscript-only-pdf-preview' ); ?></h1>
 		<?php
-	} else {
-		// Test setting max execution time.
-		$max_execution_msg = '';
-		if ( false === gopp_plugin_set_time_limit( $num_pdfs * $gopp_plugin_per_pdf_secs ) ) {
-			$max_execution_msg = __( '<strong>Warning: cannot set max execution time!</strong> The maximum time allowed for a PHP script to run on your system could not be set, so you may experience the White Screen Of Death (WSOD) on trying this.', 'ghostscript-only-pdf-preview' );
+		if ( ! $cnt ) {
+			?>
+			<p>
+				<?php _e( 'This tool is for regenerating the thumbnail previews of PDFs, but no PDFs have been uploaded, so it has nothing to do.', 'ghostscript-only-pdf-preview' ); ?>
+			</p>
+			<?php
+		} else {
+			// Test setting max execution time.
+			$max_execution_msg = '';
+			if ( false === self::set_time_limit( max( $cnt * self::$per_pdf_secs, self::$min_time_limit ) ) ) {
+				$max_execution_msg = __( '<strong>Warning: cannot set max execution time!</strong> The maximum time allowed for a PHP script to run on your system could not be set, so you may experience the White Screen Of Death (WSOD) on trying this.', 'ghostscript-only-pdf-preview' );
+			}
+			?>
+			<form class="gopp_regen_pdf_previews_form" method="GET">
+				<input type="hidden" name="page" value="<?php echo GOPP_REGEN_PDF_PREVIEWS_SLUG; ?>" />
+				<?php wp_nonce_field( GOPP_REGEN_PDF_PREVIEWS_SLUG ) ?>
+				<input type="hidden" id="poll_cnt" name="poll_cnt" value="<?php echo esc_attr( $cnt ); ?>" />
+				<input type="hidden" id="poll_nonce" name="poll_nonce" value="<?php echo esc_attr( wp_create_nonce( 'gopp_poll_regen_pdf_previews_' . $cnt, 'poll_nonce' ) ); ?>" />
+				<p class="gopp_regen_pdf_previews_form_hide">
+					<?php _e( 'Regenerate the thumbnail previews of PDFs uploaded to your system.', 'ghostscript-only-pdf-preview' ); ?>
+				</p>
+				<p class="gopp_regen_pdf_previews_form_hide">
+					<?php
+						/* translators: %s: formatted number of PDFs found. */
+						echo sprintf( _n( '<strong>%s</strong> PDF has been found.', '<strong>%s</strong> PDFs have been found.', $cnt, 'ghostscript-only-pdf-preview' ), number_format_i18n( $cnt ) );
+					?>
+				</p>
+				<input id="<?php echo GOPP_REGEN_PDF_PREVIEWS_SLUG; ?>" class="button" name="<?php echo GOPP_REGEN_PDF_PREVIEWS_SLUG; ?>" value="<?php echo esc_attr( __( 'Regenerate PDF Previews', 'ghostscript-only-pdf-preview' ) ); ?>" type="submit" />
+				<?php if ( $cnt > 10 ) : ?>
+				<p>
+					<?php echo sprintf(
+							/* translators: %s: formatted number (greater than 10) of PDFs found. */
+							__( 'Regenerating %s PDF previews can take a long time.', 'ghostscript-only-pdf-preview' ), number_format_i18n( $cnt )
+						); ?>
+				</p>
+				<?php endif; ?>
+				<?php if ( $max_execution_msg ) : ?>
+				<p>
+					<?php echo $max_execution_msg; ?>
+				</p>
+				<?php endif; ?>
+				<p>
+					<?php
+						/* translators: %s: url to the Media Library page in list mode. */
+						echo sprintf( __( 'Note that you can also regenerate PDF previews in batches or individually using the bulk action "Regenerate PDF Previews" (or the row action "Regenerate preview") available in the <a href="%s">list mode of the Media Library</a>.', 'ghostscript-only-pdf-preview' ), admin_url( 'upload.php?mode=list' ) );
+					?>
+				</p>
+			</form>
+			<?php
 		}
+
 		?>
-		<form class="gopp_regen_pdf_previews_form" method="GET">
-			<input type="hidden" name="page" value="<?php echo GOPP_REGEN_PDF_PREVIEWS_SLUG; ?>" />
-			<?php wp_nonce_field( GOPP_REGEN_PDF_PREVIEWS_SLUG ) ?>
-			<p class="gopp_regen_pdf_previews_form_hide">
-				<?php _e( 'Regenerate the thumbnail previews of PDFs uploaded to your system.', 'ghostscript-only-pdf-preview' ); ?>
-			</p>
-			<p class="gopp_regen_pdf_previews_form_hide">
-				<?php
-					/* translators: %s: formatted number of PDFs found. */
-					echo sprintf( _n( '<strong>%s</strong> PDF has been found.', '<strong>%s</strong> PDFs have been found.', $num_pdfs, 'ghostscript-only-pdf-preview' ), number_format_i18n( $num_pdfs ) );
-				?>
-			</p>
-			<input id="<?php echo GOPP_REGEN_PDF_PREVIEWS_SLUG; ?>" class="button" name="<?php echo GOPP_REGEN_PDF_PREVIEWS_SLUG; ?>" value="<?php echo esc_attr( __( 'Regenerate PDF Previews', 'ghostscript-only-pdf-preview' ) ); ?>" type="submit" />
-			<?php if ( $num_pdfs > 10 ) : ?>
-			<p>
-				<?php echo sprintf(
-						/* translators: %s: formatted number (greater than 10) of PDFs found. */
-						__( 'Regenerating %s PDF previews can take a long time.', 'ghostscript-only-pdf-preview' ), number_format_i18n( $num_pdfs )
-					); ?>
-			</p>
-			<?php endif; ?>
-			<?php if ( $max_execution_msg ) : ?>
-			<p>
-				<?php echo $max_execution_msg; ?>
-			</p>
-			<?php endif; ?>
-		</form>
+	</div>
 		<?php
 	}
 
-	?>
-</div>
-	<?php
-}
-
-/**
- * Called on 'admin_enqueue_scripts' action.
- */
-function gopp_plugin_admin_enqueue_scripts( $hook_suffix ) {
-	global $gopp_plugin_hook_suffix;
-	if ( $gopp_plugin_hook_suffix === $hook_suffix ) {
-		add_action( 'admin_print_footer_scripts', 'gopp_plugin_admin_print_footer_scripts' );
-	} elseif ( 'upload.php' === $hook_suffix ) {
-		add_action( 'admin_print_footer_scripts', 'gopp_plugin_admin_print_footer_scripts_upload' );
+	/**
+	 * Called on 'admin_enqueue_scripts' action.
+	 * Outputs some javascript on "Regen. PDFs Previews" page or Media Library page.
+	 */
+	static function admin_enqueue_scripts( $hook_suffix ) {
+		if ( self::$hook_suffix === $hook_suffix ) {
+			add_action( 'admin_print_footer_scripts', array( __CLASS__, 'admin_print_footer_scripts' ) );
+		} elseif ( 'upload.php' === $hook_suffix ) {
+			add_action( 'admin_print_footer_scripts', array( __CLASS__, 'admin_print_footer_scripts_upload' ) );
+		}
 	}
-}
 
-/**
- * Called on 'admin_print_footer_scripts' action.
- * Some basic UI feedback for the "Regen. PDFs Previews" administration tool when the button is clicked.
- */
-function gopp_plugin_admin_print_footer_scripts() {
-	$please_wait_msg = '<div class="notice notice-warning inline"><p>' . __( 'Please wait...', 'ghostscript-only-pdf-preview' ) . '<span class="spinner is-active" style="float:none;margin-top:0;"></span></p></div>';
-	?>
+	/**
+	 * Called on 'admin_print_footer_scripts' action.
+	 * Some basic UI feedback for the "Regen. PDFs Previews" administration tool when the button is clicked.
+	 */
+	static function admin_print_footer_scripts() {
+		$please_wait_msg = '<div class="notice notice-warning inline"><p>' . __( 'Please wait...', 'ghostscript-only-pdf-preview' ) . '<span id="gopp_progress"></span>' . self::spinner( -2, true ) . '</p></div>';
+		?>
 <script type="text/javascript">
 /*jslint ass: true, nomen: true, plusplus: true, regexp: true, vars: true, white: true, indent: 4 */
-/*global jQuery */
+/*global jQuery, gopp_plugin */
+var gopp_plugin = gopp_plugin || {}; // Our namespace.
 ( function ( $ ) {
 	'use strict';
+
 	// jQuery ready.
 	$( function () {
 		var $wrap = $( '#gopp_regen_pdf_previews' ), $msgs = $( '.notice, .updated', $wrap ), $form = $( '.gopp_regen_pdf_previews_form', $wrap );
 		if ( $wrap.length ) {
 			$( 'input[type="submit"]', $form ).click( function ( e ) {
-				var $this = $( this ), $msg = $( <?php echo json_encode( $please_wait_msg ); ?> );
+				var $this = $( this ), $msg = $( <?php echo json_encode( $please_wait_msg ); ?> ), $progress, poll_func,
+					cnt = parseInt( $( '#poll_cnt', $form ).val(), 10 ), poll_nonce = $( '#poll_nonce', $form ).val();
 				$this.hide();
 				$( '.gopp_regen_pdf_previews_form_hide', $wrap ).hide();
 				$msgs.hide();
 				$( 'h1', $wrap ).first().after( $msg );
+				$progress = $( '#gopp_progress', $wrap ).first();
+
+				poll_func = function () {
+					$.post( ajaxurl, {
+							action: 'gopp_poll_regen_pdf_previews',
+							cnt: cnt,
+							poll_nonce: poll_nonce
+						}, function( data ) {
+							if ( data && data.msg ) {
+								$progress.html( data.msg );
+							}
+							setTimeout( poll_func, <?php echo self::$poll_interval; ?> * 1000 );
+						}, 'json'
+					);
+				};
+				setTimeout( poll_func, <?php echo self::$poll_interval; ?> * 1000 );
 			} );
 		}
 	} );
 } )( jQuery );
 </script>
-	<?php
-}
+		<?php
+	}
 
-/**
- * Called on 'admin_print_footer_scripts' action.
- * UI and ajax call for the "Regenerate preview" row action added to the list mode of the Media Library.
- */
-function gopp_plugin_admin_print_footer_scripts_upload() {
-	?>
+	/**
+	 * Called on 'admin_print_footer_scripts' action.
+	 * UI and ajax call for the "Regenerate preview" row action added to the list mode of the Media Library, and spinner for bulk action.
+	 */
+	static function admin_print_footer_scripts_upload() {
+		$ajax_action_msg = __( 'Regenerate preview ajax action not available!', 'ghostscript-only-pdf-preview' );
+		?>
 <script type="text/javascript">
 /*jslint ass: true, nomen: true, plusplus: true, regexp: true, vars: true, white: true, indent: 4 */
 /*global jQuery, ajaxurl, gopp_plugin */
@@ -436,99 +537,211 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 		var $target = $( e.target ), $row_action_div = $target.parents( '.row-actions' ).first(), $spinner = $target.next();
 		$( '.gopp_response', $row_action_div.parent() ).remove();
 		$spinner.addClass( 'is-active' );
-		$.post( ajaxurl, {
+		$.post( {
+			url: ajaxurl,
+			data: {
 				action: 'gopp_media_row_action',
 				id: id,
 				nonce: nonce
-			}, function( response ) {
+			},
+			dataType: 'json',
+			error: function( jqXHR, textStatus, errorThrown ) {
+				var err_msg;
 				$spinner.removeClass( 'is-active' );
-				if ( response ) {
-					if ( response.error ) {
-						$( '<div class="notice error gopp_response"><p>' + response.error + '</p></div>' ).insertAfter( $row_action_div );
-					} else if ( response.msg ) {
-						$( '<div class="notice updated gopp_response"><p>' + response.msg + '</p></div>' ).insertAfter( $row_action_div );
+				err_msg = '<div class="notice error gopp_response"><p><?php echo htmlspecialchars( $ajax_action_msg, ENT_QUOTES ); ?> ' + errorThrown + '</p></div>';
+				$row_action_div.after( $( err_msg ) );
+			},
+			success: function( data ) {
+				$spinner.removeClass( 'is-active' );
+				if ( data ) {
+					if ( data.error ) {
+						$row_action_div.after( $( '<div class="notice error gopp_response"><p>' + data.error + '</p></div>' ) );
+					} else if ( data.msg ) {
+						$row_action_div.after( $( '<div class="notice updated gopp_response"><p>' + data.msg + '</p></div>' ) );
 					}
-					if ( response.img ) {
-						$( '.has-media-icon .media-icon', $row_action_div.parent() ).html( response.img );
+					if ( data.img ) {
+						$( '.has-media-icon .media-icon', $row_action_div.parent() ).html( data.img );
 					}
+				} else {
+					$row_action_div.after( $( '<div class="notice error gopp_response"><p><?php echo htmlspecialchars( $ajax_action_msg, ENT_QUOTES ); ?></p></div>' ) );
 				}
-			}, 'json'
-		);
+			},
+			timeout: <?php echo self::$min_time_limit; ?> * 1000
+		} );
 
 		return false;
 	};
 
+	// jQuery ready.
+	$( function () {
+		$( '#doaction, #doaction2' ).click( function ( e ) {
+			var $target = $( e.target );
+			$( 'select[name^="action"]' ).each( function () {
+				if ( 'gopp_regen_pdf_previews' === $( this ).val() ) {
+					$target.after( <?php echo json_encode( self::spinner( 5, true ) ); ?> );
+				}
+			} );
+		} );
+	} );
+
 } )( jQuery );
 </script>
-	<?php
-}
+		<?php
+	}
 
-/**
- * Called on 'media_row_actions' filter.
- * Adds the "Regenerate preview" link to PDF rows in list mode of the Media Library.
- */
-function gopp_plugin_media_row_actions( $actions, $post, $detached ) {
-	global $gopp_plugin_cap;
-	if ( 'application/pdf' === $post->post_mime_type && current_user_can( $gopp_plugin_cap ) ) {
-		gopp_plugin_load_gopp_image_editor_gs();
-		if ( GOPP_Image_Editor_GS::test( array( 'path' => get_attached_file( $post->ID ) ) ) ) {
-			$actions['gopp_regen_pdf_preview'] = sprintf(
-				'<a href="#the-list" onclick="return gopp_plugin.media_row_action( event, %d, %s );" class="hide-if-no-js aria-button-if-js" aria-label="%s">%s</a><span class="spinner" style="float:none;margin-top:0;"></span>',
-				$post->ID,
-				esc_attr( json_encode( wp_create_nonce( 'gopp_media_row_action_' . $post->ID ) ) ),
-				/* translators: %s: attachment title */
-				esc_attr( sprintf( __( 'Regenerate the PDF preview for &#8220;%s&#8221;', 'ghostscript-only-pdf-preview' ), _draft_or_post_title() ) ),
-				esc_attr( __( 'Regenerate preview', 'ghostscript-only-pdf-preview' ) )
-			);
+	/**
+	 * Return spinner HTML, catering for IE perculiarities.
+	 */
+	static function spinner( $margin_top = 0, $is_active = false ) {
+		$is_active = $is_active ? ' is-active' : '';
+		if ( ! empty( $_SERVER['HTTP_USER_AGENT'] ) && (
+			false !== strpos( $_SERVER['HTTP_USER_AGENT'], 'Edge' ) || false !== strpos( $_SERVER['HTTP_USER_AGENT'], 'MSIE' ) || false !== strpos( $_SERVER['HTTP_USER_AGENT'], 'Trident' )
+		) ) {
+			// See http://stackoverflow.com/a/1904931/664741
+			$ret = '<img class="spinner' . $is_active . '" src="' . admin_url( 'images/spinner.gif' ) . '" width="20" height="20" style="float:none;margin-top:' . $margin_top . 'px;" />';
+		} else {
+			$ret = '<span class="spinner' . $is_active . '" style="float:none;margin-top:' . $margin_top . 'px;"></span>';
+		}
+		return $ret;
+	}
+
+	/**
+	 * Called on 'bulk_actions-upload' filter.
+	 * Adds "Regenerate PDF Previews" to the bulk action dropdown in the list mode of the Media Library.
+	 */
+	static function bulk_actions_upload( $actions ) {
+		if ( current_user_can( self::$cap ) ) {
+			$actions['gopp_regen_pdf_previews'] = __( 'Regenerate PDF Previews', 'ghostscript-only-pdf-preview' );
+		}
+		return $actions;
+	}
+
+	/**
+	 * Called on 'handle_bulk_actions-upload' filter.
+	 * Does the work of the "Regenerate PDF Previews" bulk action.
+	 */
+	static function handle_bulk_actions_upload( $location, $doaction, $post_ids ) {
+
+		if ( 'gopp_regen_pdf_previews' === $doaction && current_user_can( self::$cap ) ) {
+			// Note nonce has already been checked in "wp-admin/upload.php".
+			// But $post_ids hasn't (and triggers a PHP Warning if nothing selected in "wp-admin/upload.php:168" as of WP 4.7.1).
+			$ids = $post_ids && is_array( $post_ids ) ? array_map( 'intval', $post_ids ) : array();
+
+			list( $cnt, $num_updates, $num_fails, $time ) = self::do_regen_pdf_previews( $ids, true /*check_mime_type*/, false /*do_transient*/ );
+
+			$location = add_query_arg( 'gopp_rpp', "{$cnt}_{$num_updates}_{$num_fails}_{$time}", $location );
+		}
+		return $location;
+	}
+
+	/**
+	 * Called on 'removable_query_args' filter.
+	 * Signals that our query arg should be removed from the URL.
+	 */
+	static function removable_query_args( $removable_query_args ) {
+		$removable_query_args[] = 'gopp_rpp';
+		return $removable_query_args;
+	}
+
+	/**
+	 * Called on 'current_screen' action.
+	 * Removes our query arg from the URL.
+	 */
+	static function current_screen( $current_screen ) {
+		if ( self::$hook_suffix === $current_screen->id || 'upload' === $current_screen->id ) {
+			$_SERVER['REQUEST_URI'] = remove_query_arg( array( 'gopp_rpp' ), $_SERVER['REQUEST_URI'] );
 		}
 	}
-	return $actions;
-}
 
-/**
- * Ajax callback for media row action.
- * Does the work of the "Regenerate preview" row action.
- */
-function gopp_plugin_gopp_media_row_action() {
-	$ret = array( 'msg' => '', 'error' => false, 'img' => '' );
+	/**
+	 * Called on 'media_row_actions' filter.
+	 * Adds the "Regenerate preview" link to PDF rows in the list mode of the Media Library.
+	 */
+	static function media_row_actions( $actions, $post, $detached ) {
+		if ( 'application/pdf' === $post->post_mime_type && current_user_can( self::$cap ) ) {
+			self::load_gopp_image_editor_gs();
+			if ( GOPP_Image_Editor_GS::test( array( 'path' => get_attached_file( $post->ID ) ) ) ) {
+				$actions['gopp_regen_pdf_preview'] = sprintf(
+					'<a href="#the-list" onclick="return gopp_plugin.media_row_action( event, %d, %s );" class="hide-if-no-js aria-button-if-js" aria-label="%s">%s</a>' . self::spinner( -3 ),
+					$post->ID,
+					esc_attr( json_encode( wp_create_nonce( 'gopp_media_row_action_' . $post->ID ) ) ),
+					/* translators: %s: attachment title */
+					esc_attr( sprintf( __( 'Regenerate the PDF preview for &#8220;%s&#8221;', 'ghostscript-only-pdf-preview' ), _draft_or_post_title() ) ),
+					esc_attr( __( 'Regenerate preview', 'ghostscript-only-pdf-preview' ) )
+				);
+			}
+		}
+		return $actions;
+	}
 
-	global $gopp_plugin_cap;
-	if ( ! current_user_can( $gopp_plugin_cap ) ) {
-		$ret['error'] = __( 'Sorry, you are not allowed to access this page.', 'ghostscript-only-pdf-preview' );
-	} else {
-		$id = isset( $_POST['id'] ) && is_string( $_POST['id'] ) ? intval( $_POST['id'] ) : '';
+	/**
+	 * Ajax callback for media row action.
+	 * Does the work of the "Regenerate preview" row action.
+	 */
+	static function gopp_media_row_action() {
+		$ret = array( 'msg' => '', 'error' => false, 'img' => '' );
 
-		if ( ! check_ajax_referer( 'gopp_media_row_action_' . $id, 'nonce', false /*die*/ ) ) {
-			$ret['error'] = __( 'Invalid nonce.', 'ghostscript-only-pdf-preview' );
+		if ( ! current_user_can( self::$cap ) ) {
+			$ret['error'] = __( 'Sorry, you are not allowed to access this page.', 'ghostscript-only-pdf-preview' );
 		} else {
-			if ( ! $id ) {
-				$ret['error'] = __( 'Invalid ID.', 'ghostscript-only-pdf-preview' );
+			$id = isset( $_POST['id'] ) && is_string( $_POST['id'] ) ? intval( $_POST['id'] ) : '';
+
+			if ( ! check_ajax_referer( 'gopp_media_row_action_' . $id, 'nonce', false /*die*/ ) ) {
+				$ret['error'] = __( 'Invalid nonce.', 'ghostscript-only-pdf-preview' );
 			} else {
-				gopp_plugin_set_time_limit( 300 ); // Allow 5 minutes.
-				$file = get_attached_file( $id );
-				if ( false === $file || '' === $file ) {
+				if ( ! $id || 'application/pdf' !== get_post_mime_type( $id ) ) {
 					$ret['error'] = __( 'Invalid ID.', 'ghostscript-only-pdf-preview' );
 				} else {
-					$meta = wp_generate_attachment_metadata( $id, $file );
-					if ( ! $meta ) {
+
+					list( $cnt, $num_updates, $num_fails, $time ) = self::do_regen_pdf_previews( array( $id ), false /*check_mime_type*/, false /*do_transient*/ );
+
+					if ( $num_fails || 1 !== $num_updates ) {
 						$ret['error'] = __( 'Failed to generate the PDF preview.', 'ghostscript-only-pdf-preview' );
 					} else {
-						// wp_update_attachment_metadata() returns false if nothing to update so check first.
-						$old_value = get_metadata( 'post', $id, '_wp_attachment_metadata' );
-						if ( ( $old_value && is_array( $old_value ) && 1 === count( $old_value ) && $old_value[0] === $meta ) || false !== wp_update_attachment_metadata( $id, $meta ) ) {
-							$ret['msg'] = __( 'Successfully regenerated the PDF preview. You will probably need to refresh your browser to see the updated thumbnail.', 'ghostscript-only-pdf-preview' );
-							$ret['img'] = wp_get_attachment_image( $id, array( 60, 60 ), true, array( 'alt' => '' ) );
+						$ret['img'] = wp_get_attachment_image( $id, array( 60, 60 ), true, array( 'alt' => '' ) );
+						if ( preg_match( '/^(<img.*?src="[^"]+\.jpg)(" .*\/>)$/', $ret['img'], $matches ) ) {
+							$ret['img'] = $matches[1] . '?gopp=' . rand() . $matches[2];
+							$ret['msg'] = __( 'Successfully regenerated the PDF preview. It\'s best to refresh your browser to see the updated thumbnail correctly.', 'ghostscript-only-pdf-preview' );
 						} else {
-							$ret['error'] = __( 'Failed to generate the PDF preview.', 'ghostscript-only-pdf-preview' );
+							$ret['msg'] = __( 'Successfully regenerated the PDF preview. You will need to refresh your browser to see the updated thumbnail.', 'ghostscript-only-pdf-preview' );
 						}
 					}
 				}
 			}
 		}
+
+		if ( defined( 'GOPP_TESTING' ) && GOPP_TESTING ) { // Allow for testing.
+			return json_encode( $ret );
+		}
+		wp_send_json( $ret );
 	}
 
-	if ( defined( 'GOPP_TESTING' ) && GOPP_TESTING ) { // Allow for testing.
-		return json_encode( $ret );
+	/**
+	 * Ajax callback for progess polling when using the "Regen. PDF Previews" administration tool. 
+	 */
+	static function gopp_poll_regen_pdf_previews() {
+		$ret = array( 'msg' => '' );
+
+		if ( current_user_can( self::$cap ) ) {
+			$cnt = isset( $_REQUEST['cnt'] ) && is_string( $_REQUEST['cnt'] ) ? intval( $_REQUEST['cnt'] ) : 0;
+
+			check_ajax_referer( 'gopp_poll_regen_pdf_previews_' . $cnt, 'poll_nonce' );
+
+			if ( $cnt && ( $transient = get_transient( 'gopp_plugin_poll_rpp' ) ) ) {
+				list( $check_cnt, $idx ) = $transient;
+				if ( $check_cnt === $cnt ) {
+					$idx++;
+					/* translators: %1$d: percentage of PDF previews completed; %2$d: completed count. */
+					$ret['msg'] = sprintf( __( '%d%% (%d)', 'ghostscript-only-pdf-preview' ), round( $idx * 100 / $cnt ), $idx );
+				}
+			}
+		}
+
+		if ( defined( 'GOPP_TESTING' ) && GOPP_TESTING ) { // Allow for testing.
+			return json_encode( $ret );
+		}
+		wp_send_json( $ret );
 	}
-	wp_send_json( $ret );
 }
+
+GhostScript_Only_PDF_Preview::main();

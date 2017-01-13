@@ -438,7 +438,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 	 */
 	public function test_alpha_pdf_preview() {
 		do_action( 'admin_init' );
-		$this->assertSame( 10, has_filter( 'wp_image_editors', 'gopp_plugin_wp_image_editors' ) );
+		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GhostScript_Only_PDF_Preview', 'wp_image_editors' ) ) );
 
 		$test_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
 		$attachment_id = $this->factory->attachment->create_upload_object( $test_file );

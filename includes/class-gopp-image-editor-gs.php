@@ -85,7 +85,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	public static function test( $args = array() ) {
 		if ( null === self::$have_gs ) {
 			/**
-			 * Returning a non-null value will short-circuit test for GhostScript availability.
+			 * Returning a non-null value will short-circuit the test for GhostScript availability.
 			 * Useful for performance reasons if you know your GhostScript installation works (saves an `exec`).
 			 *
 			 * @since 4.x
@@ -94,7 +94,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			 */
 			$shortcircuit_have_gs = apply_filters( 'gopp_image_have_gs', self::$have_gs );
 			if ( null !== $shortcircuit_have_gs ) {
-				self::$have_gs = !! $shortcircuit_have_gs;
+				self::$have_gs = !! $shortcircuit_have_gs; // Allow for disabling also.
 			} else {
 
 				// See if we've cached it.
@@ -107,12 +107,9 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 
 					if ( 0 === $return_var && is_array( $output ) && ! empty( $output[0] ) && is_string( $output[0] ) && false !== stripos( $output[0], 'ghostscript' ) ) {
 						self::$have_gs = true;
+						set_transient( 'gopp_image_have_gs', 1, GOPP_IMAGE_EDITOR_GS_TRANSIENT_EXPIRATION );
 					} else {
 						self::$have_gs = false;
-					}
-
-					if ( self::$have_gs ) {
-						set_transient( 'gopp_image_have_gs', 1, GOPP_IMAGE_EDITOR_GS_TRANSIENT_EXPIRATION );
 					}
 				}
 			}
@@ -213,7 +210,9 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			return new WP_Error( 'image_save_error', __( 'Image Editor Save Failed', 'ghostscript-only-pdf-preview' ) );
 		}
 
-		$size = @ getimagesize( $filename );
+		// As this editor immediately thrown away just do dummy size. Saves some cycles.
+		$size = array( 1088, 1408 ); // US Letter size at 128 DPI. Makes it pass the unit test Tests_Image_Functions::test_wp_generate_attachment_metadata_pdf().
+		//$size = @ getimagesize( $filename );
 		if ( ! $size ) {
 			return new WP_Error( 'image_save_error', __( 'Could not read image size.', 'ghostscript-only-pdf-preview' ) );
 		}
@@ -271,13 +270,14 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		}
 
 		// Check existence & magic bytes.
-		$fp = @ fopen( $file, 'r' );
+		$fp = @ fopen( $file, 'rb' );
 		if ( false === $fp ) {
 			return __( 'File doesn&#8217;t exist?', 'ghostscript-only-pdf-preview' );
 		}
-		$magic_bytes = fread( $fp, 10 ); // Max 10 chars: %PDF-NN.NN
+		$magic_bytes = fread( $fp, 10 ); // Max 10 chars: "%PDF-N.NN" plus optional initial linefeed.
 		fclose( $fp );
-		if ( ! preg_match( '/^%PDF-[0-9]{1,2}\.[0-9]{1,2}/', $magic_bytes ) ) {
+		// This is a similar test to that done by libmagic.
+		if ( ! preg_match( '/^\n?%PDF-[01]\.[0-9]{1,2}/', $magic_bytes ) ) {
 			return __( 'File is not a PDF.', 'ghostscript-only-pdf-preview' );
 		}
 

@@ -1,6 +1,6 @@
 {
   "name": "ghostscript-only-pdf-preview",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "Uses GhostScript directly to generate PDF previews.",
   "repository": {
     "type": "git",
