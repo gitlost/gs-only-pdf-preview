@@ -111,6 +111,8 @@ The `gopp_image_gs_cmd_path` filter is necessary if your GhostScript installatio
 
 The filter can also be used just for performance reasons (especially on Windows systems to save searching the registry and directories).
 
+Note that the non-filtered values of `have_gs` and `gs_cmd_path` are cached as transients by the plugin for performance reasons, with a lifetime of one day. You can clear these transients by de-activating and re-activating the plugin.
+
 ## Screenshots ##
 
 ### 1. Before: upload of various PDFs with alpha channels and/or CMYK color spaces resulting in broken previews. ###
