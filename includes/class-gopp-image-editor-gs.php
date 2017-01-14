@@ -2,7 +2,7 @@
 /**
  * WordPress GhostScript Image Editor
  *
- * @package WordPress
+ * @package GhostScript Only PDF Preview
  * @subpackage Image_Editor
  */
 
@@ -29,12 +29,13 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	protected $default_quality = 70;
 
 	/**
-	 * Resolution of output JPEG.
+	 * Resolution of output JPEG (DPI).
 	 *
 	 * @access protected
 	 * @var int
 	 */
-	protected $resolution = 128;
+	protected $resolution = null;
+	protected $default_resolution = 128;
 
 	/**
 	 * Page to render.
@@ -42,7 +43,8 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @access protected
 	 * @var int
 	 */
-	protected $page = 1;
+	protected $page = null;
+	protected $default_page = 1;
 
 	/**
 	 * Whether on Windows or not.
@@ -52,15 +54,6 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @var bool
 	 */
 	protected static $is_win = null;
-
-	/**
-	 * Whether can run GhostScript executable.
-	 *
-	 * @static
-	 * @access protected
-	 * @var bool
-	 */
-	protected static $have_gs = null;
 
 	/**
 	 * The path to the GhostScript executable.
@@ -83,39 +76,8 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @return bool
 	 */
 	public static function test( $args = array() ) {
-		if ( null === self::$have_gs ) {
-			/**
-			 * Returning a non-null value will short-circuit the test for GhostScript availability.
-			 * Useful for performance reasons if you know your GhostScript installation works (saves an `exec`).
-			 *
-			 * @since 4.x
-			 *
-			 * @param string $have_gs Whether GhostScript available. Default null.
-			 */
-			$shortcircuit_have_gs = apply_filters( 'gopp_image_have_gs', self::$have_gs );
-			if ( null !== $shortcircuit_have_gs ) {
-				self::$have_gs = !! $shortcircuit_have_gs; // Allow for disabling also.
-			} else {
-
-				// See if we've cached it.
-				$transient = get_transient( 'gopp_image_have_gs' );
-				if ( $transient ) {
-					self::$have_gs = true;
-				} else {
-					$cmd = self::gs_cmd( '-dBATCH -dNOPAUSE -dNOPROMPT -dSAFER -v' );
-					exec( $cmd, $output, $return_var );
-
-					if ( 0 === $return_var && is_array( $output ) && ! empty( $output[0] ) && is_string( $output[0] ) && false !== stripos( $output[0], 'ghostscript' ) ) {
-						self::$have_gs = true;
-						set_transient( 'gopp_image_have_gs', 1, GOPP_IMAGE_EDITOR_GS_TRANSIENT_EXPIRATION );
-					} else {
-						self::$have_gs = false;
-					}
-				}
-			}
-		}
-
-		if ( ! self::$have_gs ) {
+		// Must have path to GhostScript executable.
+		if ( ! self::gs_cmd_path() ) {
 			return false;
 		}
 
@@ -168,16 +130,10 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		$this->mime_type = $mime_type;
 
 		// Allow chance for gopp_editor_set_resolution filter to fire by calling set_resolution() with null arg (mimicking set_quality() behavior).
-		$result = $this->set_resolution();
-		if ( true !== $result ) {
-			return $result;
-		}
+		$this->set_resolution();
 
 		// Similarly for page to render.
-		$result = $this->set_page();
-		if ( true !== $result ) {
-			return $result;
-		}
+		$this->set_page();
 
 		return $this->set_quality();
 	}
@@ -203,14 +159,16 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			$filename = $this->generate_filename( null, null, $extension );
 		}
 
-		$cmd = self::gs_cmd( $this->get_gs_args( $filename ) );
+		if ( ! ( $cmd = self::gs_cmd( $this->get_gs_args( $filename ) ) ) ) {
+			return new WP_Error( 'image_save_error', __( 'No GhostScript.', 'ghostscript-only-pdf-preview' ) );
+		}
 		exec( $cmd, $output, $return_var );
 
 		if ( 0 !== $return_var ) {
 			return new WP_Error( 'image_save_error', __( 'Image Editor Save Failed', 'ghostscript-only-pdf-preview' ) );
 		}
 
-		// As this editor immediately thrown away just do dummy size. Saves some cycles.
+		// As this editor is immediately thrown away just do dummy size. Saves some cycles.
 		$size = array( 1088, 1408 ); // US Letter size at 128 DPI. Makes it pass the unit test Tests_Image_Functions::test_wp_generate_attachment_metadata_pdf().
 		//$size = @ getimagesize( $filename );
 		if ( ! $size ) {
@@ -276,7 +234,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		}
 		$magic_bytes = fread( $fp, 10 ); // Max 10 chars: "%PDF-N.NN" plus optional initial linefeed.
 		fclose( $fp );
-		// This is a similar test to that done by libmagic.
+		// This is a similar test to that done by libmagic, but more strict on version format by insisting it's "0." or "1." followed by 1 or 2 numbers.
 		if ( ! preg_match( '/^\n?%PDF-[01]\.[0-9]{1,2}/', $magic_bytes ) ) {
 			return __( 'File is not a PDF.', 'ghostscript-only-pdf-preview' );
 		}
@@ -285,21 +243,20 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	}
 
 	/**
-	 * Returns (shell-escaped) shell command with passed-in arguments tagged on, and stderr redirected to stdout.
+	 * Returns the path of the GhostScript executable.
 	 *
 	 * @since 4.x
 	 *
 	 * @static
 	 * @access protected
 	 *
-	 * @param string $args Arguments, already shell escaped.
-	 * @return string
+	 * @return false|string Returns false if can't determine path, else path string.
 	 */
-	protected static function gs_cmd( $args ) {
+	protected static function gs_cmd_path() {
 		if ( null === self::$gs_cmd_path ) {
 			/**
-			 * Returning a non-null value will short-circuit determining the path of the GhostScript executable.
-			 * Useful if your GhostScript installation is in a non-standard location; also useful for performance reasons.
+			 * Returning a valid path will short-circuit determining the path of the GhostScript executable.
+			 * Useful if your GhostScript installation is in a non-standard location.
 			 *
 			 * @since 4.x
 			 *
@@ -307,19 +264,46 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			 * @param bool   $is_win      True if running on Windows.
 			 */
 			$shortcircuit_path = apply_filters( 'gopp_image_gs_cmd_path', self::$gs_cmd_path, self::is_win() );
-			if ( $shortcircuit_path ) {
-				// Don't check it's executable in case it depends on the PATH.
-				self::$gs_cmd_path = $shortcircuit_path;
+			// See also if we've a cached value.
+			$transient = get_transient( 'gopp_image_gs_cmd_path' );
+			// Only use transient if no filtered value or they're the same.
+			if ( $transient && ( ! $shortcircuit_path || $transient === $shortcircuit_path ) ) {
+				self::$gs_cmd_path = $transient;
 			} else {
-				if ( self::is_win() ) {
-					self::$gs_cmd_path = self::gs_cmd_win();
+				if ( $shortcircuit_path && self::test_gs_cmd( $shortcircuit_path ) ) {
+					self::$gs_cmd_path = $shortcircuit_path;
 				} else {
-					self::$gs_cmd_path = self::gs_cmd_nix();
+					if ( self::is_win() ) {
+						self::$gs_cmd_path = self::gs_cmd_win();
+					} else {
+						self::$gs_cmd_path = self::gs_cmd_nix();
+					}
+				}
+				if ( self::$gs_cmd_path ) {
+					set_transient( 'gopp_image_gs_cmd_path', self::$gs_cmd_path, GOPP_IMAGE_EDITOR_GS_TRANSIENT_EXPIRATION );
+				} elseif ( $transient ) {
+					delete_transient( 'gopp_image_gs_cmd_path' );
 				}
 			}
 		}
+		return self::$gs_cmd_path;
+	}
 
-		return self::escapeshellarg( self::$gs_cmd_path ) . ' ' . $args . ' 2>&1';
+	/**
+	 * Tests whether a purported GhostScript executable works.
+	 *
+	 * @since 4.x
+	 *
+	 * @static
+	 * @access protected
+	 *
+	 * @param string $cmd GhostScript executable to try.
+	 * @return bool
+	 */
+	protected static function test_gs_cmd( $cmd ) {
+		exec( self::escapeshellarg( $cmd ) . ' -dBATCH -dNOPAUSE -dNOPROMPT -dSAFER -v 2>&1', $output, $return_var );
+
+		return 0 === $return_var && is_array( $output ) && ! empty( $output[0] ) && is_string( $output[0] ) && false !== stripos( $output[0], 'ghostscript' );
 	}
 
 	/**
@@ -330,13 +314,16 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @static
 	 * @access protected
 	 *
-	 * @return string
+	 * @return false|string Returns false if can't determine path, else path.
 	 */
 	protected static function gs_cmd_nix() {
-		if ( is_executable( '/usr/bin/gs' ) ) {
+		if ( self::test_gs_cmd( '/usr/bin/gs' ) ) {
 			return '/usr/bin/gs';
 		}
-		return 'gs'; // Resort to PATH.
+		if ( self::test_gs_cmd( 'gs' ) ) { // Resort to PATH.
+			return 'gs';
+		}
+		return false;
 	}
 
 	/**
@@ -347,21 +334,10 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @static
 	 * @access protected
 	 *
-	 * @return string
+	 * @return false|string Returns false if can't determine path, else path.
 	 */
 	protected static function gs_cmd_win() {
-		// See if we've cached it.
-		$transient = get_transient( 'gopp_image_gs_cmd_win' );
-		if ( $transient && is_executable( $transient ) ) {
-			return $transient;
-		}
-
-		// Remove invalid transient if any.
-		if ( $transient ) {
-			delete_transient( 'gopp_image_gs_cmd_win' );
-		}
-
-		$win_path = '';
+		$win_path = false;
 
 		// Try using REG QUERY to access the registry.
 		// Do one test query first to see if it works.
@@ -390,7 +366,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 							$ver = (float) $matches[2];
 							if ( $highest_ver < $ver ) {
 								$possible_path = $matches[1] . '\\gs' . $matches[2] . '\\bin\\gswin' . $matches[3] . 'c.exe';
-								if ( is_executable( $possible_path ) ) {
+								if ( self::test_gs_cmd( $possible_path ) ) {
 									$best_match = $possible_path;
 								}
 							}
@@ -401,6 +377,14 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 						break;
 					}
 				}
+			}
+		}
+
+		if ( ! $win_path ) {
+			// Try GSC environment variable. TODO: Is this still used?
+			$gsc = getenv( 'GSC' );
+			if ( $gsc && is_string( $gsc ) && self::test_gs_cmd( $gsc ) ) {
+				$win_path = $gsc;
 			}
 		}
 
@@ -431,9 +415,9 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 						if ( preg_match( '/[0-9]+\.[0-9]+$/', $gs_entry, $matches ) ) {
 							$ver = (float) $matches[0];
 							if ( $highest_ver < $ver ) {
-								if ( is_executable( $gs_entry . '\\bin\\gswin64c.exe' ) ) {
+								if ( is_executable( $gs_entry . '\\bin\\gswin64c.exe' ) && self::test_gs_cmd( $gs_entry . '\\bin\\gswin64c.exe' ) ) {
 									$best_match = $gs_entry . '\\bin\\gswin64c.exe';
-								} elseif ( is_executable( $gs_entry . '\\bin\\gswin32c.exe' ) ) {
+								} elseif ( is_executable( $gs_entry . '\\bin\\gswin32c.exe' ) && self::test_gs_cmd( $gs_entry . '\\bin\\gswin32c.exe' ) ) {
 									$best_match = $gs_entry . '\\bin\\gswin32c.exe';
 								}
 							}
@@ -447,11 +431,33 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			}
 		}
 
-		if ( $win_path ) {
-			set_transient( 'gopp_image_gs_cmd_win', $win_path, GOPP_IMAGE_EDITOR_GS_TRANSIENT_EXPIRATION );
-			return $win_path;
+		// Resort to PATH.
+		if ( ! $win_path && self::test_gs_cmd( 'gswin64c.exe' ) ) {
+			$win_path = 'gswin64c.exe';
 		}
-		return 'gswin64c.exe'; // Resort to PATH.
+		if ( ! $win_path && self::test_gs_cmd( 'gswin32c.exe' ) ) {
+			$win_path = 'gswin32c.exe';
+		}
+
+		return $win_path;
+	}
+
+	/**
+	 * Returns (shell-escaped) shell command with passed-in arguments tagged on, and stderr redirected to stdout.
+	 *
+	 * @since 4.x
+	 *
+	 * @static
+	 * @access protected
+	 *
+	 * @param string $args Arguments, already shell escaped.
+	 * @return false|string Returns false if no executable path, else command string.
+	 */
+	protected static function gs_cmd( $args ) {
+		if ( $gs_cmd_path = self::gs_cmd_path() ) {
+			return self::escapeshellarg( $gs_cmd_path ) . ' ' . $args . ' 2>&1';
+		}
+		return false;
 	}
 
 	/**
@@ -461,7 +467,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @access protected
 	 *
 	 * @param string $filename File name of output JPEG.
-	 * @return string
+	 * @return string Arguments string, shell-escaped.
 	 */
 	protected function get_gs_args( $filename ) {
 		$ret = $this->initial_gs_args();
@@ -544,7 +550,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	}
 
 	/**
-	 * Deletes all transients used and resets caching statics.
+	 * Deletes transient and clears caching statics.
 	 *
 	 * @since 4.x
 	 *
@@ -554,10 +560,9 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @return void
 	 */
 	public static function clear() {
-		delete_transient( 'gopp_image_have_gs' );
-		delete_transient( 'gopp_image_gs_cmd_win' );
+		delete_transient( 'gopp_image_gs_cmd_path' );
 
-		self::$is_win = self::$have_gs = self::$gs_cmd_path = null;
+		self::$is_win = self::$gs_cmd_path = null;
 	}
 
 	/**
@@ -566,9 +571,13 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @since 4.x
 	 * @access public
 	 *
-	 * @return int $resolution Resolution of preview.
+	 * @return int $resolution Resolution of preview (DPI).
 	 */
 	public function get_resolution() {
+		if ( ! $this->resolution ) {
+			$this->set_resolution();
+		}
+
 		return $this->resolution;
 	}
 
@@ -597,9 +606,14 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			 * @param int    $resolution Resolution (DPI) of the PDF preview thumbnail.
 			 * @param string $filename   The PDF file name.
 			 */
-			$resolution = apply_filters( 'gopp_editor_set_resolution', $this->resolution, $this->file );
+			$resolution = apply_filters( 'gopp_editor_set_resolution', $this->default_resolution, $this->file );
+			if ( ( $resolution = intval( $resolution ) ) <= 0 ) {
+				$resolution = $this->default_resolution;
+			}
+		} else {
+			$resolution = intval( $resolution );
 		}
-		if ( ( $resolution = intval( $resolution ) ) > 0 ) {
+		if ( $resolution > 0 ) {
 			$this->resolution = $resolution;
 			return true;
 		}
@@ -615,6 +629,10 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @return int $page The page to render.
 	 */
 	public function get_page() {
+		if ( ! $this->page ) {
+			$this->set_page();
+		}
+
 		return $this->page;
 	}
 
@@ -643,9 +661,14 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			 * @param int    $page     The page to render.
 			 * @param string $filename The PDF file name.
 			 */
-			$page = apply_filters( 'gopp_editor_set_page', $this->page, $this->file );
+			$page = apply_filters( 'gopp_editor_set_page', $this->default_page, $this->file );
+			if ( ( $page = intval( $page ) ) <= 0 ) {
+				$page = $this->default_page;
+			}
+		} else {
+			$page = intval( $page );
 		}
-		if ( ( $page = intval( $page ) ) > 0 ) {
+		if ( $page > 0 ) {
 			$this->page = $page;
 			return true;
 		}

@@ -45,11 +45,11 @@ class Tests_GOPP extends WP_UnitTestCase {
 	}
 
 	/**
-	 * Test main.
+	 * Test init.
 	 */
-	function test_main() {
+	function test_init() {
 		$this->assertFalse( is_admin() );
-		GhostScript_Only_PDF_Preview::main();
+		GhostScript_Only_PDF_Preview::init();
 		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GhostScript_Only_PDF_Preview', 'wp_image_editors' ) ) );
 		$this->assertFalse( has_action( 'admin_init', array( 'GhostScript_Only_PDF_Preview', 'admin_init' ) ) );
 		$this->assertFalse( has_action( 'wp_ajax_gopp_media_row_action', array( 'GhostScript_Only_PDF_Preview', 'gopp_media_row_action' ) ) );
@@ -62,7 +62,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		set_current_screen( $pagenow );
 
 		$this->assertTrue( is_admin() );
-		GhostScript_Only_PDF_Preview::main();
+		GhostScript_Only_PDF_Preview::init();
 		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GhostScript_Only_PDF_Preview', 'wp_image_editors' ) ) );
 		$this->assertSame( 10, has_action( 'admin_init', array( 'GhostScript_Only_PDF_Preview', 'admin_init' ) ) );
 		$this->assertSame( 10, has_action( 'admin_menu', array( 'GhostScript_Only_PDF_Preview', 'admin_menu' ) ) );
@@ -154,22 +154,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$args = self::$func_args['wp_die'][0];
 		$this->assertTrue( false !== stripos( $args['message'], 'activated' ) );
 
-		$wp_version = GOPP_PLUGIN_WP_UP_TO_VERSION;
-		add_filter( 'gopp_image_have_gs', array( $this, 'filter_gopp_image_have_gs_false' ) );
-		GhostScript_Only_PDF_Preview::activation_hook();
-		remove_filter( 'gopp_image_have_gs', array( $this, 'filter_gopp_image_have_gs_false' ) );
-		$admin_notices = get_transient( 'gopp_plugin_admin_notices' );
-		$this->assertSame( 1, count( $admin_notices ) );
-		$this->assertSame( 2, count( $admin_notices[0] ) );
-		$this->assertSame( 'warning', $admin_notices[0][0] );
-		$this->assertTrue( false !== stripos( $admin_notices[0][1], 'executable' ) );
-		delete_transient( 'gopp_plugin_admin_notices' );
-
 		$wp_version = $old_wp_version;
-	}
-
-	function filter_gopp_image_have_gs_false( $gs_cmd_path ) {
-		return false;
 	}
 
 	/**
@@ -315,6 +300,23 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertTrue( false !== stripos( $output, 'ignored' ) );
 		$this->assertTrue( false !== strpos( $output, 'notice-info' ) );
 		$this->assertFalse( false !== strpos( $output, 'notice-notice' ) );
+
+		global $current_screen;
+		$old_current_screen = $current_screen;
+		$current_screen = new stdClass;
+		$current_screen->id = 'upload';
+
+		$_REQUEST['gopp_rpp'] = '0_0_0_0';
+		ob_start();
+		GhostScript_Only_PDF_Preview::admin_notices();
+		$output = ob_get_clean();
+		$this->assertFalse( false !== strpos( $output, 'error is-dismissible' ) );
+		$this->assertFalse( false !== strpos( $output, 'updated is-dismissible' ) );
+		$this->assertFalse( false !== strpos( $output, 'warning is-dismissible' ) );
+		$this->assertFalse( false !== strpos( $output, 'notice-info' ) );
+		$this->assertFalse( false !== strpos( $output, 'notice-notice' ) );
+
+		$current_screen = $old_current_screen;
 
 		GhostScript_Only_PDF_Preview::$hook_suffix = null;
 	}
@@ -576,42 +578,38 @@ class Tests_GOPP extends WP_UnitTestCase {
 	 * Test admin enqueue.
 	 */
 	function test_admin_enqueue_scripts() {
-		$this->assertTrue( is_string( GhostScript_Only_PDF_Preview::$hook_suffix ) ); // Depends on admin_menu test succeeding.
 
+		global $wp_scripts;
+		$old_wp_scripts = $wp_scripts;
+
+		$wp_scripts = null;
 		GhostScript_Only_PDF_Preview::admin_enqueue_scripts( 'blah' );
-		$this->assertFalse( has_action( 'admin_print_footer_scripts', array( 'GhostScript_Only_PDF_Preview', 'admin_print_footer_scripts' ) ) );
-		$this->assertFalse( has_action( 'admin_print_footer_scripts', array( 'GhostScript_Only_PDF_Preview', 'admin_print_footer_scripts_upload' ) ) );
+		ob_start();
+		wp_scripts()->do_items();
+		$out = ob_get_clean();
+		$this->assertEmpty( $out );
 
+		$wp_scripts = null;
 		GhostScript_Only_PDF_Preview::admin_enqueue_scripts( GhostScript_Only_PDF_Preview::$hook_suffix );
-		$this->assertSame( 10, has_action( 'admin_print_footer_scripts', array( 'GhostScript_Only_PDF_Preview', 'admin_print_footer_scripts' ) ) );
-		$this->assertFalse( has_action( 'admin_print_footer_scripts', array( 'GhostScript_Only_PDF_Preview', 'admin_print_footer_scripts_upload' ) ) );
+		ob_start();
+		wp_scripts()->do_items();
+		$out = ob_get_clean();
+		$this->assertTrue( false !== stripos( $out, 'jquery-migrate' ) );
+		$this->assertTrue( false !== stripos( $out, 'ghostscript-only-pdf-preview' ) );
+		$this->assertTrue( false !== stripos( $out, 'gopp_plugin_params' ) );
+		$this->assertTrue( false !== stripos( $out, 'please_wait_msg' ) );
 
+		$wp_scripts = null;
 		GhostScript_Only_PDF_Preview::admin_enqueue_scripts( 'upload.php' );
-		$this->assertSame( 10, has_action( 'admin_print_footer_scripts', array( 'GhostScript_Only_PDF_Preview', 'admin_print_footer_scripts' ) ) );
-		$this->assertSame( 10, has_action( 'admin_print_footer_scripts', array( 'GhostScript_Only_PDF_Preview', 'admin_print_footer_scripts_upload' ) ) );
-
-		remove_action( 'admin_print_footer_scripts', array( 'GhostScript_Only_PDF_Preview', 'admin_print_footer_scripts' ) );
-		remove_action( 'admin_print_footer_scripts', array( 'GhostScript_Only_PDF_Preview', 'admin_print_footer_scripts_upload' ) );
-	}
-
-	/**
-	 * Test admin print footer scripts for regen.
-	 */
-	function test_admin_print_footer_scripts() {
 		ob_start();
-		$out = GhostScript_Only_PDF_Preview::admin_print_footer_scripts();
+		wp_scripts()->do_items();
 		$out = ob_get_clean();
-		$this->assertTrue( false !== stripos( $out, 'please wait' ) );
-	}
+		$this->assertTrue( false !== stripos( $out, 'jquery-migrate' ) );
+		$this->assertTrue( false !== stripos( $out, 'ghostscript-only-pdf-preview' ) );
+		$this->assertTrue( false !== stripos( $out, 'gopp_plugin_params' ) );
+		$this->assertTrue( false !== stripos( $out, 'no_items_selected_msg' ) );
 
-	/**
-	 * Test admin print footer scripts for upload.
-	 */
-	function test_admin_print_footer_scripts_upload() {
-		ob_start();
-		$out = GhostScript_Only_PDF_Preview::admin_print_footer_scripts_upload();
-		$out = ob_get_clean();
-		$this->assertNotEmpty( $out );
+		$old_wp_scripts = $wp_scripts;
 	}
 
 	/**
@@ -852,3 +850,5 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertSame( '{"msg":"100% (1)"}', $out );
 	}
 }
+
+require_once dirname( __FILE__ ) . '/test-gopp-image-editor-gs.php';

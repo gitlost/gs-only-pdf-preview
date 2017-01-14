@@ -51,7 +51,7 @@ On jpeg thumbnail size it appears to be comparable, maybe a bit larger on averag
 
 A basic administration tool to regenerate (or generate, if they previously didn't have a preview) the previews of all PDFs uploaded to the system is included. Note that if you have a lot of PDFs you may experience the White Screen Of Death (WSOD) if the tool exceeds the [maximum execution time](http://php.net/manual/en/info.configuration.php#ini.max-execution-time) allowed. Note also that as the filenames of the previews don't (normally) change, you will probably have to refresh your browser to see the updated thumbnails.
 
-As workarounds for the possible WSOD issue above, and as facilities in themselves, a "Regenerate PDF Previews" bulk action is added to the list mode of the Media Library, and a "Regenerate preview" row action is added to each PDF entry in the list. So previews can be regenerated in batches or individually instead.
+As workarounds for the possible WSOD issue above, and as facilities in themselves, a "Regenerate PDF Previews" bulk action is added to the list mode of the Media Library, and a "Regenerate Preview" row action is added to each PDF entry in the list. So previews can be regenerated in batches or individually instead.
 
 = And =
 
@@ -75,11 +75,10 @@ For Windows, there's an installer available at the [GhostScript download page](h
 
 = What filters are available? =
 
-Four plugin-specific filters are available:
+Three plugin-specific filters are available:
 
 * `gopp_editor_set_resolution` sets the resolution of the PDF preview.
 * `gopp_editor_set_page` sets the page to render for the PDF preview.
-* `gopp_image_have_gs` short-circuits the test (via the shell) to see if GhostScript is installed on your system.
 * `gopp_image_gs_cmd_path` short-circuits the determination of the path of the GhostScript executable on your system.
 
 The `gopp_editor_set_resolution` filter is an analogue of the standard [`wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) filter, and allows one to override the default resolution of 128 DPI used for the PDF preview. For instance, in your theme's "functions.php":
@@ -96,10 +95,6 @@ Similarly the `gopp_editor_set_page` filter allows one to override the default o
 	}
 	add_filter( 'gopp_editor_set_page', 'mytheme_gopp_editor_set_page', 10, 2 );
 
-The `gopp_image_have_gs` filter can be used to improve performance (saves a test shell command) if you know the GhostScript installation on your server works:
-
-	add_filter( 'gopp_image_have_gs', '__return_true', 10, 0 );
-
 The `gopp_image_gs_cmd_path` filter is necessary if your GhostScript installation is in a non-standard location and the plugin fails to determine where it is (if this happens you'll get a **Warning: no GhostScript!** notice on activation):
 
 	function mytheme_gopp_image_gs_cmd_path( $gs_cmd_path, $is_win ) {
@@ -107,17 +102,25 @@ The `gopp_image_gs_cmd_path` filter is necessary if your GhostScript installatio
 	}
 	add_filter( 'gopp_image_gs_cmd_path', 'mytheme_gopp_image_gs_cmd_path', 10, 2 );
 
-The filter can also be used just for performance reasons (especially on Windows systems to save searching the registry and directories).
+The filter can also be used just for performance reasons, especially on Windows systems to save searching the registry and directories.
 
-Note that the non-filtered values of `have_gs` and `gs_cmd_path` are cached as transients by the plugin for performance reasons, with a lifetime of one day. You can clear these transients by de-activating and re-activating the plugin.
+Note that the value of `gs_cmd_path` is cached as a transient by the plugin for performance reasons, with a lifetime of one day. You can clear it by de-activating and re-activating the plugin, or by manually calling the `clear` method of the GhostScript Image Editor:
+
+	function mytheme_gopp_init() {
+		if ( class_exists( 'GOPP_Image_Editor_GS' ) ) {
+			GOPP_Image_Editor_GS::clear();
+		}
+	}
+	add_filter( 'init', 'mytheme_gopp_init' );
 
 == Screenshots ==
 
 1. Before: upload of various PDFs with alpha channels and/or CMYK color spaces resulting in broken previews.
 2. After: upload of the same PDFs resulting in a result.
-3. Regenerate PDF Previews administration tool.
-4. Regenerate PDF Previews bulk action in list mode of Media Library.
-5. Regenerate preview row action in list mode of Media Library.
+3. Regenerate PDF Previews administration tool front page.
+4. Regenerate PDF Previews administration tool after processing.
+5. Regenerate PDF Previews bulk action in list mode of Media Library.
+6. Regenerate Preview row action in list mode of Media Library.
 
 == Changelog ==
 

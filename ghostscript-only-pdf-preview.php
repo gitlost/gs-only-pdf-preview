@@ -35,9 +35,10 @@ class GhostScript_Only_PDF_Preview {
 	static $timing_dec_places = 1; // Number of decimal places to show on time (in seconds) taken.
 
 	/**
-	 * Static constructor.
+	 * Called on 'init' action.
+	 * Entry point.
 	 */
-	static function main() {
+	static function init() {
 		load_plugin_textdomain( 'ghostscript-only-pdf-preview', false, basename( dirname( __FILE__ ) ) . '/languages' );
 
 		// Add always in case of front-end use.
@@ -221,7 +222,7 @@ class GhostScript_Only_PDF_Preview {
 					$admin_notices[] = array( 'error', __( 'Invalid arguments!', 'ghostscript-only-pdf-preview' ) );
 				} else {
 					if ( 0 === $cnt ) {
-						// The standard WP behaviour is to be silent on doing bulk action with nothing selected.
+						// Note the standard WP behaviour is to be silent on doing bulk action with nothing selected.
 						if ( $is_tool ) {
 							$admin_notices[] = array( 'error', __( 'No PDFs found!', 'ghostscript-only-pdf-preview' ) );
 						}
@@ -343,6 +344,7 @@ class GhostScript_Only_PDF_Preview {
 			self::set_time_limit( max( $cnt * self::$per_pdf_secs, self::$min_time_limit ) );
 			if ( $do_transient ) {
 				delete_transient( 'gopp_plugin_poll_rpp' );
+				$last_sub_time = -1;
 			}
 			foreach ( $ids as $idx => $id ) {
 				if ( $check_mime_type && 'application/pdf' !== get_post_mime_type( $id ) ) {
@@ -365,8 +367,9 @@ class GhostScript_Only_PDF_Preview {
 						}
 					}
 				}
-				if ( $do_transient && ( $sub_time = round( microtime( true ) - $time ) ) && 0 === $sub_time % self::$poll_interval ) {
+				if ( $do_transient && ( $sub_time = round( microtime( true ) - $time ) ) && 0 === $sub_time % self::$poll_interval && $sub_time > $last_sub_time ) {
 					set_transient( 'gopp_plugin_poll_rpp', array( $cnt, $idx ), self::$poll_interval + 2 ); // Allow some comms time.
+					$last_sub_time = $sub_time;
 				}
 			}
 			if ( $do_transient ) {
@@ -446,9 +449,13 @@ class GhostScript_Only_PDF_Preview {
 				<p>
 					<?php
 						/* translators: %s: url to the Media Library page in list mode. */
-						echo sprintf( __( 'Note that you can also regenerate PDF previews in batches or individually using the bulk action "Regenerate PDF Previews" (or the row action "Regenerate preview") available in the <a href="%s">list mode of the Media Library</a>.', 'ghostscript-only-pdf-preview' ), admin_url( 'upload.php?mode=list' ) );
+						echo sprintf( __( 'Note that you can also regenerate PDF previews in batches or individually using the bulk action "Regenerate PDF Previews" (or the row action "Regenerate Preview") available in the <a href="%s">list mode of the Media Library</a>.', 'ghostscript-only-pdf-preview' ), admin_url( 'upload.php?mode=list' ) );
 					?>
 				</p>
+				<?php if ( defined( 'GOPP_PLUGIN_DEBUG' ) && GOPP_PLUGIN_DEBUG ) : ?>
+					<?php require_once dirname( __FILE__ ) . '/includes/debug-gopp-image-editor-gs.php'; ?>
+					<?php DEBUG_GOPP_Image_Editor_GS::dump(); ?>
+				<?php endif; ?>
 			</form>
 			<?php
 		}
@@ -463,130 +470,34 @@ class GhostScript_Only_PDF_Preview {
 	 * Outputs some javascript on "Regen. PDFs Previews" page or Media Library page.
 	 */
 	static function admin_enqueue_scripts( $hook_suffix ) {
-		if ( self::$hook_suffix === $hook_suffix ) {
-			add_action( 'admin_print_footer_scripts', array( __CLASS__, 'admin_print_footer_scripts' ) );
-		} elseif ( 'upload.php' === $hook_suffix ) {
-			add_action( 'admin_print_footer_scripts', array( __CLASS__, 'admin_print_footer_scripts_upload' ) );
+		if ( self::$hook_suffix === $hook_suffix || 'upload.php' === $hook_suffix ) {
+			$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+			$is_regen_pdf_preview = self::$hook_suffix === $hook_suffix;
+			$is_upload = 'upload.php' === $hook_suffix;
+
+			wp_enqueue_script( 'ghostscript-only-pdf-preview', plugins_url( "js/ghostscript-only-pdf-preview{$suffix}.js", __FILE__ ), array( 'jquery', 'jquery-migrate' ), GOPP_PLUGIN_VERSION );
+
+			// Our parameters.
+			$params = array(
+				'val' => array( // Gets around stringification of direct localize elements.
+					'is_debug' => defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG && defined( 'GOPP_PLUGIN_DEBUG' ) && GOPP_PLUGIN_DEBUG,
+					'is_regen_pdf_preview' => $is_regen_pdf_preview,
+					'is_upload' => $is_upload,
+				),
+			);
+			if ( $is_regen_pdf_preview ) {
+				$params['please_wait_msg'] = '<div class="notice notice-warning inline"><p>' . __( 'Please wait...', 'ghostscript-only-pdf-preview' )
+											. '<span id="gopp_progress"></span>' . self::spinner( -2, true ) . '</p></div>';
+				$params['val']['poll_interval'] = self::$poll_interval;
+			} elseif ( $is_upload ) {
+				$params['no_items_selected_msg'] = '<span class="gopp_none" style="display:inline-block;margin-top:6px">' . __( 'No items selected!', 'ghostscript-only-pdf-preview' ) . '</span>';
+				$params['action_not_available'] = __( 'Regenerate Preview ajax action not available!', 'ghostscript-only-pdf-preview' );
+				$params['spinner'] = self::spinner( 5, true );
+				$params['val']['min_time_limit'] = self::$min_time_limit;
+			}
+			$params = apply_filters( 'gopp_plugin_params', $params );
+			wp_localize_script( 'ghostscript-only-pdf-preview', 'gopp_plugin_params', $params );
 		}
-	}
-
-	/**
-	 * Called on 'admin_print_footer_scripts' action.
-	 * Some basic UI feedback for the "Regen. PDFs Previews" administration tool when the button is clicked.
-	 */
-	static function admin_print_footer_scripts() {
-		$please_wait_msg = '<div class="notice notice-warning inline"><p>' . __( 'Please wait...', 'ghostscript-only-pdf-preview' ) . '<span id="gopp_progress"></span>' . self::spinner( -2, true ) . '</p></div>';
-		?>
-<script type="text/javascript">
-/*jslint ass: true, nomen: true, plusplus: true, regexp: true, vars: true, white: true, indent: 4 */
-/*global jQuery, gopp_plugin */
-var gopp_plugin = gopp_plugin || {}; // Our namespace.
-( function ( $ ) {
-	'use strict';
-
-	// jQuery ready.
-	$( function () {
-		var $wrap = $( '#gopp_regen_pdf_previews' ), $msgs = $( '.notice, .updated', $wrap ), $form = $( '.gopp_regen_pdf_previews_form', $wrap );
-		if ( $wrap.length ) {
-			$( 'input[type="submit"]', $form ).click( function ( e ) {
-				var $this = $( this ), $msg = $( <?php echo json_encode( $please_wait_msg ); ?> ), $progress, poll_func,
-					cnt = parseInt( $( '#poll_cnt', $form ).val(), 10 ), poll_nonce = $( '#poll_nonce', $form ).val();
-				$this.hide();
-				$( '.gopp_regen_pdf_previews_form_hide', $wrap ).hide();
-				$msgs.hide();
-				$( 'h1', $wrap ).first().after( $msg );
-				$progress = $( '#gopp_progress', $wrap ).first();
-
-				poll_func = function () {
-					$.post( ajaxurl, {
-							action: 'gopp_poll_regen_pdf_previews',
-							cnt: cnt,
-							poll_nonce: poll_nonce
-						}, function( data ) {
-							if ( data && data.msg ) {
-								$progress.html( data.msg );
-							}
-							setTimeout( poll_func, <?php echo self::$poll_interval; ?> * 1000 );
-						}, 'json'
-					);
-				};
-				setTimeout( poll_func, <?php echo self::$poll_interval; ?> * 1000 );
-			} );
-		}
-	} );
-} )( jQuery );
-</script>
-		<?php
-	}
-
-	/**
-	 * Called on 'admin_print_footer_scripts' action.
-	 * UI and ajax call for the "Regenerate preview" row action added to the list mode of the Media Library, and spinner for bulk action.
-	 */
-	static function admin_print_footer_scripts_upload() {
-		$ajax_action_msg = __( 'Regenerate preview ajax action not available!', 'ghostscript-only-pdf-preview' );
-		?>
-<script type="text/javascript">
-/*jslint ass: true, nomen: true, plusplus: true, regexp: true, vars: true, white: true, indent: 4 */
-/*global jQuery, ajaxurl, gopp_plugin */
-var gopp_plugin = gopp_plugin || {}; // Our namespace.
-( function ( $ ) {
-	'use strict';
-
-	gopp_plugin.media_row_action = function ( e, id, nonce ) {
-		var $target = $( e.target ), $row_action_div = $target.parents( '.row-actions' ).first(), $spinner = $target.next();
-		$( '.gopp_response', $row_action_div.parent() ).remove();
-		$spinner.addClass( 'is-active' );
-		$.post( {
-			url: ajaxurl,
-			data: {
-				action: 'gopp_media_row_action',
-				id: id,
-				nonce: nonce
-			},
-			dataType: 'json',
-			error: function( jqXHR, textStatus, errorThrown ) {
-				var err_msg;
-				$spinner.removeClass( 'is-active' );
-				err_msg = '<div class="notice error gopp_response"><p><?php echo htmlspecialchars( $ajax_action_msg, ENT_QUOTES ); ?> ' + errorThrown + '</p></div>';
-				$row_action_div.after( $( err_msg ) );
-			},
-			success: function( data ) {
-				$spinner.removeClass( 'is-active' );
-				if ( data ) {
-					if ( data.error ) {
-						$row_action_div.after( $( '<div class="notice error gopp_response"><p>' + data.error + '</p></div>' ) );
-					} else if ( data.msg ) {
-						$row_action_div.after( $( '<div class="notice updated gopp_response"><p>' + data.msg + '</p></div>' ) );
-					}
-					if ( data.img ) {
-						$( '.has-media-icon .media-icon', $row_action_div.parent() ).html( data.img );
-					}
-				} else {
-					$row_action_div.after( $( '<div class="notice error gopp_response"><p><?php echo htmlspecialchars( $ajax_action_msg, ENT_QUOTES ); ?></p></div>' ) );
-				}
-			},
-			timeout: <?php echo self::$min_time_limit; ?> * 1000
-		} );
-
-		return false;
-	};
-
-	// jQuery ready.
-	$( function () {
-		$( '#doaction, #doaction2' ).click( function ( e ) {
-			var $target = $( e.target );
-			$( 'select[name^="action"]' ).each( function () {
-				if ( 'gopp_regen_pdf_previews' === $( this ).val() ) {
-					$target.after( <?php echo json_encode( self::spinner( 5, true ) ); ?> );
-				}
-			} );
-		} );
-	} );
-
-} )( jQuery );
-</script>
-		<?php
 	}
 
 	/**
@@ -655,7 +566,7 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 
 	/**
 	 * Called on 'media_row_actions' filter.
-	 * Adds the "Regenerate preview" link to PDF rows in the list mode of the Media Library.
+	 * Adds the "Regenerate Preview" link to PDF rows in the list mode of the Media Library.
 	 */
 	static function media_row_actions( $actions, $post, $detached ) {
 		if ( 'application/pdf' === $post->post_mime_type && current_user_can( self::$cap ) ) {
@@ -667,7 +578,7 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 					esc_attr( json_encode( wp_create_nonce( 'gopp_media_row_action_' . $post->ID ) ) ),
 					/* translators: %s: attachment title */
 					esc_attr( sprintf( __( 'Regenerate the PDF preview for &#8220;%s&#8221;', 'ghostscript-only-pdf-preview' ), _draft_or_post_title() ) ),
-					esc_attr( __( 'Regenerate preview', 'ghostscript-only-pdf-preview' ) )
+					esc_attr( __( 'Regenerate&nbsp;Preview', 'ghostscript-only-pdf-preview' ) )
 				);
 			}
 		}
@@ -676,7 +587,7 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 
 	/**
 	 * Ajax callback for media row action.
-	 * Does the work of the "Regenerate preview" row action.
+	 * Does the work of the "Regenerate Preview" row action.
 	 */
 	static function gopp_media_row_action() {
 		$ret = array( 'msg' => '', 'error' => false, 'img' => '' );
@@ -744,4 +655,4 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 	}
 }
 
-GhostScript_Only_PDF_Preview::main();
+add_action( 'init', array( 'GhostScript_Only_PDF_Preview', 'init' ) );

@@ -6,6 +6,25 @@ module.exports = function( grunt ) { //The wrapper function
 	grunt.initConfig( {
 		pkg: grunt.file.readJSON( 'package.json' ),
 
+		// The uglify task and its configurations
+		uglify: {
+			options: {
+				banner: '/*! <%= pkg.name %> <%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n'
+			},
+			build: {
+				files: [ {
+					expand: true,     // Enable dynamic expansion.
+					src: [ 'js/*.js', '!js/*.min.js' ], // Actual pattern(s) to match.
+					ext: '.min.js'   // Dest filepaths will have this extension.
+				} ]
+			}
+		},
+
+		// The jshint task and its configurations
+		jshint: {
+			all: [ 'js/*.js', '!js/*.min.js' ]
+		},
+
 		wp_readme_to_markdown: {
 			convert:{
 				files: {
@@ -64,6 +83,9 @@ module.exports = function( grunt ) { //The wrapper function
 							'../ghostscript-only-pdf-preview/ghostscript-only-pdf-preview.php',
 							'../ghostscript-only-pdf-preview/uninstall.php',
 							'../ghostscript-only-pdf-preview/includes/class-gopp-image-editor-gs.php',
+							'../ghostscript-only-pdf-preview/includes/debug-gopp-image-editor-gs.php',
+							'../ghostscript-only-pdf-preview/js/ghostscript-only-pdf-preview.js',
+							'../ghostscript-only-pdf-preview/js/ghostscript-only-pdf-preview.min.js',
 							'../ghostscript-only-pdf-preview/languages/ghostscript-only-pdf-preview.pot',
 							'../ghostscript-only-pdf-preview/languages/ghostscript-only-pdf-preview-fr_FR.mo',
 							'../ghostscript-only-pdf-preview/languages/ghostscript-only-pdf-preview-fr_FR.po'
@@ -83,11 +105,17 @@ module.exports = function( grunt ) { //The wrapper function
 			}
 		},
 
+		clean: {
+			js: [ 'js/*.min.js' ]
+		}
+
 	} );
 
 	// Default task(s), executed when you run 'grunt'
-	grunt.registerTask( 'default', [ 'wp_readme_to_markdown', 'makepot', 'compress' ] );
+	grunt.registerTask( 'default', [ 'uglify', 'wp_readme_to_markdown', 'makepot', 'compress' ] );
 
 	// Creating a custom task
-	grunt.registerTask( 'test', [ 'phpunit' ] );
+	grunt.registerTask( 'test', [ 'jshint', 'phpunit' ] );
+
+	grunt.registerTask( 'test_build', [ 'clean', 'uglify' ] );
 };
