@@ -39,13 +39,10 @@ class GhostScript_Only_PDF_Preview {
 	 * Entry point.
 	 */
 	static function init() {
-		load_plugin_textdomain( 'ghostscript-only-pdf-preview', false, basename( dirname( __FILE__ ) ) . '/languages' );
-
 		// Add always in case of front-end use.
 		add_filter( 'wp_image_editors', array( __CLASS__, 'wp_image_editors' ) );
 
 		if ( is_admin() ) {
-			register_activation_hook( __FILE__, array( __CLASS__, 'activation_hook' ) );
 			if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
 				add_action( 'admin_init', array( __CLASS__, 'admin_init' ) );
 				add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
@@ -654,5 +651,9 @@ class GhostScript_Only_PDF_Preview {
 		wp_send_json( $ret );
 	}
 }
+
+load_plugin_textdomain( 'ghostscript-only-pdf-preview', false, basename( dirname( __FILE__ ) ) . '/languages' );
+
+register_activation_hook( __FILE__, array( 'GhostScript_Only_PDF_Preview', 'activation_hook' ) );
 
 add_action( 'init', array( 'GhostScript_Only_PDF_Preview', 'init' ) );

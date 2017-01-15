@@ -83,7 +83,7 @@ Three plugin-specific filters are available:
 * `gopp_editor_set_page` sets the page to render for the PDF preview.
 * `gopp_image_gs_cmd_path` short-circuits the determination of the path of the GhostScript executable on your system.
 
-The `gopp_editor_set_resolution` filter is an analogue of the standard [`wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) filter, and allows one to override the default resolution of 128 DPI used for the PDF preview. For instance, in your theme's "functions.php":
+The `gopp_editor_set_resolution` filter is an analogue of the standard [`wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) filter mentioned above, and allows one to override the default resolution of 128 DPI used for the PDF preview. For instance, in your theme's "functions.php":
 
 	function mytheme_gopp_editor_set_resolution( $resolution, $filename ) {
 		return 100;
