@@ -246,45 +246,45 @@ msgstr ""
 msgid "No GhostScript."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:168
+#: includes/class-gopp-image-editor-gs.php:169
 msgid "Image Editor Save Failed"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:175
+#: includes/class-gopp-image-editor-gs.php:176
 msgid "Could not read image size."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:213
+#: includes/class-gopp-image-editor-gs.php:214
 msgid "Loading from URL not supported."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:218
-#: includes/class-gopp-image-editor-gs.php:223
+#: includes/class-gopp-image-editor-gs.php:219
+#: includes/class-gopp-image-editor-gs.php:224
 msgid "Unsupported file name."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:233
+#: includes/class-gopp-image-editor-gs.php:234
 msgid "File doesn&#8217;t exist?"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:239
+#: includes/class-gopp-image-editor-gs.php:241
 msgid "File is not a PDF."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:620
+#: includes/class-gopp-image-editor-gs.php:622
 msgid "Attempted to set PDF preview resolution to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:675
+#: includes/class-gopp-image-editor-gs.php:677
 msgid "Attempted to set PDF preview page to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:694
-#: includes/class-gopp-image-editor-gs.php:715
-#: includes/class-gopp-image-editor-gs.php:734
-#: includes/class-gopp-image-editor-gs.php:747
-#: includes/class-gopp-image-editor-gs.php:761
-#: includes/class-gopp-image-editor-gs.php:774
+#: includes/class-gopp-image-editor-gs.php:696
+#: includes/class-gopp-image-editor-gs.php:717
+#: includes/class-gopp-image-editor-gs.php:736
+#: includes/class-gopp-image-editor-gs.php:749
+#: includes/class-gopp-image-editor-gs.php:763
+#: includes/class-gopp-image-editor-gs.php:776
 msgid "Unsupported operation."
 msgstr ""
 

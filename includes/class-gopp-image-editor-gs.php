@@ -165,6 +165,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		exec( $cmd, $output, $return_var );
 
 		if ( 0 !== $return_var ) {
+			do_action( 'gopp_error', __CLASS__, __FUNCTION__, __LINE__, compact( 'cmd', 'return_var', 'output' ) );
 			return new WP_Error( 'image_save_error', __( 'Image Editor Save Failed', 'ghostscript-only-pdf-preview' ) );
 		}
 
@@ -172,7 +173,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		$size = array( 1088, 1408 ); // US Letter size at 128 DPI. Makes it pass the unit test Tests_Image_Functions::test_wp_generate_attachment_metadata_pdf().
 		//$size = @ getimagesize( $filename );
 		if ( ! $size ) {
-			return new WP_Error( 'image_save_error', __( 'Could not read image size.', 'ghostscript-only-pdf-preview' ) );
+			return new WP_Error( 'image_save_error', __( 'Could not read image size.', 'ghostscript-only-pdf-preview' ) ); // @codeCoverageIgnore
 		}
 
 		// For form's sake, transmogrify into the JPEG file.
@@ -236,6 +237,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		fclose( $fp );
 		// This is a similar test to that done by libmagic, but more strict on version format by insisting it's "0." or "1." followed by 1 or 2 numbers.
 		if ( ! preg_match( '/^\n?%PDF-[01]\.[0-9]{1,2}/', $magic_bytes ) ) {
+			do_action( 'gopp_error', __CLASS__, __FUNCTION__, __LINE__, compact( 'file', 'magic_bytes' ) );
 			return __( 'File is not a PDF.', 'ghostscript-only-pdf-preview' );
 		}
 

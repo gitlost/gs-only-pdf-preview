@@ -59,7 +59,7 @@ As workarounds for the possible WSOD issue above, and as facilities in themselve
 
 A google-cheating schoolboy French translation is supplied.
 
-The plugin runs on WP 4.7.0, and requires GhostScript to be installed on the server. The plugin should run on PHP 5.2.17 to 7.1, and on both Unix and Windows systems.
+The plugin runs on WP 4.7.0 and 4.7.1, and requires GhostScript to be installed on the server. The plugin should run on PHP 5.2.17 to 7.1, and on both Unix and Windows systems.
 
 The project is on [github](https://github.com/gitlost/ghostscript-only-pdf-preview).
 
@@ -138,7 +138,7 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 
 ## Changelog ##
 
-### 1.0.0 (13 Jan 2017) ###
+### 1.0.0 (15 Jan 2017) ###
 * Initial release.
 
 ### 0.9.0 (8 Jan 2017) ###
