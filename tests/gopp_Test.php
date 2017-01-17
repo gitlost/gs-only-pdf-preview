@@ -49,12 +49,12 @@ class Tests_GOPP extends WP_UnitTestCase {
 	 */
 	function test_init() {
 		$this->assertFalse( is_admin() );
-		GhostScript_Only_PDF_Preview::init();
-		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GhostScript_Only_PDF_Preview', 'wp_image_editors' ) ) );
-		$this->assertFalse( has_action( 'admin_init', array( 'GhostScript_Only_PDF_Preview', 'admin_init' ) ) );
-		$this->assertFalse( has_action( 'wp_ajax_gopp_media_row_action', array( 'GhostScript_Only_PDF_Preview', 'gopp_media_row_action' ) ) );
+		GS_Only_PDF_Preview::init();
+		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
+		$this->assertFalse( has_action( 'admin_init', array( 'GS_Only_PDF_Preview', 'admin_init' ) ) );
+		$this->assertFalse( has_action( 'wp_ajax_gopp_media_row_action', array( 'GS_Only_PDF_Preview', 'gopp_media_row_action' ) ) );
 
-		remove_filter( 'wp_image_editors', array( 'GhostScript_Only_PDF_Preview', 'wp_image_editors' ) );
+		remove_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) );
 
 		global $pagenow;
 		$old_pagenow = $pagenow;
@@ -62,32 +62,32 @@ class Tests_GOPP extends WP_UnitTestCase {
 		set_current_screen( $pagenow );
 
 		$this->assertTrue( is_admin() );
-		GhostScript_Only_PDF_Preview::init();
-		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GhostScript_Only_PDF_Preview', 'wp_image_editors' ) ) );
-		$this->assertSame( 10, has_action( 'admin_init', array( 'GhostScript_Only_PDF_Preview', 'admin_init' ) ) );
-		$this->assertSame( 10, has_action( 'admin_menu', array( 'GhostScript_Only_PDF_Preview', 'admin_menu' ) ) );
-		$this->assertSame( 10, has_action( 'admin_enqueue_scripts', array( 'GhostScript_Only_PDF_Preview', 'admin_enqueue_scripts' ) ) );
+		GS_Only_PDF_Preview::init();
+		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
+		$this->assertSame( 10, has_action( 'admin_init', array( 'GS_Only_PDF_Preview', 'admin_init' ) ) );
+		$this->assertSame( 10, has_action( 'admin_menu', array( 'GS_Only_PDF_Preview', 'admin_menu' ) ) );
+		$this->assertSame( 10, has_action( 'admin_enqueue_scripts', array( 'GS_Only_PDF_Preview', 'admin_enqueue_scripts' ) ) );
 
-		$this->assertSame( 10, has_filter( 'bulk_actions-upload', array( 'GhostScript_Only_PDF_Preview', 'bulk_actions_upload' ) ) );
-		$this->assertSame( 10, has_filter( 'handle_bulk_actions-upload', array( 'GhostScript_Only_PDF_Preview', 'handle_bulk_actions_upload' ) ) );
-		$this->assertSame( 10, has_filter( 'removable_query_args', array( 'GhostScript_Only_PDF_Preview', 'removable_query_args' ) ) );
+		$this->assertSame( 10, has_filter( 'bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'bulk_actions_upload' ) ) );
+		$this->assertSame( 10, has_filter( 'handle_bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'handle_bulk_actions_upload' ) ) );
+		$this->assertSame( 10, has_filter( 'removable_query_args', array( 'GS_Only_PDF_Preview', 'removable_query_args' ) ) );
 
-		$this->assertSame( 10, has_action( 'current_screen', array( 'GhostScript_Only_PDF_Preview', 'current_screen' ) ) );
-		$this->assertSame( 100, has_action( 'media_row_actions', array( 'GhostScript_Only_PDF_Preview', 'media_row_actions' ) ) );
-		$this->assertSame( 10, has_action( 'wp_ajax_gopp_media_row_action', array( 'GhostScript_Only_PDF_Preview', 'gopp_media_row_action' ) ) );
+		$this->assertSame( 10, has_action( 'current_screen', array( 'GS_Only_PDF_Preview', 'current_screen' ) ) );
+		$this->assertSame( 100, has_action( 'media_row_actions', array( 'GS_Only_PDF_Preview', 'media_row_actions' ) ) );
+		$this->assertSame( 10, has_action( 'wp_ajax_gopp_media_row_action', array( 'GS_Only_PDF_Preview', 'gopp_media_row_action' ) ) );
 
-		remove_filter( 'wp_image_editors', array( 'GhostScript_Only_PDF_Preview', 'wp_image_editors' ) );
-		remove_action( 'admin_init', array( 'GhostScript_Only_PDF_Preview', 'admin_init' ) );
-		remove_action( 'admin_menu', array( 'GhostScript_Only_PDF_Preview', 'admin_menu' ) );
-		remove_action( 'admin_enqueue_scripts', array( 'GhostScript_Only_PDF_Preview', 'admin_enqueue_scripts' ) );
+		remove_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) );
+		remove_action( 'admin_init', array( 'GS_Only_PDF_Preview', 'admin_init' ) );
+		remove_action( 'admin_menu', array( 'GS_Only_PDF_Preview', 'admin_menu' ) );
+		remove_action( 'admin_enqueue_scripts', array( 'GS_Only_PDF_Preview', 'admin_enqueue_scripts' ) );
 
-		remove_filter( 'bulk_actions-upload', array( 'GhostScript_Only_PDF_Preview', 'bulk_actions_upload' ) );
-		remove_filter( 'handle_bulk_actions-upload', array( 'GhostScript_Only_PDF_Preview', 'handle_bulk_actions_upload' ) );
-		remove_filter( 'removable_query_args', array( 'GhostScript_Only_PDF_Preview', 'removable_query_args' ) );
+		remove_filter( 'bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'bulk_actions_upload' ) );
+		remove_filter( 'handle_bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'handle_bulk_actions_upload' ) );
+		remove_filter( 'removable_query_args', array( 'GS_Only_PDF_Preview', 'removable_query_args' ) );
 
-		remove_action( 'current_screen', array( 'GhostScript_Only_PDF_Preview', 'current_screen' ) );
-		remove_action( 'media_row_actions', array( 'GhostScript_Only_PDF_Preview', 'media_row_actions' ) );
-		remove_action( 'wp_ajax_gopp_media_row_action', array( 'GhostScript_Only_PDF_Preview', 'gopp_media_row_action' ) );
+		remove_action( 'current_screen', array( 'GS_Only_PDF_Preview', 'current_screen' ) );
+		remove_action( 'media_row_actions', array( 'GS_Only_PDF_Preview', 'media_row_actions' ) );
+		remove_action( 'wp_ajax_gopp_media_row_action', array( 'GS_Only_PDF_Preview', 'gopp_media_row_action' ) );
 
 		$pagenow = $old_pagenow;
 	}
@@ -97,10 +97,10 @@ class Tests_GOPP extends WP_UnitTestCase {
 	 */
 	function test_wp_image_editors() {
 		$image_editors = array( 'blah' );
-		$output = GhostScript_Only_PDF_Preview::wp_image_editors( $image_editors );
+		$output = GS_Only_PDF_Preview::wp_image_editors( $image_editors );
 		$this->assertContains( 'GOPP_Image_Editor_GS', $output );
 		$image_editors = $output;
-		$output = GhostScript_Only_PDF_Preview::wp_image_editors( $image_editors );
+		$output = GS_Only_PDF_Preview::wp_image_editors( $image_editors );
 		$this->assertContains( 'GOPP_Image_Editor_GS', $output );
 		$this->assertSame( $output, $image_editors );
 	}
@@ -117,12 +117,12 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$old_wp_version = $wp_version;
 
 		$wp_version = GOPP_PLUGIN_WP_UP_TO_VERSION;
-		GhostScript_Only_PDF_Preview::activation_hook();
+		GS_Only_PDF_Preview::activation_hook();
 		$admin_notices = get_transient( 'gopp_plugin_admin_notices' );
 		$this->assertEmpty( $admin_notices );
 
 		$wp_version = '9999.9999.9999';
-		GhostScript_Only_PDF_Preview::activation_hook();
+		GS_Only_PDF_Preview::activation_hook();
 		$admin_notices = get_transient( 'gopp_plugin_admin_notices' );
 		$this->assertSame( 1, count( $admin_notices ) );
 		$this->assertSame( 2, count( $admin_notices[0] ) );
@@ -130,13 +130,13 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertTrue( false !== stripos( $admin_notices[0][1], 'version' ) );
 
 		ob_start();
-		GhostScript_Only_PDF_Preview::admin_notices();
+		GS_Only_PDF_Preview::admin_notices();
 		$output = ob_get_clean();
 		$this->assertTrue( false !== stripos( $output, 'warning is-dismissible' ) );
 		$this->assertTrue( false !== stripos( $output, 'version' ) );
 		$this->assertEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
 
-		GhostScript_Only_PDF_Preview::activation_hook();
+		GS_Only_PDF_Preview::activation_hook();
 		$this->assertNotEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
 		$this->assertFalse( defined( 'WP_UNINSTALL_PLUGIN' ) );
 		define( 'WP_UNINSTALL_PLUGIN', dirname( dirname( __FILE__ ) ) . '/uninstall.php' );
@@ -146,7 +146,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$wp_version = '4.6';
 		self::clear_func_args();
 		try {
-			GhostScript_Only_PDF_Preview::activation_hook();
+			GS_Only_PDF_Preview::activation_hook();
 		} catch ( WPDieException $e ) {
 			unset( $e );
 		}
@@ -167,7 +167,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		self::clear_func_args();
 		try {
-			GhostScript_Only_PDF_Preview::activation_hook();
+			GS_Only_PDF_Preview::activation_hook();
 		} catch ( WPDieException $e ) {
 			unset( $e );
 		}
@@ -182,9 +182,9 @@ class Tests_GOPP extends WP_UnitTestCase {
 	function test_admin_init() {
 		$admin_notices_action = is_network_admin() ? 'network_admin_notices' : ( is_user_admin() ? 'user_admin_notices' : 'admin_notices' );
 
-		GhostScript_Only_PDF_Preview::admin_init();
-		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GhostScript_Only_PDF_Preview', 'wp_image_editors' ) ) );
-		$this->assertSame( 10, has_action( $admin_notices_action, array( 'GhostScript_Only_PDF_Preview', 'admin_notices' ) ) );
+		GS_Only_PDF_Preview::admin_init();
+		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
+		$this->assertSame( 10, has_action( $admin_notices_action, array( 'GS_Only_PDF_Preview', 'admin_notices' ) ) );
 	}
 
 	/**
@@ -203,7 +203,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		set_transient( 'gopp_plugin_admin_notices', $admin_notices );
 
 		ob_start();
-		GhostScript_Only_PDF_Preview::admin_notices();
+		GS_Only_PDF_Preview::admin_notices();
 		$output = ob_get_clean();
 		$this->assertTrue( false !== strpos( $output, 'error is-dismissible' ) );
 		$this->assertTrue( false !== strpos( $output, 'updated is-dismissible' ) );
@@ -213,14 +213,14 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		delete_transient( 'gopp_plugin_admin_notices' );
 
-		$this->assertTrue( null === GhostScript_Only_PDF_Preview::$hook_suffix );
+		$this->assertTrue( null === GS_Only_PDF_Preview::$hook_suffix );
 		$current_screen = get_current_screen();
 		$current_screen_id = $current_screen ? $current_screen->id : null;
-		GhostScript_Only_PDF_Preview::$hook_suffix = $current_screen_id;
+		GS_Only_PDF_Preview::$hook_suffix = $current_screen_id;
 
 		$_REQUEST['gopp_rpp'] = '200_102_98_99999.9';
 		ob_start();
-		GhostScript_Only_PDF_Preview::admin_notices();
+		GS_Only_PDF_Preview::admin_notices();
 		$output = ob_get_clean();
 		$this->assertTrue( false !== strpos( $output, 'error is-dismissible' ) );
 		$this->assertTrue( false !== strpos( $output, 'updated is-dismissible' ) );
@@ -233,7 +233,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		set_transient( 'gopp_plugin_admin_notices', array( array( 'warning', 'Warning' ) ) );
 		ob_start();
-		GhostScript_Only_PDF_Preview::admin_notices();
+		GS_Only_PDF_Preview::admin_notices();
 		$output = ob_get_clean();
 		$this->assertTrue( false !== strpos( $output, 'error is-dismissible' ) );
 		$this->assertTrue( false !== strpos( $output, 'updated is-dismissible' ) );
@@ -248,7 +248,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		$_REQUEST['gopp_rpp'] = '0_1_0_0';
 		ob_start();
-		GhostScript_Only_PDF_Preview::admin_notices();
+		GS_Only_PDF_Preview::admin_notices();
 		$output = ob_get_clean();
 		$this->assertTrue( false !== strpos( $output, 'error is-dismissible' ) );
 		$this->assertTrue( false !== stripos( $output, 'invalid arguments' ) );
@@ -259,7 +259,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		$_REQUEST['gopp_rpp'] = '1_0_1_0';
 		ob_start();
-		GhostScript_Only_PDF_Preview::admin_notices();
+		GS_Only_PDF_Preview::admin_notices();
 		$output = ob_get_clean();
 		$this->assertTrue( false !== strpos( $output, 'error is-dismissible' ) );
 		$this->assertFalse( false !== strpos( $output, 'updated is-dismissible' ) );
@@ -270,7 +270,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		$_REQUEST['gopp_rpp'] = '1_0_0_0';
 		ob_start();
-		GhostScript_Only_PDF_Preview::admin_notices();
+		GS_Only_PDF_Preview::admin_notices();
 		$output = ob_get_clean();
 		$this->assertFalse( false !== strpos( $output, 'error is-dismissible' ) );
 		$this->assertFalse( false !== strpos( $output, 'updated is-dismissible' ) );
@@ -281,7 +281,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		$_REQUEST['gopp_rpp'] = '0_0_0_0';
 		ob_start();
-		GhostScript_Only_PDF_Preview::admin_notices();
+		GS_Only_PDF_Preview::admin_notices();
 		$output = ob_get_clean();
 		$this->assertTrue( false !== strpos( $output, 'error is-dismissible' ) );
 		$this->assertTrue( false !== stripos( $output, 'no pdfs' ) );
@@ -292,7 +292,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		$_REQUEST['gopp_rpp'] = '4_1_1_0';
 		ob_start();
-		GhostScript_Only_PDF_Preview::admin_notices();
+		GS_Only_PDF_Preview::admin_notices();
 		$output = ob_get_clean();
 		$this->assertTrue( false !== strpos( $output, 'error is-dismissible' ) );
 		$this->assertTrue( false !== strpos( $output, 'updated is-dismissible' ) );
@@ -308,7 +308,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		$_REQUEST['gopp_rpp'] = '0_0_0_0';
 		ob_start();
-		GhostScript_Only_PDF_Preview::admin_notices();
+		GS_Only_PDF_Preview::admin_notices();
 		$output = ob_get_clean();
 		$this->assertFalse( false !== strpos( $output, 'error is-dismissible' ) );
 		$this->assertFalse( false !== strpos( $output, 'updated is-dismissible' ) );
@@ -318,23 +318,23 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		$current_screen = $old_current_screen;
 
-		GhostScript_Only_PDF_Preview::$hook_suffix = null;
+		GS_Only_PDF_Preview::$hook_suffix = null;
 	}
 
 	/**
 	 * Test admin menu.
 	 */
 	function test_admin_menu() {
-		$this->assertTrue( null === GhostScript_Only_PDF_Preview::$hook_suffix );
+		$this->assertTrue( null === GS_Only_PDF_Preview::$hook_suffix );
 
-		GhostScript_Only_PDF_Preview::admin_menu();
-		$this->assertFalse( is_string( GhostScript_Only_PDF_Preview::$hook_suffix ) );
+		GS_Only_PDF_Preview::admin_menu();
+		$this->assertFalse( is_string( GS_Only_PDF_Preview::$hook_suffix ) );
 
 		$out = wp_set_current_user( 1 ); // Need manage_options cap to add load-XXX
 
-		GhostScript_Only_PDF_Preview::admin_menu();
-		$this->assertTrue( is_string( GhostScript_Only_PDF_Preview::$hook_suffix ) );
-		$this->assertSame( 10, has_action( 'load-' . GhostScript_Only_PDF_Preview::$hook_suffix, array( 'GhostScript_Only_PDF_Preview', 'load_regen_pdf_previews' ) ) );
+		GS_Only_PDF_Preview::admin_menu();
+		$this->assertTrue( is_string( GS_Only_PDF_Preview::$hook_suffix ) );
+		$this->assertSame( 10, has_action( 'load-' . GS_Only_PDF_Preview::$hook_suffix, array( 'GS_Only_PDF_Preview', 'load_regen_pdf_previews' ) ) );
 
 		$out = wp_set_current_user( 0 );
 	}
@@ -348,7 +348,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		// No cap.
 		self::clear_func_args();
 		try {
-			GhostScript_Only_PDF_Preview::load_regen_pdf_previews();
+			GS_Only_PDF_Preview::load_regen_pdf_previews();
 		} catch ( WPDieException $e ) {
 			unset( $e );
 		}
@@ -357,13 +357,13 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$out = wp_set_current_user( 1 ); // Need manage_options cap to add load-XXX
 
 		do_action( 'admin_init' );
-		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GhostScript_Only_PDF_Preview', 'wp_image_editors' ) ) );
+		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
 		GOPP_Image_Editor_GS::clear();
 
 		// Do nothing.
 		self::clear_func_args();
 		try {
-			GhostScript_Only_PDF_Preview::load_regen_pdf_previews();
+			GS_Only_PDF_Preview::load_regen_pdf_previews();
 		} catch ( WPDieException $e ) {
 			unset( $e );
 		}
@@ -377,7 +377,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		self::clear_func_args();
 		try {
-			GhostScript_Only_PDF_Preview::load_regen_pdf_previews();
+			GS_Only_PDF_Preview::load_regen_pdf_previews();
 		} catch ( WPDieException $e ) {
 			unset( $e );
 		}
@@ -399,7 +399,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		self::clear_func_args();
 		try {
-			GhostScript_Only_PDF_Preview::load_regen_pdf_previews();
+			GS_Only_PDF_Preview::load_regen_pdf_previews();
 		} catch ( WPDieException $e ) {
 			unset( $e );
 		}
@@ -421,7 +421,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		self::clear_func_args();
 		try {
-			GhostScript_Only_PDF_Preview::load_regen_pdf_previews();
+			GS_Only_PDF_Preview::load_regen_pdf_previews();
 		} catch ( WPDieException $e ) {
 			unset( $e );
 		}
@@ -442,7 +442,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		self::clear_func_args();
 		try {
-			GhostScript_Only_PDF_Preview::load_regen_pdf_previews();
+			GS_Only_PDF_Preview::load_regen_pdf_previews();
 		} catch ( WPDieException $e ) {
 			unset( $e );
 		}
@@ -463,18 +463,18 @@ class Tests_GOPP extends WP_UnitTestCase {
 	 */
 	function test_do_regen_pdf_previews() {
 		// Bad ids.
-		$output = GhostScript_Only_PDF_Preview::do_regen_pdf_previews( array( 1234, 2345, 3456 ), false /*check_mime_type*/, false /*do_transient*/ );
+		$output = GS_Only_PDF_Preview::do_regen_pdf_previews( array( 1234, 2345, 3456 ), false /*check_mime_type*/, false /*do_transient*/ );
 		$this->assertSame( 4, count( $output ) );
 		$this->assertSame( array( 3, 0, 3 ), array_slice( $output, 0, 3 ) );
 		$this->assertEmpty( get_transient( 'gopp_plugin_poll_rpp' ) );
 
 		// Bad ids check mime.
-		$output = GhostScript_Only_PDF_Preview::do_regen_pdf_previews( array( 1234, 2345, 3456 ), true /*check_mime_type*/, false /*do_transient*/ );
+		$output = GS_Only_PDF_Preview::do_regen_pdf_previews( array( 1234, 2345, 3456 ), true /*check_mime_type*/, false /*do_transient*/ );
 		$this->assertSame( 4, count( $output ) );
 		$this->assertSame( array( 3, 0, 0 ), array_slice( $output, 0, 3 ) );
 
 		// Bad ids transient.
-		$output = GhostScript_Only_PDF_Preview::do_regen_pdf_previews( array( 1234, 2345, 3456 ), false /*check_mime_type*/, true /*do_transient*/ );
+		$output = GS_Only_PDF_Preview::do_regen_pdf_previews( array( 1234, 2345, 3456 ), false /*check_mime_type*/, true /*do_transient*/ );
 		$this->assertSame( 4, count( $output ) );
 		$this->assertSame( array( 3, 0, 3 ), array_slice( $output, 0, 3 ) );
 		$this->assertEmpty( get_transient( 'gopp_plugin_poll_rpp' ) );
@@ -503,13 +503,13 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$ids[] = $attachment_id;
 
 		// No mime check.
-		$output = GhostScript_Only_PDF_Preview::do_regen_pdf_previews( $ids, false /*check_mime_type*/, true /*do_transient*/ );
+		$output = GS_Only_PDF_Preview::do_regen_pdf_previews( $ids, false /*check_mime_type*/, true /*do_transient*/ );
 		$this->assertSame( 4, count( $output ) );
 		$this->assertSame( array( count( $ids ), count( $ids ), 0 ), array_slice( $output, 0, 3 ) );
 		$this->assertEmpty( get_transient( 'gopp_plugin_poll_rpp' ) );
 
 		// Mime check.
-		$output = GhostScript_Only_PDF_Preview::do_regen_pdf_previews( $ids, true /*check_mime_type*/, true /*do_transient*/ );
+		$output = GS_Only_PDF_Preview::do_regen_pdf_previews( $ids, true /*check_mime_type*/, true /*do_transient*/ );
 		$this->assertSame( 4, count( $output ) );
 		$this->assertSame( array( count( $ids ), 3, 0 ), array_slice( $output, 0, 3 ) );
 		$this->assertEmpty( get_transient( 'gopp_plugin_poll_rpp' ) );
@@ -518,13 +518,13 @@ class Tests_GOPP extends WP_UnitTestCase {
 		unlink( get_attached_file( $ids[2] ) );
 
 		// 2 bad no mime check
-		$output = GhostScript_Only_PDF_Preview::do_regen_pdf_previews( $ids, false /*check_mime_type*/, true /*do_transient*/ );
+		$output = GS_Only_PDF_Preview::do_regen_pdf_previews( $ids, false /*check_mime_type*/, true /*do_transient*/ );
 		$this->assertSame( 4, count( $output ) );
 		$this->assertSame( array( count( $ids ), 3, 2 ), array_slice( $output, 0, 3 ) );
 		$this->assertEmpty( get_transient( 'gopp_plugin_poll_rpp' ) );
 
 		// 2 bad mime check
-		$output = GhostScript_Only_PDF_Preview::do_regen_pdf_previews( $ids, true /*check_mime_type*/, true /*do_transient*/ );
+		$output = GS_Only_PDF_Preview::do_regen_pdf_previews( $ids, true /*check_mime_type*/, true /*do_transient*/ );
 		$this->assertSame( 4, count( $output ) );
 		$this->assertSame( array( count( $ids ), 2, 1 ), array_slice( $output, 0, 3 ) );
 		$this->assertEmpty( get_transient( 'gopp_plugin_poll_rpp' ) );
@@ -539,7 +539,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		// No cap.
 		self::clear_func_args();
 		try {
-			GhostScript_Only_PDF_Preview::regen_pdf_previews();
+			GS_Only_PDF_Preview::regen_pdf_previews();
 		} catch ( WPDieException $e ) {
 			unset( $e );
 		}
@@ -548,12 +548,12 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$out = wp_set_current_user( 1 ); // Need manage_options cap.
 
 		do_action( 'admin_init' );
-		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GhostScript_Only_PDF_Preview', 'wp_image_editors' ) ) );
+		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
 		GOPP_Image_Editor_GS::clear();
 
 		// No pdfs.
 		ob_start();
-		GhostScript_Only_PDF_Preview::regen_pdf_previews();
+		GS_Only_PDF_Preview::regen_pdf_previews();
 		$out = ob_get_clean();
 		$this->assertTrue( false !== stripos( $out, 'nothing' ) );
 		$this->assertTrue( false === stripos( $out, 'gopp_regen_pdf_previews_form' ) );
@@ -565,7 +565,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertNotEmpty( $attachment_id );
 
 		ob_start();
-		GhostScript_Only_PDF_Preview::regen_pdf_previews();
+		GS_Only_PDF_Preview::regen_pdf_previews();
 		$out = ob_get_clean();
 		$this->assertTrue( false !== stripos( $out, '<strong>1</strong> PDF' ) );
 		$this->assertTrue( false !== stripos( $out, 'gopp_regen_pdf_previews_form' ) );
@@ -583,29 +583,29 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$old_wp_scripts = $wp_scripts;
 
 		$wp_scripts = null;
-		GhostScript_Only_PDF_Preview::admin_enqueue_scripts( 'blah' );
+		GS_Only_PDF_Preview::admin_enqueue_scripts( 'blah' );
 		ob_start();
 		wp_scripts()->do_items();
 		$out = ob_get_clean();
 		$this->assertEmpty( $out );
 
 		$wp_scripts = null;
-		GhostScript_Only_PDF_Preview::admin_enqueue_scripts( GhostScript_Only_PDF_Preview::$hook_suffix );
+		GS_Only_PDF_Preview::admin_enqueue_scripts( GS_Only_PDF_Preview::$hook_suffix );
 		ob_start();
 		wp_scripts()->do_items();
 		$out = ob_get_clean();
 		$this->assertTrue( false !== stripos( $out, 'jquery-migrate' ) );
-		$this->assertTrue( false !== stripos( $out, 'ghostscript-only-pdf-preview' ) );
+		$this->assertTrue( false !== stripos( $out, 'gs-only-pdf-preview' ) );
 		$this->assertTrue( false !== stripos( $out, 'gopp_plugin_params' ) );
 		$this->assertTrue( false !== stripos( $out, 'please_wait_msg' ) );
 
 		$wp_scripts = null;
-		GhostScript_Only_PDF_Preview::admin_enqueue_scripts( 'upload.php' );
+		GS_Only_PDF_Preview::admin_enqueue_scripts( 'upload.php' );
 		ob_start();
 		wp_scripts()->do_items();
 		$out = ob_get_clean();
 		$this->assertTrue( false !== stripos( $out, 'jquery-migrate' ) );
-		$this->assertTrue( false !== stripos( $out, 'ghostscript-only-pdf-preview' ) );
+		$this->assertTrue( false !== stripos( $out, 'gs-only-pdf-preview' ) );
 		$this->assertTrue( false !== stripos( $out, 'gopp_plugin_params' ) );
 		$this->assertTrue( false !== stripos( $out, 'no_items_selected_msg' ) );
 
@@ -616,12 +616,12 @@ class Tests_GOPP extends WP_UnitTestCase {
 	 * Test spinner.
 	 */
 	function test_spinner() {
-		$output = GhostScript_Only_PDF_Preview::spinner( 4, true );
+		$output = GS_Only_PDF_Preview::spinner( 4, true );
 		$this->assertFalse( false !== stripos( $output, '<img' ) );
 		$this->assertTrue( false !== stripos( $output, 'margin-top:4px' ) );
 		$this->assertTrue( false !== stripos( $output, 'is-active' ) );
 
-		$output = GhostScript_Only_PDF_Preview::spinner( -2, false );
+		$output = GS_Only_PDF_Preview::spinner( -2, false );
 		$this->assertFalse( false !== stripos( $output, '<img' ) );
 		$this->assertTrue( false !== stripos( $output, 'margin-top:-2px' ) );
 		$this->assertFalse( false !== stripos( $output, 'is-active' ) );
@@ -629,12 +629,12 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$http_user_agent = isset( $_SERVER['HTTP_USER_AGENT'] ) ? $_SERVER['HTTP_USER_AGENT'] : null;	
 
 		$_SERVER['HTTP_USER_AGENT'] = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.79 Safari/537.36 Edge/14.14393';
-		$output = GhostScript_Only_PDF_Preview::spinner( 0, true );
+		$output = GS_Only_PDF_Preview::spinner( 0, true );
 		$this->assertTrue( false !== stripos( $output, '<img' ) );
 		$this->assertTrue( false !== stripos( $output, 'margin-top:0px' ) );
 		$this->assertTrue( false !== stripos( $output, 'is-active' ) );
 
-		$output = GhostScript_Only_PDF_Preview::spinner( 0, false );
+		$output = GS_Only_PDF_Preview::spinner( 0, false );
 		$this->assertTrue( false !== stripos( $output, '<img' ) );
 		$this->assertTrue( false !== stripos( $output, 'margin-top:0px' ) );
 		$this->assertFalse( false !== stripos( $output, 'is-active' ) );
@@ -650,12 +650,12 @@ class Tests_GOPP extends WP_UnitTestCase {
 		// Succeed.
 		$out = wp_set_current_user( 1 ); // Need manage_options cap.
 		$actions = array( 'trash' => 'Trash' );
-		$output = GhostScript_Only_PDF_Preview::bulk_actions_upload( $actions );
+		$output = GS_Only_PDF_Preview::bulk_actions_upload( $actions );
 		$this->assertArrayHasKey( 'gopp_regen_pdf_previews', $output );
 
 		// Fail.
 		$out = wp_set_current_user( 0 ); // Need manage_options cap.
-		$output = GhostScript_Only_PDF_Preview::bulk_actions_upload( $actions );
+		$output = GS_Only_PDF_Preview::bulk_actions_upload( $actions );
 		$this->assertArrayNotHasKey( 'gopp_regen_pdf_previews', $output );
 	}
 
@@ -668,14 +668,14 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$location = 'blah';
 		$doaction = 'gopp_regen_pdf_previews';
 		$post_ids = array( 1 );
-		$output = GhostScript_Only_PDF_Preview::handle_bulk_actions_upload( $location, $doaction, $post_ids );
+		$output = GS_Only_PDF_Preview::handle_bulk_actions_upload( $location, $doaction, $post_ids );
 		$this->assertTrue( false !== stripos( $output, 'gopp_rpp' ) );
 
 		// Fail.
 		$out = wp_set_current_user( 0 ); // Need manage_options cap.
-		$output = GhostScript_Only_PDF_Preview::handle_bulk_actions_upload( $location, $doaction, $post_ids );
+		$output = GS_Only_PDF_Preview::handle_bulk_actions_upload( $location, $doaction, $post_ids );
 		$this->assertSame( $location, $output );
-		$output = GhostScript_Only_PDF_Preview::handle_bulk_actions_upload( $location, 'something', $post_ids );
+		$output = GS_Only_PDF_Preview::handle_bulk_actions_upload( $location, 'something', $post_ids );
 		$this->assertSame( $location, $output );
 	}
 
@@ -685,7 +685,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 	function test_removable_query_args() {
 
 		$removable_query_args = array( 'wow' );
-		$output = GhostScript_Only_PDF_Preview::removable_query_args( $removable_query_args );
+		$output = GS_Only_PDF_Preview::removable_query_args( $removable_query_args );
 		$this->assertContains( 'gopp_rpp', $output );
 	}
 
@@ -700,13 +700,13 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$old_request_uri = $_SERVER['REQUEST_URI'];
 
 		$_SERVER['REQUEST_URI'] = 'http://example.org/wp-admin/tools.php?page=' . GOPP_REGEN_PDF_PREVIEWS_SLUG . '&gopp_rpp=1_1_0_0.2';
-		GhostScript_Only_PDF_Preview::current_screen( $dummy_screen );
+		GS_Only_PDF_Preview::current_screen( $dummy_screen );
 		$this->assertTrue( false === stripos( $_SERVER['REQUEST_URI'], 'gopp_rpp' ) );
 
 		// Fail.
 		$_SERVER['REQUEST_URI'] = 'http://example.org/wp-admin/tools.php?page=' . GOPP_REGEN_PDF_PREVIEWS_SLUG . '&gopp_rpp=1_1_0_0.2';
 		$dummy_screen->id = 'blah';
-		GhostScript_Only_PDF_Preview::current_screen( $dummy_screen );
+		GS_Only_PDF_Preview::current_screen( $dummy_screen );
 		$this->assertTrue( false !== stripos( $_SERVER['REQUEST_URI'], 'gopp_rpp' ) );
 
 		$_SERVER['REQUEST_URI'] = $old_request_uri;
@@ -724,12 +724,12 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$post->post_mime_type = 'blah';
 		$detached = null;
 
-		$out = GhostScript_Only_PDF_Preview::media_row_actions( $actions, $post, $detached );
+		$out = GS_Only_PDF_Preview::media_row_actions( $actions, $post, $detached );
 		$this->assertEmpty( $out );
 
 		$post->post_mime_type = 'application/pdf';
 
-		$out = GhostScript_Only_PDF_Preview::media_row_actions( $actions, $post, $detached );
+		$out = GS_Only_PDF_Preview::media_row_actions( $actions, $post, $detached );
 		$this->assertNotEmpty( $out );
 		$this->assertTrue( isset( $out['gopp_regen_pdf_preview'] ) );
 		$this->assertTrue( false !== stripos( $out['gopp_regen_pdf_preview'], '1234' ) );
@@ -743,16 +743,16 @@ class Tests_GOPP extends WP_UnitTestCase {
 	function test_gopp_media_row_action() {
 		if ( ! defined( 'GOPP_TESTING' ) ) define( 'GOPP_TESTING', true );
 
-		$out = GhostScript_Only_PDF_Preview::gopp_media_row_action();
+		$out = GS_Only_PDF_Preview::gopp_media_row_action();
 		$this->assertTrue( false !== stripos( $out, 'allowed' ) );
 
 		$out = wp_set_current_user( 1 ); // Need manage_options cap.
 
 		do_action( 'admin_init' );
-		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GhostScript_Only_PDF_Preview', 'wp_image_editors' ) ) );
+		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
 		GOPP_Image_Editor_GS::clear();
 
-		$out = GhostScript_Only_PDF_Preview::gopp_media_row_action();
+		$out = GS_Only_PDF_Preview::gopp_media_row_action();
 		$this->assertTrue( false !== stripos( $out, 'invalid nonce' ) );
 
 		// Bad id.
@@ -762,7 +762,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$_POST['nonce'] = wp_create_nonce( 'gopp_media_row_action_' . $id );
 		$_REQUEST = $_POST;
 		$this->assertTrue( 1 === wp_verify_nonce( $_POST['nonce'], 'gopp_media_row_action_' . $id ) );
-		$out = GhostScript_Only_PDF_Preview::gopp_media_row_action();
+		$out = GS_Only_PDF_Preview::gopp_media_row_action();
 		$this->assertTrue( false !== stripos( $out, 'invalid id' ) );
 
 		// Non-existent id.
@@ -771,7 +771,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$_POST['nonce'] = wp_create_nonce( 'gopp_media_row_action_' . $id );
 		$_REQUEST = $_POST;
 		$this->assertTrue( 1 === wp_verify_nonce( $_POST['nonce'], 'gopp_media_row_action_' . $id ) );
-		$out = GhostScript_Only_PDF_Preview::gopp_media_row_action();
+		$out = GS_Only_PDF_Preview::gopp_media_row_action();
 		$this->assertTrue( false !== stripos( $out, 'invalid id' ) );
 
 		// Success.
@@ -783,13 +783,13 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$_POST['nonce'] = wp_create_nonce( 'gopp_media_row_action_' . $id );
 		$_REQUEST = $_POST;
 		$this->assertTrue( 1 === wp_verify_nonce( $_POST['nonce'], 'gopp_media_row_action_' . $id ) );
-		$out = GhostScript_Only_PDF_Preview::gopp_media_row_action();
+		$out = GS_Only_PDF_Preview::gopp_media_row_action();
 		$this->assertTrue( false !== stripos( $out, 'success' ) );
 
 		// Fail.
 		$file = get_attached_file( $id );
 		unlink( $file );
-		$out = GhostScript_Only_PDF_Preview::gopp_media_row_action();
+		$out = GS_Only_PDF_Preview::gopp_media_row_action();
 		$this->assertTrue( false !== stripos( $out, 'failed' ) );
 
 		// Non-PDF.
@@ -801,7 +801,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$_POST['nonce'] = wp_create_nonce( 'gopp_media_row_action_' . $id );
 		$_REQUEST = $_POST;
 		$this->assertTrue( 1 === wp_verify_nonce( $_POST['nonce'], 'gopp_media_row_action_' . $id ) );
-		$out = GhostScript_Only_PDF_Preview::gopp_media_row_action();
+		$out = GS_Only_PDF_Preview::gopp_media_row_action();
 		$this->assertTrue( false !== stripos( $out, 'invalid id' ) );
 
 		$out = wp_set_current_user( 0 );
@@ -813,7 +813,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 	function test_gopp_poll_regen_pdf_previews() {
 		if ( ! defined( 'GOPP_TESTING' ) ) define( 'GOPP_TESTING', true );
 
-		$out = GhostScript_Only_PDF_Preview::gopp_poll_regen_pdf_previews();
+		$out = GS_Only_PDF_Preview::gopp_poll_regen_pdf_previews();
 		$this->assertSame( '{"msg":""}', $out );
 
 		$out = wp_set_current_user( 1 ); // Need manage_options cap.
@@ -822,7 +822,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		add_filter( 'wp_doing_ajax', '__return_true' );
 		self::clear_func_args();
 		try {
-			GhostScript_Only_PDF_Preview::gopp_poll_regen_pdf_previews();
+			GS_Only_PDF_Preview::gopp_poll_regen_pdf_previews();
 		} catch ( WPDieException $e ) {
 			unset( $e );
 		}
@@ -836,17 +836,17 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$_POST['cnt'] = (string) $cnt;
 		$_POST['poll_nonce'] = wp_create_nonce( 'gopp_poll_regen_pdf_previews_' . $cnt );
 		$_REQUEST = $_POST;
-		$out = GhostScript_Only_PDF_Preview::gopp_poll_regen_pdf_previews();
+		$out = GS_Only_PDF_Preview::gopp_poll_regen_pdf_previews();
 		$this->assertSame( '{"msg":""}', $out );
 
 		// Transient bad check_cnt.
 		set_transient( 'gopp_plugin_poll_rpp', array( 2, 1 ) );
-		$out = GhostScript_Only_PDF_Preview::gopp_poll_regen_pdf_previews();
+		$out = GS_Only_PDF_Preview::gopp_poll_regen_pdf_previews();
 		$this->assertSame( '{"msg":""}', $out );
 
 		// Success.
 		set_transient( 'gopp_plugin_poll_rpp', array( 1, 0 ) );
-		$out = GhostScript_Only_PDF_Preview::gopp_poll_regen_pdf_previews();
+		$out = GS_Only_PDF_Preview::gopp_poll_regen_pdf_previews();
 		$this->assertSame( '{"msg":"100% (1)"}', $out );
 	}
 }

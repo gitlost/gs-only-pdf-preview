@@ -2,9 +2,9 @@
 # This file is distributed under the GPLv2.
 msgid ""
 msgstr ""
-"Project-Id-Version: GhostScript Only PDF Preview 1.0.0\n"
+"Project-Id-Version: GS Only PDF Preview 1.0.0\n"
 "Report-Msgid-Bugs-To: "
-"https://wordpress.org/support/plugin/ghostscript-only-pdf-preview\n"
+"https://wordpress.org/support/plugin/gs-only-pdf-preview\n"
 "POT-Creation-Date: 2016-12-23 14:39:09+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -25,76 +25,75 @@ msgstr ""
 "X-Poedit-Bookmarks: \n"
 "X-Textdomain-Support: yes\n"
 
-#: ghostscript-only-pdf-preview.php:94
+#: gs-only-pdf-preview.php:94
 #. translators: %s: url to admin plugins page.
 msgid ""
-"The plugin \"GhostScript Only PDF Preview\" cannot be activated as it "
-"relies on the PHP function <code>exec</code>, which has been disabled on "
-"your system via the <code>php.ini</code> directive "
-"<code>disable_functions</code>. <a href=\"%s\">Return to Plugins page.</a>"
+"The plugin \"GS Only PDF Preview\" cannot be activated as it relies on the "
+"PHP function <code>exec</code>, which has been disabled on your system via "
+"the <code>php.ini</code> directive <code>disable_functions</code>. <a "
+"href=\"%s\">Return to Plugins page.</a>"
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:100
+#: gs-only-pdf-preview.php:100
 #. translators: %s: url to admin plugins page.
 msgid ""
-"The plugin \"GhostScript Only PDF Preview\" cannot be activated as it "
-"relies on the PHP function <code>exec</code> being enabled on your system. "
-"<a href=\"%s\">Return to Plugins page.</a>"
+"The plugin \"GS Only PDF Preview\" cannot be activated as it relies on the "
+"PHP function <code>exec</code> being enabled on your system. <a "
+"href=\"%s\">Return to Plugins page.</a>"
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:113
+#: gs-only-pdf-preview.php:113
 #. translators: %s: url to admin plugins page.
 msgid ""
-"The plugin \"GhostScript Only PDF Preview\" cannot be activated as it "
-"relies on the PHP function <code>exec</code>, which has been disabled on "
-"your system via the suhosin extension directive "
+"The plugin \"GS Only PDF Preview\" cannot be activated as it relies on the "
+"PHP function <code>exec</code>, which has been disabled on your system via "
+"the suhosin extension directive "
 "<code>suhosin.executor.func.blacklist</code>. <a href=\"%s\">Return to "
 "Plugins page.</a>"
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:125
+#: gs-only-pdf-preview.php:125
 #. translators: %s: url to admin plugins page.
 msgid ""
-"The plugin \"GhostScript Only PDF Preview\" cannot be activated as it is "
+"The plugin \"GS Only PDF Preview\" cannot be activated as it is "
 "incompatible with the <code>php.ini</code> directive "
 "<code>safe_mode</code>, enabled on your system. <a href=\"%s\">Return to "
 "Plugins page.</a>"
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:141
+#: gs-only-pdf-preview.php:141
 #. translators: %1$s: lowest compatible WordPress version; %2$s: user's current
 #. WordPress version; %3$s: url to admin plugins page.
 msgid ""
-"The plugin \"GhostScript Only PDF Preview\" cannot be activated as it "
-"requires WordPress %1$s to work and you have WordPress %2$s. <a "
-"href=\"%3$s\">Return to Plugins page.</a>"
+"The plugin \"GS Only PDF Preview\" cannot be activated as it requires "
+"WordPress %1$s to work and you have WordPress %2$s. <a href=\"%3$s\">Return "
+"to Plugins page.</a>"
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:154
+#: gs-only-pdf-preview.php:154
 #. translators: %1$s: highest WordPress version tested; %2$s: user's current
 #. WordPress version.
 msgid ""
-"<strong>Warning: untested!</strong> The plugin \"GhostScript Only PDF "
-"Preview\" has only been tested on WordPress versions up to %1$s. You have "
-"WordPress %2$s."
+"<strong>Warning: untested!</strong> The plugin \"GS Only PDF Preview\" has "
+"only been tested on WordPress versions up to %1$s. You have WordPress %2$s."
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:166
+#: gs-only-pdf-preview.php:166
 msgid ""
-"<strong>Warning: no GhostScript!</strong> The plugin \"GhostScript Only PDF "
+"<strong>Warning: no GhostScript!</strong> The plugin \"GS Only PDF "
 "Preview\" cannot determine the server location of your GhostScript "
 "executable."
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:219
+#: gs-only-pdf-preview.php:219
 msgid "Invalid arguments!"
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:224
+#: gs-only-pdf-preview.php:224
 msgid "No PDFs found!"
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:230
+#: gs-only-pdf-preview.php:230
 #. translators: %1$s: formatted number of PDF previews regenerated; %2$s:
 #. formatted number of seconds to one decimal place it took.
 msgid "%1$s PDF preview regenerated in %2$s seconds."
@@ -102,83 +101,83 @@ msgid_plural "%1$s PDF previews regenerated in %2$s seconds."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ghostscript-only-pdf-preview.php:236
+#: gs-only-pdf-preview.php:236
 #. translators: %s: formatted number of non-PDFs ignored.
 msgid "%s non-PDF ignored."
 msgid_plural "%s non-PDFs ignored."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ghostscript-only-pdf-preview.php:241
+#: gs-only-pdf-preview.php:241
 msgid "Nothing updated!"
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:245
+#: gs-only-pdf-preview.php:245
 #. translators: %s: formatted number of non-PDFs ignored.
 msgid "Nothing updateable! %s non-PDF ignored."
 msgid_plural "Nothing updateable! %s non-PDFs ignored."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ghostscript-only-pdf-preview.php:252
+#: gs-only-pdf-preview.php:252
 #. translators: %s: formatted number of PDF previews that failed to regenerate.
 msgid "%s PDF preview not regenerated."
 msgid_plural "%s PDF previews not regenerated."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ghostscript-only-pdf-preview.php:258
+#: gs-only-pdf-preview.php:258
 msgid "You can go again below if you want."
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:296 ghostscript-only-pdf-preview.php:432
-#: ghostscript-only-pdf-preview.php:522
+#: gs-only-pdf-preview.php:296 gs-only-pdf-preview.php:432
+#: gs-only-pdf-preview.php:522
 msgid "Regenerate PDF Previews"
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:296
+#: gs-only-pdf-preview.php:296
 msgid "Regen. PDF Previews"
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:310 ghostscript-only-pdf-preview.php:397
-#: ghostscript-only-pdf-preview.php:593
+#: gs-only-pdf-preview.php:310 gs-only-pdf-preview.php:397
+#: gs-only-pdf-preview.php:593
 msgid "Sorry, you are not allowed to access this page."
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:403
-msgid "GhostScript Only PDF Preview - Regenerate PDF Previews"
+#: gs-only-pdf-preview.php:403
+msgid "GS Only PDF Preview - Regenerate PDF Previews"
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:408
+#: gs-only-pdf-preview.php:408
 msgid ""
 "This tool is for regenerating the thumbnail previews of PDFs, but no PDFs "
 "have been uploaded, so it has nothing to do."
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:415
+#: gs-only-pdf-preview.php:415
 msgid ""
 "<strong>Warning: cannot set max execution time!</strong> The maximum time "
 "allowed for a PHP script to run on your system could not be set, so you may "
 "experience the White Screen Of Death (WSOD) on trying this."
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:424
+#: gs-only-pdf-preview.php:424
 msgid "Regenerate the thumbnail previews of PDFs uploaded to your system."
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:429
+#: gs-only-pdf-preview.php:429
 #. translators: %s: formatted number of PDFs found.
 msgid "<strong>%s</strong> PDF has been found."
 msgid_plural "<strong>%s</strong> PDFs have been found."
 msgstr[0] ""
 msgstr[1] ""
 
-#: ghostscript-only-pdf-preview.php:437
+#: gs-only-pdf-preview.php:437
 #. translators: %s: formatted number (greater than 10) of PDFs found.
 msgid "Regenerating %s PDF previews can take a long time."
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:449
+#: gs-only-pdf-preview.php:449
 #. translators: %s: url to the Media Library page in list mode.
 msgid ""
 "Note that you can also regenerate PDF previews in batches or individually "
@@ -187,113 +186,113 @@ msgid ""
 "Media Library</a>."
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:486
+#: gs-only-pdf-preview.php:486
 msgid "Please wait..."
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:490
+#: gs-only-pdf-preview.php:490
 msgid "No items selected!"
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:491
+#: gs-only-pdf-preview.php:491
 msgid "Regenerate Preview ajax action not available!"
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:577
+#: gs-only-pdf-preview.php:577
 #. translators: %s: attachment title
 msgid "Regenerate the PDF preview for &#8220;%s&#8221;"
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:578
+#: gs-only-pdf-preview.php:578
 msgid "Regenerate&nbsp;Preview"
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:598
+#: gs-only-pdf-preview.php:598
 msgid "Invalid nonce."
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:601
+#: gs-only-pdf-preview.php:601
 msgid "Invalid ID."
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:607
+#: gs-only-pdf-preview.php:607
 msgid "Failed to generate the PDF preview."
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:612
+#: gs-only-pdf-preview.php:612
 msgid ""
 "Successfully regenerated the PDF preview. It's best to refresh your browser "
 "to see the updated thumbnail correctly."
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:614
+#: gs-only-pdf-preview.php:614
 msgid ""
 "Successfully regenerated the PDF preview. You will need to refresh your "
 "browser to see the updated thumbnail."
 msgstr ""
 
-#: ghostscript-only-pdf-preview.php:643
+#: gs-only-pdf-preview.php:643
 #. translators: %1$d: percentage of PDF previews completed; %2$d: completed
 #. count.
 msgid "%d%% (%d)"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:155
+#: includes/class-gopp-image-editor-gs.php:156
 msgid "Unsupported MIME type."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:163
+#: includes/class-gopp-image-editor-gs.php:164
 msgid "No GhostScript."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:169
+#: includes/class-gopp-image-editor-gs.php:170
 msgid "Image Editor Save Failed"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:176
+#: includes/class-gopp-image-editor-gs.php:177
 msgid "Could not read image size."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:214
+#: includes/class-gopp-image-editor-gs.php:215
 msgid "Loading from URL not supported."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:219
-#: includes/class-gopp-image-editor-gs.php:224
+#: includes/class-gopp-image-editor-gs.php:220
+#: includes/class-gopp-image-editor-gs.php:225
 msgid "Unsupported file name."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:234
+#: includes/class-gopp-image-editor-gs.php:235
 msgid "File doesn&#8217;t exist?"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:241
+#: includes/class-gopp-image-editor-gs.php:242
 msgid "File is not a PDF."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:622
+#: includes/class-gopp-image-editor-gs.php:623
 msgid "Attempted to set PDF preview resolution to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:677
+#: includes/class-gopp-image-editor-gs.php:678
 msgid "Attempted to set PDF preview page to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:696
-#: includes/class-gopp-image-editor-gs.php:717
-#: includes/class-gopp-image-editor-gs.php:736
-#: includes/class-gopp-image-editor-gs.php:749
-#: includes/class-gopp-image-editor-gs.php:763
-#: includes/class-gopp-image-editor-gs.php:776
+#: includes/class-gopp-image-editor-gs.php:697
+#: includes/class-gopp-image-editor-gs.php:718
+#: includes/class-gopp-image-editor-gs.php:737
+#: includes/class-gopp-image-editor-gs.php:750
+#: includes/class-gopp-image-editor-gs.php:764
+#: includes/class-gopp-image-editor-gs.php:777
 msgid "Unsupported operation."
 msgstr ""
 
 #. Plugin Name of the plugin/theme
-msgid "GhostScript Only PDF Preview"
+msgid "GS Only PDF Preview"
 msgstr ""
 
 #. Plugin URI of the plugin/theme
-msgid "https://github.com/gitlost/ghostscript-only-pdf-preview"
+msgid "https://github.com/gitlost/gs-only-pdf-preview"
 msgstr ""
 
 #. Description of the plugin/theme

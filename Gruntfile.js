@@ -33,8 +33,8 @@ module.exports = function( grunt ) { //The wrapper function
 				options: {
 					'screenshot_url': 'https://github.com/gitlost/{plugin}/raw/master/assets/{screenshot}.png', //'https://ps.w.org/{plugin}/assets/{screenshot}.png',
 					'post_convert': function ( readme ) {
-						return '[![Build Status](https://travis-ci.org/gitlost/ghostscript-only-pdf-preview.png?branch=master)](https://travis-ci.org/gitlost/ghostscript-only-pdf-preview)\n'
-							+ '[![codecov.io](http://codecov.io/github/gitlost/ghostscript-only-pdf-preview/coverage.svg?branch=master)](http://codecov.io/github/gitlost/ghostscript-only-pdf-preview?branch=master)\n'
+						return '[![Build Status](https://travis-ci.org/gitlost/gs-only-pdf-preview.png?branch=master)](https://travis-ci.org/gitlost/gs-only-pdf-preview)\n'
+							+ '[![codecov.io](http://codecov.io/github/gitlost/gs-only-pdf-preview/coverage.svg?branch=master)](http://codecov.io/github/gitlost/gs-only-pdf-preview?branch=master)\n'
 							+ readme;
 					}
 				}
@@ -48,7 +48,7 @@ module.exports = function( grunt ) { //The wrapper function
 					domainPath: '/languages',         // Where to save the POT file.
 					exclude: [ 'tests/' ],            // List of files or directories to ignore.
 					include: [],                      // List of files or directories to include.
-					mainFile: 'ghostscript-only-pdf-preview.php',   // Main project file.
+					mainFile: 'gs-only-pdf-preview.php',   // Main project file.
 					potComments: '',                  // The copyright at the beginning of the POT file.
 					potFilename: '',                  // Name of the POT file.
 					potHeaders: {
@@ -79,16 +79,16 @@ module.exports = function( grunt ) { //The wrapper function
 				files: [
 					{
 						src: [
-							'../ghostscript-only-pdf-preview/readme.txt',
-							'../ghostscript-only-pdf-preview/ghostscript-only-pdf-preview.php',
-							'../ghostscript-only-pdf-preview/uninstall.php',
-							'../ghostscript-only-pdf-preview/includes/class-gopp-image-editor-gs.php',
-							'../ghostscript-only-pdf-preview/includes/debug-gopp-image-editor-gs.php',
-							'../ghostscript-only-pdf-preview/js/ghostscript-only-pdf-preview.js',
-							'../ghostscript-only-pdf-preview/js/ghostscript-only-pdf-preview.min.js',
-							'../ghostscript-only-pdf-preview/languages/ghostscript-only-pdf-preview.pot',
-							'../ghostscript-only-pdf-preview/languages/ghostscript-only-pdf-preview-fr_FR.mo',
-							'../ghostscript-only-pdf-preview/languages/ghostscript-only-pdf-preview-fr_FR.po'
+							'../gs-only-pdf-preview/readme.txt',
+							'../gs-only-pdf-preview/gs-only-pdf-preview.php',
+							'../gs-only-pdf-preview/uninstall.php',
+							'../gs-only-pdf-preview/includes/class-gopp-image-editor-gs.php',
+							'../gs-only-pdf-preview/includes/debug-gopp-image-editor-gs.php',
+							'../gs-only-pdf-preview/js/gs-only-pdf-preview.js',
+							'../gs-only-pdf-preview/js/gs-only-pdf-preview.min.js',
+							'../gs-only-pdf-preview/languages/gs-only-pdf-preview.pot',
+							'../gs-only-pdf-preview/languages/gs-only-pdf-preview-fr_FR.mo',
+							'../gs-only-pdf-preview/languages/gs-only-pdf-preview-fr_FR.po'
 						]
 					}
 				]

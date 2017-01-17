@@ -1,6 +1,6 @@
-[![Build Status](https://travis-ci.org/gitlost/ghostscript-only-pdf-preview.png?branch=master)](https://travis-ci.org/gitlost/ghostscript-only-pdf-preview)
-[![codecov.io](http://codecov.io/github/gitlost/ghostscript-only-pdf-preview/coverage.svg?branch=master)](http://codecov.io/github/gitlost/ghostscript-only-pdf-preview?branch=master)
-# GhostScript Only PDF Preview #
+[![Build Status](https://travis-ci.org/gitlost/gs-only-pdf-preview.png?branch=master)](https://travis-ci.org/gitlost/gs-only-pdf-preview)
+[![codecov.io](http://codecov.io/github/gitlost/gs-only-pdf-preview/coverage.svg?branch=master)](http://codecov.io/github/gitlost/gs-only-pdf-preview?branch=master)
+# GS Only PDF Preview #
 **Contributors:** [gitlost](https://profiles.wordpress.org/gitlost)  
 **Tags:** GhostScript, PDF, PDF Preview, GhostScript Only  
 **Requires at least:** 4.7.0  
@@ -37,7 +37,7 @@ I believe these concerns are addressed here through screening of the file and it
 
 ### Performance ###
 
-Unsurprisingly it's faster. Crude benchmarking (see the [script `perf_vs_imagick.php`](https://github.com/gitlost/ghostscript-only-pdf-preview/blob/master/perf/perf_vs_imagick.php)) suggest it's around 40% faster. However the production of the preview is only a part of the overhead of uploading a PDF (and doesn't include producing the intermediate thumbnail sizes for instance) so any speed-up will probably not be that noticeable.
+Unsurprisingly it's faster. Crude benchmarking (see the [script `perf_vs_imagick.php`](https://github.com/gitlost/gs-only-pdf-preview/blob/master/perf/perf_vs_imagick.php)) suggest it's around 40% faster. However the production of the preview is only a part of the overhead of uploading a PDF (and doesn't include producing the intermediate thumbnail sizes for instance) so any speed-up will probably not be that noticeable.
 
 On jpeg thumbnail size it appears to be comparable, maybe a bit larger on average. To mitigate this the default jpeg quality for the PDF preview has been lowered to 70 (from 82), which results in some extra "ringing" (speckles around letters) but the previews tested remain very readable. Note that this only affects the "full" PDF thumbnail - the intermediate-sized thumbnails as produced by `Imagick` or `GD` and any other non-PDF images remain at the standard jpeg quality of 82. Use the [WP filter `wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) to override this, for instance to restore the quality to 82 you could add to your theme's "functions.php":
 
@@ -61,7 +61,7 @@ A google-cheating schoolboy French translation is supplied.
 
 The plugin runs on WP 4.7.0 and 4.7.1, and requires GhostScript to be installed on the server. The plugin should run on PHP 5.2.17 to 7.1, and on both Unix and Windows systems.
 
-The project is on [github](https://github.com/gitlost/ghostscript-only-pdf-preview).
+The project is on [github](https://github.com/gitlost/gs-only-pdf-preview).
 
 ## Installation ##
 
@@ -118,22 +118,22 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 ## Screenshots ##
 
 ### 1. Before: upload of various PDFs with alpha channels and/or CMYK color spaces resulting in broken previews. ###
-![Before: upload of various PDFs with alpha channels and/or CMYK color spaces resulting in broken previews.](https://github.com/gitlost/ghostscript-only-pdf-preview/raw/master/assets/screenshot-1.png)
+![Before: upload of various PDFs with alpha channels and/or CMYK color spaces resulting in broken previews.](https://github.com/gitlost/gs-only-pdf-preview/raw/master/assets/screenshot-1.png)
 
 ### 2. After: upload of the same PDFs resulting in a result. ###
-![After: upload of the same PDFs resulting in a result.](https://github.com/gitlost/ghostscript-only-pdf-preview/raw/master/assets/screenshot-2.png)
+![After: upload of the same PDFs resulting in a result.](https://github.com/gitlost/gs-only-pdf-preview/raw/master/assets/screenshot-2.png)
 
 ### 3. Regenerate PDF Previews administration tool front page. ###
-![Regenerate PDF Previews administration tool front page.](https://github.com/gitlost/ghostscript-only-pdf-preview/raw/master/assets/screenshot-3.png)
+![Regenerate PDF Previews administration tool front page.](https://github.com/gitlost/gs-only-pdf-preview/raw/master/assets/screenshot-3.png)
 
 ### 4. Regenerate PDF Previews administration tool after processing. ###
-![Regenerate PDF Previews administration tool after processing.](https://github.com/gitlost/ghostscript-only-pdf-preview/raw/master/assets/screenshot-4.png)
+![Regenerate PDF Previews administration tool after processing.](https://github.com/gitlost/gs-only-pdf-preview/raw/master/assets/screenshot-4.png)
 
 ### 5. Regenerate PDF Previews bulk action in list mode of Media Library. ###
-![Regenerate PDF Previews bulk action in list mode of Media Library.](https://github.com/gitlost/ghostscript-only-pdf-preview/raw/master/assets/screenshot-5.png)
+![Regenerate PDF Previews bulk action in list mode of Media Library.](https://github.com/gitlost/gs-only-pdf-preview/raw/master/assets/screenshot-5.png)
 
 ### 6. Regenerate Preview row action in list mode of Media Library. ###
-![Regenerate Preview row action in list mode of Media Library.](https://github.com/gitlost/ghostscript-only-pdf-preview/raw/master/assets/screenshot-6.png)
+![Regenerate Preview row action in list mode of Media Library.](https://github.com/gitlost/gs-only-pdf-preview/raw/master/assets/screenshot-6.png)
 
 
 ## Changelog ##

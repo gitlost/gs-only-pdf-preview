@@ -1,4 +1,4 @@
-=== GhostScript Only PDF Preview ===
+=== GS Only PDF Preview ===
 Contributors: gitlost
 Tags: GhostScript, PDF, PDF Preview, GhostScript Only
 Requires at least: 4.7.0
@@ -35,7 +35,7 @@ I believe these concerns are addressed here through screening of the file and it
 
 = Performance =
 
-Unsurprisingly it's faster. Crude benchmarking (see the [script `perf_vs_imagick.php`](https://github.com/gitlost/ghostscript-only-pdf-preview/blob/master/perf/perf_vs_imagick.php)) suggest it's around 40% faster. However the production of the preview is only a part of the overhead of uploading a PDF (and doesn't include producing the intermediate thumbnail sizes for instance) so any speed-up will probably not be that noticeable.
+Unsurprisingly it's faster. Crude benchmarking (see the [script `perf_vs_imagick.php`](https://github.com/gitlost/gs-only-pdf-preview/blob/master/perf/perf_vs_imagick.php)) suggest it's around 40% faster. However the production of the preview is only a part of the overhead of uploading a PDF (and doesn't include producing the intermediate thumbnail sizes for instance) so any speed-up will probably not be that noticeable.
 
 On jpeg thumbnail size it appears to be comparable, maybe a bit larger on average. To mitigate this the default jpeg quality for the PDF preview has been lowered to 70 (from 82), which results in some extra "ringing" (speckles around letters) but the previews tested remain very readable. Note that this only affects the "full" PDF thumbnail - the intermediate-sized thumbnails as produced by `Imagick` or `GD` and any other non-PDF images remain at the standard jpeg quality of 82. Use the [WP filter `wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) to override this, for instance to restore the quality to 82 you could add to your theme's "functions.php":
 
@@ -59,7 +59,7 @@ A google-cheating schoolboy French translation is supplied.
 
 The plugin runs on WP 4.7.0 and 4.7.1, and requires GhostScript to be installed on the server. The plugin should run on PHP 5.2.17 to 7.1, and on both Unix and Windows systems.
 
-The project is on [github](https://github.com/gitlost/ghostscript-only-pdf-preview).
+The project is on [github](https://github.com/gitlost/gs-only-pdf-preview).
 
 == Installation ==
 
