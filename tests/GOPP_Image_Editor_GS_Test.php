@@ -183,7 +183,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 			array( 'non_existent', false, 'File doesn&#8217;t exist?' ), // Non-existent.
 			array( 'non_existent', true, true ), // Non-existent.
 			array( 'http://external', false, 'Loading from URL not supported.' ), // Non-local.
-			array( '@args_file', false, 'Unsupported file name.' ), // GhostScript argument file.
+			array( '@args_file', false, 'Unsupported file name.' ), // Ghostscript argument file.
 			array( 'space filename', false, 'Unsupported file name.' ), // File name containing space.
 			array( 'quote\'filename', false, 'Unsupported file name.' ), // File name containing single quote.
 			array( 'double_quote"filename', false, 'Unsupported file name.' ), // File name containing double quote.

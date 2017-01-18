@@ -2,7 +2,7 @@
 /**
  * Plugin Name: GS Only PDF Preview
  * Plugin URI: https://github.com/gitlost/gs-only-pdf-preview
- * Description: Uses GhostScript directly to generate PDF previews.
+ * Description: Uses Ghostscript directly to generate PDF previews.
  * Version: 1.0.0
  * Author: gitlost
  * Author URI: https://profiles.wordpress.org/gitlost
@@ -62,7 +62,7 @@ class GS_Only_PDF_Preview {
 
 	/**
 	 * Called on 'wp_image_editors' action.
-	 * Adds GhostScript `GOPP_Image_Editor_GS` class to head of image editors list.
+	 * Adds Ghostscript `GOPP_Image_Editor_GS` class to head of image editors list.
 	 */
 	static function wp_image_editors( $image_editors ) {
 		if ( ! in_array( 'GOPP_Image_Editor_GS', $image_editors, true ) ) {
@@ -77,7 +77,7 @@ class GS_Only_PDF_Preview {
 
 	/**
 	 * Called on plugin activation.
-	 * Checks that `exec` available and "safe_mode" not set. Checks WP versions. Checks GhostScript available.
+	 * Checks that `exec` available and "safe_mode" not set. Checks WP versions. Checks Ghostscript available.
 	 */
 	static function activation_hook() {
 
@@ -104,7 +104,7 @@ class GS_Only_PDF_Preview {
 			wp_die( $msg );
 		}
 
-		// If the (somewhat out-dated) suhosin extension is loaded, then need to check its function blacklist also, as it doesn't reflect in function_exists().
+		// If the (somewhat outdated) suhosin extension is loaded, then need to check its function blacklist also, as it doesn't reflect in function_exists().
 		// Theoretically should first check whether the function whitelist exists and whether exec() is not in it, as it overrides the blacklist, but it's unlikely to be used.
 		if ( extension_loaded( 'suhosin' ) && in_array( 'exec', array_map( 'trim', explode( ',', strtolower( ini_get( 'suhosin.executor.func.blacklist' ) ) ) ), true ) ) {
 			deactivate_plugins( $plugin_basename );
@@ -161,9 +161,9 @@ class GS_Only_PDF_Preview {
 		self::load_gopp_image_editor_gs();
 		GOPP_Image_Editor_GS::clear();
 
-		// Check if GhostScript available.
+		// Check if Ghostscript available.
 		if ( ! GOPP_Image_Editor_GS::test( array() ) ) {
-			$admin_notices[] = array( 'warning', __( '<strong>Warning: no GhostScript!</strong> The plugin "GS Only PDF Preview" cannot determine the server location of your GhostScript executable.', 'gs-only-pdf-preview' ) );
+			$admin_notices[] = array( 'warning', __( '<strong>Warning: no Ghostscript!</strong> The plugin "GS Only PDF Preview" cannot determine the server location of your Ghostscript executable.', 'gs-only-pdf-preview' ) );
 		}
 
 		if ( $admin_notices ) {

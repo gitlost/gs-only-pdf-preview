@@ -1,5 +1,5 @@
 The assets contain modified art from:
 
-GhostScript, distributed under the GNU Affero General Public License (the "AGPL"). See http://www.artifex.com/page/licensing-information.html
+Ghostscript, distributed under the GNU Affero General Public License (the "AGPL"). See http://www.artifex.com/page/licensing-information.html
 Clker.com, released under the lastest version of the creative commons CC0 public domain dedication. See http://www.clker.com/disclaimer.html
 ImageMagick, distributed under the Apache 2.0 license. See https://www.imagemagick.org/script/index.php

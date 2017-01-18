@@ -1,6 +1,6 @@
 <?php
 /**
- * WordPress GhostScript Image Editor
+ * WordPress Ghostscript Image Editor
  *
  * @package GS Only PDF Preview
  * @subpackage Image_Editor
@@ -11,7 +11,7 @@ if ( ! defined( 'GOPP_IMAGE_EDITOR_GS_TRANSIENT_EXPIRATION' ) ) {
 }
 
 /**
- * WordPress Image Editor Class for producing JPEG from PDF using GhostScript.
+ * WordPress Image Editor Class for producing JPEG from PDF using Ghostscript.
  *
  * @since 4.x
  * @package WordPress
@@ -56,7 +56,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	protected static $is_win = null;
 
 	/**
-	 * The path to the GhostScript executable.
+	 * The path to the Ghostscript executable.
 	 *
 	 * @static
 	 * @access protected
@@ -65,7 +65,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	protected static $gs_cmd_path = null;
 
 	/**
-	 * Checks to see if current environment supports GhostScript and whether we're compatible with args if any.
+	 * Checks to see if current environment supports Ghostscript and whether we're compatible with args if any.
 	 * In particular if given 'path' argument then checks filename (but not its existence or magic bytes).
 	 *
 	 * @since 4.x
@@ -77,7 +77,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @return bool
 	 */
 	public static function test( $args = array() ) {
-		// Must have path to GhostScript executable.
+		// Must have path to Ghostscript executable.
 		if ( ! self::gs_cmd_path() ) {
 			return false;
 		}
@@ -161,7 +161,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		}
 
 		if ( ! ( $cmd = self::gs_cmd( $this->get_gs_args( $filename ) ) ) ) {
-			return new WP_Error( 'image_save_error', __( 'No GhostScript.', 'gs-only-pdf-preview' ) );
+			return new WP_Error( 'image_save_error', __( 'No Ghostscript.', 'gs-only-pdf-preview' ) );
 		}
 		exec( $cmd, $output, $return_var );
 
@@ -215,7 +215,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			return __( 'Loading from URL not supported.', 'gs-only-pdf-preview' );
 		}
 
-		// Check filename can't be interpreted by GhostScript as special - see https://ghostscript.com/doc/9.20/Use.htm#Options
+		// Check filename can't be interpreted by Ghostscript as special - see https://ghostscript.com/doc/9.20/Use.htm#Options
 		if ( preg_match( '/^[@|%-]/', $file ) ) {
 			return __( 'Unsupported file name.', 'gs-only-pdf-preview' );
 		}
@@ -246,7 +246,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	}
 
 	/**
-	 * Returns the path of the GhostScript executable.
+	 * Returns the path of the Ghostscript executable.
 	 *
 	 * @since 4.x
 	 *
@@ -258,12 +258,12 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	protected static function gs_cmd_path() {
 		if ( null === self::$gs_cmd_path ) {
 			/**
-			 * Returning a valid path will short-circuit determining the path of the GhostScript executable.
-			 * Useful if your GhostScript installation is in a non-standard location.
+			 * Returning a valid path will short-circuit determining the path of the Ghostscript executable.
+			 * Useful if your Ghostscript installation is in a non-standard location.
 			 *
 			 * @since 4.x
 			 *
-			 * @param string $gs_cmd_path The path to the GhostScript executable. Default null.
+			 * @param string $gs_cmd_path The path to the Ghostscript executable. Default null.
 			 * @param bool   $is_win      True if running on Windows.
 			 */
 			$shortcircuit_path = apply_filters( 'gopp_image_gs_cmd_path', self::$gs_cmd_path, self::is_win() );
@@ -293,14 +293,14 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	}
 
 	/**
-	 * Tests whether a purported GhostScript executable works.
+	 * Tests whether a purported Ghostscript executable works.
 	 *
 	 * @since 4.x
 	 *
 	 * @static
 	 * @access protected
 	 *
-	 * @param string $cmd GhostScript executable to try.
+	 * @param string $cmd Ghostscript executable to try.
 	 * @return bool
 	 */
 	protected static function test_gs_cmd( $cmd ) {
@@ -310,7 +310,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	}
 
 	/**
-	 * Returns the *nix path of the GhostScript executable.
+	 * Returns the *nix path of the Ghostscript executable.
 	 *
 	 * @since 4.x
 	 *
@@ -330,7 +330,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	}
 
 	/**
-	 * Tries to determine the Windows path of the GhostScript executable.
+	 * Tries to determine the Windows path of the Ghostscript executable.
 	 *
 	 * @since 4.x
 	 *
@@ -464,7 +464,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	}
 
 	/**
-	 * Returns the arguments for the main GhostScript invocation.
+	 * Returns the arguments for the main Ghostscript invocation.
 	 *
 	 * @since 4.x
 	 * @access protected
@@ -501,7 +501,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	}
 
 	/**
-	 * The initial non-varying arguments for the main invocation of GhostScript.
+	 * The initial non-varying arguments for the main invocation of Ghostscript.
 	 *
 	 * @since 4.x
 	 * @access protected
@@ -527,7 +527,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 */
 	protected static function escapeshellarg( $arg ) {
 		// Note that the only things we're really going to escape, given the strict base file name check,
-		// is the "WP_CONTENT_DIR/uploads" directory and the path to the GhostScript executable.
+		// is the "WP_CONTENT_DIR/uploads" directory and the path to the Ghostscript executable.
 		if ( self::is_win() ) {
 			// Note bang was not zapped in versions of PHP older than about Jul 2015.
 			$arg = '"' . str_replace( array( '%', '!', '"' ), ' ', $arg ) . '"'; // So will get "not found" error if any of these chars in directory path.

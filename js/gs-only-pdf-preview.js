@@ -1,5 +1,5 @@
 /**
- * Javascript for GhostScript Only PDF Preview WP plugin.
+ * Javascript for GS Only PDF Preview WP plugin.
  */
 /*jslint ass: true, nomen: true, plusplus: true, regexp: true, vars: true, white: true, indent: 4 */
 /*global jQuery, wp, commonL10n, gopp_plugin_params, console */

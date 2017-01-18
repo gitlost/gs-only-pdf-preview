@@ -1,7 +1,7 @@
 {
   "name": "gs-only-pdf-preview",
   "version": "1.0.0",
-  "description": "Uses GhostScript directly to generate PDF previews.",
+  "description": "Uses Ghostscript directly to generate PDF previews.",
   "repository": {
     "type": "git",
     "url": "git://github.com/gitlost/gs-only-pdf-preview"

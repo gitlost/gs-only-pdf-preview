@@ -80,8 +80,8 @@ msgstr ""
 
 #: gs-only-pdf-preview.php:166
 msgid ""
-"<strong>Warning: no GhostScript!</strong> The plugin \"GS Only PDF "
-"Preview\" cannot determine the server location of your GhostScript "
+"<strong>Warning: no Ghostscript!</strong> The plugin \"GS Only PDF "
+"Preview\" cannot determine the server location of your Ghostscript "
 "executable."
 msgstr ""
 
@@ -242,7 +242,7 @@ msgid "Unsupported MIME type."
 msgstr ""
 
 #: includes/class-gopp-image-editor-gs.php:164
-msgid "No GhostScript."
+msgid "No Ghostscript."
 msgstr ""
 
 #: includes/class-gopp-image-editor-gs.php:170
@@ -296,7 +296,7 @@ msgid "https://github.com/gitlost/gs-only-pdf-preview"
 msgstr ""
 
 #. Description of the plugin/theme
-msgid "Uses GhostScript directly to generate PDF previews."
+msgid "Uses Ghostscript directly to generate PDF previews."
 msgstr ""
 
 #. Author of the plugin/theme

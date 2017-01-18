@@ -2,44 +2,44 @@
 [![codecov.io](http://codecov.io/github/gitlost/gs-only-pdf-preview/coverage.svg?branch=master)](http://codecov.io/github/gitlost/gs-only-pdf-preview?branch=master)
 # GS Only PDF Preview #
 **Contributors:** [gitlost](https://profiles.wordpress.org/gitlost)  
-**Tags:** GhostScript, PDF, PDF Preview, GhostScript Only  
+**Tags:** Ghostscript, PDF, PDF Preview, Ghostscript Only  
 **Requires at least:** 4.7.0  
 **Tested up to:** 4.7.1  
 **Stable tag:** 1.0.0  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
-Uses GhostScript directly to generate PDF previews.
+Uses Ghostscript directly to generate PDF previews.
 
 ## Description ##
 
-The plugin pre-empts the standard WordPress 4.7 PDF preview production process (which uses the PHP extension `Imagick`) to call GhostScript directly to produce the preview.
+The plugin pre-empts the standard WordPress 4.7 PDF preview production process (which uses the PHP extension [`Imagick`](http://php.net/manual/en/book.imagick.php)) to call [Ghostscript](https://ghostscript.com/) directly to produce the preview.
 
-This means that only GhostScript is required on the server. Neither the PHP module `Imagick` nor the server package `ImageMagick` is needed or used (though it's fine if they're installed anyway, and if they are they'll be used by WP (unless you override it) to produce the intermediate sizes of the preview).
+This means that only Ghostscript is required on the server. Neither the PHP module `Imagick` nor the server package [`ImageMagick`](https://www.imagemagick.org/script/index.php) is needed or used (though it's fine if they're installed anyway, and if they are they'll be used by WP (unless you override it) to produce the intermediate sizes of the preview).
 
 ### Background ###
 
 The plugin was prompted by the demonstration `WP_Image_Editor_Imagick_External` class uploaded to the WP Trac ticket [#39262 Fall back to ImageMagick command line when the pecl imagic is not available on the server](https://core.trac.wordpress.org/ticket/39262) by [Hristo Pandjarov](https://profiles.wordpress.org/hristo-sg), and by the wish to solve the WP Trac ticket [#39216 PDFs with non-opaque alpha channels can result in previews with black backgrounds.](https://core.trac.wordpress.org/ticket/39216), which particularly affects PDFs with CMYK color spaces (common in the print world).
 
-The plugin by-passes (as far as PDF previews are concerned) #39216, and also by-passes the related issue [#39331 unsharpMaskImage in Imagick's thumbnail_image is not compatible with CMYK jpegs.](https://core.trac.wordpress.org/ticket/39331), as the preview jpegs produced directly by GhostScript use sRGB color spaces.
+The plugin by-passes (as far as PDF previews are concerned) #39216, and also by-passes the related issue [#39331 unsharpMaskImage in Imagick's thumbnail_image is not compatible with CMYK jpegs.](https://core.trac.wordpress.org/ticket/39331), as the preview jpegs produced directly by Ghostscript use sRGB color spaces.
 
 ### Limitations ###
 
-The plugin requires the [PHP function `exec`](http://php.net/manual/en/function.exec.php) to be enabled on your system. So if the [PHP ini setting `disable_functions`](http://php.net/manual/en/ini.core.php#ini.disable-functions) includes `exec`, the plugin won't work. Neither will it work if the (somewhat outdated) [`suhosin` security extension](https://suhosin.org/stories/index.html) is installed and `exec` is [blacklisted](https://suhosin.org/stories/configuration.html#suhosin-executor-func-blacklist).
+The plugin requires the PHP function [`exec`](http://php.net/manual/en/function.exec.php) to be enabled on your system. So if the PHP ini setting [`disable_functions`](http://php.net/manual/en/ini.core.php#ini.disable-functions) includes `exec`, the plugin won't work. Neither will it work if the (somewhat outdated) [`suhosin` security extension](https://suhosin.org/stories/index.html) is installed and `exec` is [blacklisted](https://suhosin.org/stories/configuration.html#suhosin-executor-func-blacklist).
 
-Also, the plugin is incompatible with the [PHP ini setting `safe_mode`](http://php.net/manual/en/ini.sect.safe-mode.php#ini.safe-mode), an old (and misnamed) setting that was deprecated in PHP 5.3.0 and removed in PHP 5.4.0.
+Also, the plugin is incompatible with the PHP ini setting [`safe_mode`](http://php.net/manual/en/ini.sect.safe-mode.php#ini.safe-mode), an old (and misnamed) setting that was deprecated in PHP 5.3.0 and removed in PHP 5.4.0.
 
 ### Security ###
 
-The plugin uses the PHP function `exec` to call GhostScript as a shell command. This has security implications as uncareful use with user supplied data (eg the upload file name or the file itself) could introduce an attack vector.
+The plugin uses the PHP function `exec` to call Ghostscript as a shell command. This has security implications as uncareful use with user supplied data (eg the upload file name or the file itself) could introduce an attack vector.
 
 I believe these concerns are addressed here through screening of the file and its name and escaping of arguments. This belief is backed by a bounty of fifteen hundred thousand intergalactic credits to anyone who spots a security issue. Please disclose responsibly.
 
 ### Performance ###
 
-Unsurprisingly it's faster. Crude benchmarking (see the [script `perf_vs_imagick.php`](https://github.com/gitlost/gs-only-pdf-preview/blob/master/perf/perf_vs_imagick.php)) suggest it's around 40% faster. However the production of the preview is only a part of the overhead of uploading a PDF (and doesn't include producing the intermediate thumbnail sizes for instance) so any speed-up will probably not be that noticeable.
+Unsurprisingly it's faster. Crude benchmarking (see the script [`perf_vs_imagick.php`](https://github.com/gitlost/gs-only-pdf-preview/blob/master/perf/perf_vs_imagick.php)) suggest it's around 40% faster. However the production of the preview is only a part of the overhead of uploading a PDF (and doesn't include producing the intermediate thumbnail sizes for instance) so any speed-up may not be that noticeable.
 
-On jpeg thumbnail size it appears to be comparable, maybe a bit larger on average. To mitigate this the default jpeg quality for the PDF preview has been lowered to 70 (from 82), which results in some extra "ringing" (speckles around letters) but the previews tested remain very readable. Note that this only affects the "full" PDF thumbnail - the intermediate-sized thumbnails as produced by `Imagick` or `GD` and any other non-PDF images remain at the standard jpeg quality of 82. Use the [WP filter `wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) to override this, for instance to restore the quality to 82 you could add to your theme's "functions.php":
+On jpeg thumbnail size it appears to be comparable, maybe a bit larger on average. To mitigate this the default jpeg quality for the PDF preview has been lowered to 70 (from 82), which results in some extra "ringing" (speckles around letters) but the previews tested remain very readable. Note that this only affects the "full" PDF thumbnail - the intermediate-sized thumbnails as produced by `Imagick` or `GD` and any other non-PDF images remain at the standard jpeg quality of 82. Use the WP filter [`wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) to override this, for instance to restore the quality to 82 you could add to your theme's "functions.php":
 
 	function mytheme_wp_editor_set_quality( $quality, $mime_type ) {
 		if ( 'application/pdf' === $mime_type ) {
@@ -59,7 +59,7 @@ As workarounds for the possible WSOD issue above, and as facilities in themselve
 
 A google-cheating schoolboy French translation is supplied.
 
-The plugin runs on WP 4.7.0 and 4.7.1, and requires GhostScript to be installed on the server. The plugin should run on PHP 5.2.17 to 7.1, and on both Unix and Windows systems.
+The plugin runs on WP 4.7.0 and 4.7.1, and requires Ghostscript to be installed on the server. The plugin should run on PHP 5.2.17 to 7.1, and on both Unix and Windows systems.
 
 The project is on [github](https://github.com/gitlost/gs-only-pdf-preview).
 
@@ -67,11 +67,11 @@ The project is on [github](https://github.com/gitlost/gs-only-pdf-preview).
 
 Install the plugin in the standard way via the 'Plugins' menu in WordPress and then activate.
 
-To install GhostScript, see [How to install Ghostscript](https://ghostscript.com/doc/current/Install.htm) on the official GhostScript site. For Ubuntu users, there's a package:
+To install Ghostscript, see [How to install Ghostscript](https://ghostscript.com/doc/current/Install.htm) on the official Ghostscript site. For Ubuntu users, there's a package:
 
 	sudo apt-get install ghostscript
 
-For Windows, there's an installer available at the [GhostScript download page](https://ghostscript.com/download/gsdnld.html).
+For Windows, there's an installer available at the [Ghostscript download page](https://ghostscript.com/download/gsdnld.html).
 
 ## Frequently Asked Questions ##
 
@@ -81,7 +81,7 @@ Three plugin-specific filters are available:
 
 * `gopp_editor_set_resolution` sets the resolution of the PDF preview.
 * `gopp_editor_set_page` sets the page to render for the PDF preview.
-* `gopp_image_gs_cmd_path` short-circuits the determination of the path of the GhostScript executable on your system.
+* `gopp_image_gs_cmd_path` short-circuits the determination of the path of the Ghostscript executable on your system.
 
 The `gopp_editor_set_resolution` filter is an analogue of the standard [`wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) filter mentioned above, and allows one to override the default resolution of 128 DPI used for the PDF preview. For instance, in your theme's "functions.php":
 
@@ -97,16 +97,16 @@ Similarly the `gopp_editor_set_page` filter allows one to override the default o
 	}
 	add_filter( 'gopp_editor_set_page', 'mytheme_gopp_editor_set_page', 10, 2 );
 
-The `gopp_image_gs_cmd_path` filter is necessary if your GhostScript installation is in a non-standard location and the plugin fails to determine where it is (if this happens you'll get a **Warning: no GhostScript!** notice on activation):
+The `gopp_image_gs_cmd_path` filter is necessary if your Ghostscript installation is in a non-standard location and the plugin fails to determine where it is (if this happens you'll get a **Warning: no Ghostscript!** notice on activation):
 
 	function mytheme_gopp_image_gs_cmd_path( $gs_cmd_path, $is_win ) {
-		return $is_win ? 'D:\\My GhostScript Location\\bin\\gswin32c.exe' : '/my ghostscript location/gs';
+		return $is_win ? 'D:\\My Ghostscript Location\\bin\\gswin32c.exe' : '/my ghostscript location/gs';
 	}
 	add_filter( 'gopp_image_gs_cmd_path', 'mytheme_gopp_image_gs_cmd_path', 10, 2 );
 
 The filter can also be used just for performance reasons, especially on Windows systems to save searching the registry and directories.
 
-Note that the value of `gs_cmd_path` is cached as a transient by the plugin for performance reasons, with a lifetime of one day. You can clear it by de-activating and re-activating the plugin, or by manually calling the `clear` method of the GhostScript Image Editor:
+Note that the value of `gs_cmd_path` is cached as a transient by the plugin for performance reasons, with a lifetime of one day. You can clear it by de-activating and re-activating the plugin, or by manually calling the `clear` method of the Ghostscript Image Editor:
 
 	function mytheme_gopp_init() {
 		if ( class_exists( 'GOPP_Image_Editor_GS' ) ) {

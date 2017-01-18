@@ -5,8 +5,8 @@ msgstr ""
 "Project-Id-Version: GS Only PDF Preview 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/gs-only-pdf-"
 "preview\n"
-"POT-Creation-Date: 2017-01-17 21:29+0000\n"
-"PO-Revision-Date: 2017-01-17 21:32+0000\n"
+"POT-Creation-Date: 2017-01-18 00:27+0000\n"
+"PO-Revision-Date: 2017-01-18 00:27+0000\n"
 "Last-Translator: gitlost <gitlost@gitlostbonger.com>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -100,12 +100,12 @@ msgstr ""
 
 #: gs-only-pdf-preview.php:166
 msgid ""
-"<strong>Warning: no GhostScript!</strong> The plugin \"GS Only PDF Preview\" "
-"cannot determine the server location of your GhostScript executable."
+"<strong>Warning: no Ghostscript!</strong> The plugin \"GS Only PDF Preview\" "
+"cannot determine the server location of your Ghostscript executable."
 msgstr ""
-"<strong>Attention&nbsp;: pas de GhostScript&nbsp;!</strong> L&rsquo;"
+"<strong>Attention&nbsp;: pas de Ghostscript&nbsp;!</strong> L&rsquo;"
 "extension &laquo;&nbsp;GS Only PDF Preview&nbsp;&raquo; ne peut pas "
-"déterminer l&rsquo;emplacement du serveur de votre exécutable GhostScript."
+"déterminer l&rsquo;emplacement du serveur de votre exécutable Ghostscript."
 
 #: gs-only-pdf-preview.php:219
 msgid "Invalid arguments!"
@@ -286,8 +286,8 @@ msgid "Unsupported MIME type."
 msgstr "Type MIME non supporté."
 
 #: includes/class-gopp-image-editor-gs.php:164
-msgid "No GhostScript."
-msgstr "Pas de GhostScript."
+msgid "No Ghostscript."
+msgstr "Pas de Ghostscript."
 
 #: includes/class-gopp-image-editor-gs.php:170
 msgid "Image Editor Save Failed"
@@ -344,9 +344,9 @@ msgid "https://github.com/gitlost/gs-only-pdf-preview"
 msgstr "https://github.com/gitlost/gs-only-pdf-preview"
 
 #. Description of the plugin/theme
-msgid "Uses GhostScript directly to generate PDF previews."
+msgid "Uses Ghostscript directly to generate PDF previews."
 msgstr ""
-"Utilise directement GhostScript pour générer les aperçus de miniature de PDF."
+"Utilise directement Ghostscript pour générer les aperçus de miniature de PDF."
 
 #. Author of the plugin/theme
 msgid "gitlost"
