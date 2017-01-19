@@ -484,12 +484,12 @@ class GS_Only_PDF_Preview {
 			);
 			if ( $is_regen_pdf_preview ) {
 				$params['please_wait_msg'] = '<div class="notice notice-warning inline"><p>' . __( 'Please wait...', 'gs-only-pdf-preview' )
-											. '<span id="gopp_progress"></span>' . self::spinner( -2, true ) . '</p></div>';
+											. '<span id="gopp_progress"></span>' . self::spinner( -2, true /*is_active*/ ) . '</p></div>';
 				$params['val']['poll_interval'] = self::$poll_interval;
 			} elseif ( $is_upload ) {
 				$params['no_items_selected_msg'] = '<span class="gopp_none" style="display:inline-block;margin-top:6px">' . __( 'No items selected!', 'gs-only-pdf-preview' ) . '</span>';
 				$params['action_not_available'] = __( 'Regenerate Preview ajax action not available!', 'gs-only-pdf-preview' );
-				$params['spinner'] = self::spinner( 5, true );
+				$params['spinner'] = self::spinner( 5, true /*is_active*/ );
 				$params['val']['min_time_limit'] = self::$min_time_limit;
 			}
 			$params = apply_filters( 'gopp_plugin_params', $params );
