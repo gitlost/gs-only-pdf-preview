@@ -1,6 +1,6 @@
 <?php
 /**
- * WordPress Ghostscript Image Editor
+ * GOPP Ghostscript Image Editor
  *
  * @package GS Only PDF Preview
  * @subpackage Image_Editor
@@ -11,10 +11,10 @@ if ( ! defined( 'GOPP_IMAGE_EDITOR_GS_TRANSIENT_EXPIRATION' ) ) {
 }
 
 /**
- * WordPress Image Editor Class for producing JPEG from PDF using Ghostscript.
+ * GOPP Image Editor Class for producing JPEG from PDF using Ghostscript.
  *
  * @since 4.x
- * @package WordPress
+ * @package GS Only PDF Preview
  * @subpackage Image_Editor
  * @uses WP_Image_Editor Extends class
  */
@@ -418,9 +418,9 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 						if ( preg_match( '/[0-9]+\.[0-9]+$/', $gs_entry, $matches ) ) {
 							$ver = (float) $matches[0];
 							if ( $highest_ver < $ver ) {
-								if ( is_executable( $gs_entry . '\\bin\\gswin64c.exe' ) && self::test_gs_cmd( $gs_entry . '\\bin\\gswin64c.exe' ) ) {
+								if ( @ is_executable( $gs_entry . '\\bin\\gswin64c.exe' ) && self::test_gs_cmd( $gs_entry . '\\bin\\gswin64c.exe' ) ) {
 									$best_match = $gs_entry . '\\bin\\gswin64c.exe';
-								} elseif ( is_executable( $gs_entry . '\\bin\\gswin32c.exe' ) && self::test_gs_cmd( $gs_entry . '\\bin\\gswin32c.exe' ) ) {
+								} elseif ( @ is_executable( $gs_entry . '\\bin\\gswin32c.exe' ) && self::test_gs_cmd( $gs_entry . '\\bin\\gswin32c.exe' ) ) {
 									$best_match = $gs_entry . '\\bin\\gswin32c.exe';
 								}
 							}
