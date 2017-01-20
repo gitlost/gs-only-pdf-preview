@@ -3,7 +3,7 @@ Contributors: gitlost
 Tags: Ghostscript, PDF, PDF Preview, Ghostscript Only
 Requires at least: 4.7.0
 Tested up to: 4.7.1
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -124,6 +124,9 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 
 == Changelog ==
 
+= 1.0.1 (20 Jan 2017) =
+* Move exec and safe_mode check from wp_image_editors action to GOPP_Image_Editor_GS::test().
+
 = 1.0.0 (15 Jan 2017) =
 * Initial release.
 
@@ -131,6 +134,9 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 * Initial github version.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Tweeks.
 
 = 1.0.0 =
 Improved PDF preview experience.

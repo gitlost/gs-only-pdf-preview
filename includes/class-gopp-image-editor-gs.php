@@ -77,6 +77,11 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @return bool
 	 */
 	public static function test( $args = array() ) {
+		// Check that exec() is (probably) available and we're not in safe_mode.
+		if ( ! function_exists( 'exec' ) || ini_get( 'safe_mode' ) ) {
+			return false;
+		}
+
 		// Must have path to Ghostscript executable.
 		if ( ! self::gs_cmd_path() ) {
 			return false;
@@ -304,6 +309,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @return bool
 	 */
 	protected static function test_gs_cmd( $cmd ) {
+		// Note if exec() has been disabled by means not reflected in function_exists() it may barf here and throw warnings but we don't care that much.
 		exec( self::escapeshellarg( $cmd ) . ' -dBATCH -dNOPAUSE -dNOPROMPT -dSAFER -v 2>&1', $output, $return_var );
 
 		return 0 === $return_var && is_array( $output ) && ! empty( $output[0] ) && is_string( $output[0] ) && false !== stripos( $output[0], 'ghostscript' );
