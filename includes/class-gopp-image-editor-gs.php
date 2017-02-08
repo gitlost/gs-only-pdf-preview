@@ -161,9 +161,12 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			return new WP_Error( 'image_save_error', __( 'Unsupported MIME type.', 'gs-only-pdf-preview' ), $mime_type );
 		}
 
-		if ( ! $filename ) {
-			$filename = $this->generate_filename( null, null, $extension );
+		if ( ! $filename || ! ( $dirname = dirname( $filename ) ) ) {
+			return new WP_Error( 'image_save_error', __( 'Unsupported destination.', 'gs-only-pdf-preview' ), $filename );
 		}
+
+		// Make sure not to overwrite existing JPEG with same name.
+		$filename = $dirname . '/' . wp_unique_filename( $dirname, wp_basename( $filename ) );
 
 		if ( ! ( $cmd = self::gs_cmd( $this->get_gs_args( $filename ) ) ) ) {
 			return new WP_Error( 'image_save_error', __( 'No Ghostscript.', 'gs-only-pdf-preview' ) );
@@ -182,7 +185,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			return new WP_Error( 'image_save_error', __( 'Could not read image size.', 'gs-only-pdf-preview' ) ); // @codeCoverageIgnore
 		}
 
-		// For form's sake, transmogrify into the JPEG file.
+		// Transmogrify into the JPEG file.
 		$this->file = $filename;
 		$this->mime_type = $mime_type;
 		$this->update_size( $size[0], $size[1] );

@@ -152,14 +152,40 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		$this->assertSame( 'image/jpeg', $output['mime-type'] );
 		unlink( $test_filename );
 
-		// Success no filename given.
+		// Success existing jpeg.
+		$test_filename = '/tmp/test_save-gs.jpg';
+		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/wordpress-gsoc-flyer.pdf' );
+		$output = $image_editor->load();
+		$this->assertTrue( $output );
+		file_put_contents( $test_filename, 'asdf' );
+		$output = $image_editor->save( $test_filename, 'image/jpeg' );
+		$this->assertNotEmpty( $output );
+		$this->assertTrue( is_array( $output ) );
+		$this->assertNotEquals( $test_filename, $output['path'] );
+		$this->assertSame( 'asdf', file_get_contents( $test_filename ) );
+		$this->assertTrue( is_file( $output['path'] ) );
+		$this->assertNotEmpty( $output['file'] );
+		$this->assertNotEmpty( $output['width'] );
+		$this->assertNotEmpty( $output['height'] );
+		$this->assertSame( 'image/jpeg', $output['mime-type'] );
+		unlink( $test_filename );
+		unlink( $output['path'] );
+
+		// Fail no filename given.
 		$test_filename = null;
 		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/wordpress-gsoc-flyer.pdf' );
 		$output = $image_editor->load();
 		$this->assertTrue( $output );
 		$output = $image_editor->save( $test_filename, 'image/jpeg' );
 		$this->assertNotEmpty( $output );
-		$this->assertNotEmpty( $output['path'] );
+		$this->assertInstanceOf( 'WP_Error', $output );
+
+		// Success filename with no directory given.
+		$test_filename = 'blah';
+		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/wordpress-gsoc-flyer.pdf' );
+		$output = $image_editor->load();
+		$this->assertTrue( $output );
+		$output = $image_editor->save( $test_filename, 'image/jpeg' );
 		$this->assertTrue( is_file( $output['path'] ) );
 		$this->assertNotEmpty( $output['file'] );
 		$this->assertNotEmpty( $output['width'] );

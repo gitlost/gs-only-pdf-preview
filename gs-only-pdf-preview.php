@@ -3,7 +3,7 @@
  * Plugin Name: GS Only PDF Preview
  * Plugin URI: https://github.com/gitlost/gs-only-pdf-preview
  * Description: Uses Ghostscript directly to generate PDF previews.
- * Version: 1.0.1
+ * Version: 1.0.2
  * Author: gitlost
  * Author URI: https://profiles.wordpress.org/gitlost
  * License: GPLv2
@@ -16,9 +16,9 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // These need to be synced with "readme.txt".
-define( 'GOPP_PLUGIN_VERSION', '1.0.1' ); // Sync also "package.json" and "language/gs-only-pdf-preview.pot".
+define( 'GOPP_PLUGIN_VERSION', '1.0.2' ); // Sync also "package.json" and "language/gs-only-pdf-preview.pot".
 define( 'GOPP_PLUGIN_WP_AT_LEAST_VERSION', '4.7.0' );
-define( 'GOPP_PLUGIN_WP_UP_TO_VERSION', '4.7.1' );
+define( 'GOPP_PLUGIN_WP_UP_TO_VERSION', '4.7.2' );
 
 define( 'GOPP_REGEN_PDF_PREVIEWS_SLUG', 'gopp-regen-pdf-previews' );
 
@@ -31,7 +31,7 @@ class GS_Only_PDF_Preview {
 	static $cap = 'manage_options'; // What capability is needed to regenerate PDF previews.
 	static $per_pdf_secs = 20; // Seconds to allow for regenerating the preview of each PDF in the "Regen. PDF Previews" administraion tool.
 	static $min_time_limit = 300; // Minimum seconds to set max execution time to on doing regeneration.
-	static $poll_interval = 2; // How often to poll for progress info in seconds.
+	static $poll_interval = 1; // How often to poll for progress info in seconds.
 	static $timing_dec_places = 1; // Number of decimal places to show on time (in seconds) taken.
 
 	/**
@@ -54,6 +54,8 @@ class GS_Only_PDF_Preview {
 
 				add_action( 'current_screen', array( __CLASS__, 'current_screen' ) );
 				add_action( 'media_row_actions', array( __CLASS__, 'media_row_actions' ), 100, 3 ); // Add after (most) others due to spinner.
+			} else {
+				add_filter( 'media_send_to_editor', array( __CLASS__, 'media_send_to_editor' ), 10, 3 );
 			}
 			add_action( 'wp_ajax_gopp_media_row_action', array( __CLASS__, 'gopp_media_row_action' ) );
 			add_action( 'wp_ajax_gopp_poll_regen_pdf_previews', array( __CLASS__,  'gopp_poll_regen_pdf_previews' ) );
@@ -330,6 +332,7 @@ class GS_Only_PDF_Preview {
 	 * Does the actual PDF preview regenerate.
 	 */
 	static function do_regen_pdf_previews( $ids, $check_mime_type = false, $do_transient = true ) {
+		static $upload_dir = null, $basedir = null;
 
 		$cnt = $num_updates = $num_fails = $time = 0;
 		if ( $ids ) {
@@ -348,13 +351,30 @@ class GS_Only_PDF_Preview {
 				if ( false === $file || '' === $file ) {
 					$num_fails++;
 				} else {
+					// Get current metadata if any.
+					$old_value = get_metadata( 'post', $id, '_wp_attachment_metadata' );
+					if ( $old_value && ( ! is_array( $old_value ) || 1 !== count( $old_value ) ) ) {
+						$old_value = null;
+					}
+					// Remove old intermediate thumbnails if any.
+					if ( $old_value && ! empty( $old_value[0]['sizes'] ) && is_array( $old_value[0]['sizes'] ) ) {
+						if ( null === $upload_dir ) {
+							$upload_dir = wp_get_upload_dir();
+							$basedir = $upload_dir['basedir'];
+						}
+						$dirname = dirname( $file ) . '/';
+						foreach ( $old_value[0]['sizes'] as $sizeinfo ) {
+							$intermediate_file = $dirname . $sizeinfo['file'];
+							@ unlink( path_join( $basedir, $intermediate_file ) );
+						}
+					}
+					// Generate new intermediate thumbnails.
 					$meta = wp_generate_attachment_metadata( $id, $file );
 					if ( ! $meta ) {
 						$num_fails++;
 					} else {
 						// wp_update_attachment_metadata() returns false if nothing to update so check first.
-						$old_value = get_metadata( 'post', $id, '_wp_attachment_metadata' );
-						if ( ( $old_value && is_array( $old_value ) && 1 === count( $old_value ) && $old_value[0] === $meta ) || false !== wp_update_attachment_metadata( $id, $meta ) ) {
+						if ( ( $old_value && $old_value[0] === $meta ) || false !== wp_update_attachment_metadata( $id, $meta ) ) {
 							$num_updates++;
 						} else {
 							$num_fails++;
@@ -464,10 +484,11 @@ class GS_Only_PDF_Preview {
 	 * Outputs some javascript on "Regen. PDFs Previews" page or Media Library page.
 	 */
 	static function admin_enqueue_scripts( $hook_suffix ) {
-		if ( self::$hook_suffix === $hook_suffix || 'upload.php' === $hook_suffix ) {
+		if ( self::$hook_suffix === $hook_suffix || 'upload.php' === $hook_suffix || 'post-new.php' === $hook_suffix || 'post.php' === $hook_suffix ) {
 			$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
 			$is_regen_pdf_preview = self::$hook_suffix === $hook_suffix;
 			$is_upload = 'upload.php' === $hook_suffix;
+			$is_post = 'post-new.php' === $hook_suffix || 'post.php' === $hook_suffix;
 
 			wp_enqueue_script( 'gs-only-pdf-preview', plugins_url( "js/gs-only-pdf-preview{$suffix}.js", __FILE__ ), array( 'jquery', 'jquery-migrate' ), GOPP_PLUGIN_VERSION );
 
@@ -477,6 +498,7 @@ class GS_Only_PDF_Preview {
 					'is_debug' => defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG && defined( 'GOPP_PLUGIN_DEBUG' ) && GOPP_PLUGIN_DEBUG,
 					'is_regen_pdf_preview' => $is_regen_pdf_preview,
 					'is_upload' => $is_upload,
+					'is_post' => $is_post,
 				),
 			);
 			if ( $is_regen_pdf_preview ) {
@@ -488,6 +510,8 @@ class GS_Only_PDF_Preview {
 				$params['action_not_available'] = __( 'Regenerate Preview ajax action not available!', 'gs-only-pdf-preview' );
 				$params['spinner'] = self::spinner( 5, true /*is_active*/ );
 				$params['val']['min_time_limit'] = self::$min_time_limit;
+			} elseif ( $is_post ) {
+				$params['document_link_only'] = __( 'Document Link Only', 'gs-only-pdf-preview' );
 			}
 			$params = apply_filters( 'gopp_plugin_params', $params );
 			wp_localize_script( 'gs-only-pdf-preview', 'gopp_plugin_params', $params );
@@ -529,7 +553,7 @@ class GS_Only_PDF_Preview {
 
 		if ( 'gopp_regen_pdf_previews' === $doaction && current_user_can( self::$cap ) ) {
 			// Note nonce has already been checked in "wp-admin/upload.php".
-			// But $post_ids hasn't (and triggers a PHP Warning if nothing selected in "wp-admin/upload.php:168" as of WP 4.7.1).
+			// But $post_ids hasn't (and triggers a PHP Warning if nothing selected in "wp-admin/upload.php:168" as of WP 4.7.2).
 			$ids = $post_ids && is_array( $post_ids ) ? array_map( 'intval', $post_ids ) : array();
 
 			list( $cnt, $num_updates, $num_fails, $time ) = self::do_regen_pdf_previews( $ids, true /*check_mime_type*/, false /*do_transient*/ );
@@ -646,6 +670,32 @@ class GS_Only_PDF_Preview {
 			return json_encode( $ret );
 		}
 		wp_send_json( $ret );
+	}
+
+	/**
+	 * Called on 'media_send_to_editor' filter.
+	 */
+	static function media_send_to_editor( $html, $id, $attachment ) {
+		// Using the fact that 'post_title' is only set for non-image/audio/video links. See wp.media.editor.send.attachment in "wp-includes/js/media-editor.js" (line 1018).
+		if ( ! empty( $attachment['image-size'] ) && isset( $attachment['post_title'] ) && false === strpos( $html, '<img' ) ) {
+			$url = empty( $attachment['url'] ) ? '' : $attachment['url'];
+			$rel = ( strpos( $url, 'attachment_id') || get_attachment_link( $id ) == $url );
+
+			// Based on wp_ajax_send_attachment_to_editor() in "wp-admin/includes/ajax-actions.php".
+			$align = isset( $attachment['align'] ) ? $attachment['align'] : 'none';
+			$size = $attachment['image-size'];
+			$alt = isset( $attachment['image_alt'] ) ? $attachment['image_alt'] : '';
+
+			// No whitespace-only captions.
+			$caption = isset( $attachment['post_excerpt'] ) ? $attachment['post_excerpt'] : '';
+			if ( '' === trim( $caption ) ) {
+				$caption = '';
+			}
+
+			$title = ''; // We no longer insert title tags into <img> tags, as they are redundant.
+			$html = get_image_send_to_editor( $id, $caption, $title, $align, $url, $rel, $size, $alt );
+		}
+		return $html;
 	}
 }
 

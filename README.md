@@ -4,8 +4,8 @@
 **Contributors:** [gitlost](https://profiles.wordpress.org/gitlost)  
 **Tags:** Ghostscript, PDF, PDF Preview, Ghostscript Only  
 **Requires at least:** 4.7.0  
-**Tested up to:** 4.7.1  
-**Stable tag:** 1.0.1  
+**Tested up to:** 4.7.2  
+**Stable tag:** 1.0.2  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -51,15 +51,19 @@ On jpeg thumbnail size it appears to be comparable, maybe a bit larger on averag
 
 ### Tool ###
 
-A basic administration tool to regenerate (or generate, if they previously didn't have a preview) the previews of all PDFs uploaded to the system is included. Note that if you have a lot of PDFs you may experience the White Screen Of Death (WSOD) if the tool exceeds the [maximum execution time](http://php.net/manual/en/info.configuration.php#ini.max-execution-time) allowed. Note also that as the filenames of the previews don't (normally) change, you will probably have to refresh your browser to see the updated thumbnails.
+A basic administration tool to regenerate (or generate, if they previously didn't have a preview) the previews of all PDFs uploaded to the system is included (any previously generated intermediate preview thumbnails will be removed if their dimensions differ). Note that if you have a lot of PDFs you may experience the White Screen Of Death (WSOD) if the tool exceeds the [maximum execution time](http://php.net/manual/en/info.configuration.php#ini.max-execution-time) allowed. Note also that as the filenames of the previews don't (normally) change, you will probably have to refresh your browser to see the updated thumbnails.
 
 As workarounds for the possible WSOD issue above, and as facilities in themselves, a "Regenerate PDF Previews" bulk action is added to the list mode of the Media Library, and a "Regenerate Preview" row action is added to each PDF entry in the list. So previews can be regenerated in batches or individually instead.
+
+### Patches ###
+
+As a bonus version 1.0.2 patches WordPress to allow linking to the preview image in "Add Media" when editing a post ([#39618 Insert PDF Thumbnail into Editor](https://core.trac.wordpress.org/ticket/39618)). Also patches [#39630 PDF Thumbnails in Media Library Don't Fall Back to Full Size](https://core.trac.wordpress.org/ticket/39630).
 
 ### And ###
 
 A google-cheating schoolboy French translation is supplied.
 
-The plugin runs on WP 4.7.0 and 4.7.1, and requires Ghostscript to be installed on the server. The plugin should run on PHP 5.2.17 to 7.1, and on both Unix and Windows systems.
+The plugin runs on WP 4.7.0 to 4.7.2, and requires Ghostscript to be installed on the server. The plugin should run on PHP 5.2.17 to 7.1, and on both Unix and Windows servers.
 
 The project is on [github](https://github.com/gitlost/gs-only-pdf-preview).
 
@@ -81,7 +85,7 @@ Three plugin-specific filters are available:
 
 * `gopp_editor_set_resolution` sets the resolution of the PDF preview.
 * `gopp_editor_set_page` sets the page to render for the PDF preview.
-* `gopp_image_gs_cmd_path` short-circuits the determination of the path of the Ghostscript executable on your system.
+* `gopp_image_gs_cmd_path` short-circuits the determination of the path of the Ghostscript executable on your server.
 
 The `gopp_editor_set_resolution` filter is an analogue of the standard [`wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) filter mentioned above, and allows one to override the default resolution of 128 DPI used for the PDF preview. For instance, in your theme's "functions.php":
 
@@ -104,7 +108,7 @@ The `gopp_image_gs_cmd_path` filter is necessary if your Ghostscript installatio
 	}
 	add_filter( 'gopp_image_gs_cmd_path', 'mytheme_gopp_image_gs_cmd_path', 10, 2 );
 
-The filter can also be used just for performance reasons, especially on Windows systems to save searching the registry and directories.
+The filter can also be used just for performance reasons, especially on Windows servers to save searching the registry and directories.
 
 Note that the value of `gs_cmd_path` is cached as a transient by the plugin for performance reasons, with a lifetime of one day. You can clear it by de-activating and re-activating the plugin, or by manually calling the `clear` method of the Ghostscript Image Editor:
 
@@ -138,6 +142,13 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 
 ## Changelog ##
 
+### 1.0.2 (8 Feb 2017) ###
+* Don't overwrite existing JPEGs with same name as preview.
+* Remove existing preview intermediates when regenerating.
+* Patch WP to allow preview image linking in Add Media (#39618).
+* Patch WP to use thumbnail or medium sized thumbnails in Media Library (#39630).
+* WP 4.7.2 compatible
+
 ### 1.0.1 (20 Jan 2017) ###
 * Move exec and safe_mode check from wp_image_editors action to GOPP_Image_Editor_GS::test().
 
@@ -148,6 +159,9 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 * Initial github version.
 
 ## Upgrade Notice ##
+
+### 1.0.2 ###
+Doesn't overwrite existing JPEGs with same name as preview. Removes existing preview thumbnails on regeneration.
 
 ### 1.0.1 ###
 Tweeks.

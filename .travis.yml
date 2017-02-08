@@ -14,6 +14,7 @@ php:
 env:
 - WP_VERSION=nightly
 - WP_VERSION=latest
+- WP_VERSION=4.7.1
 - WP_VERSION=4.7
 
 matrix:

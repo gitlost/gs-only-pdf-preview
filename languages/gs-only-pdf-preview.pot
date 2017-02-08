@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2.
 msgid ""
 msgstr ""
-"Project-Id-Version: GS Only PDF Preview 1.0.1\n"
+"Project-Id-Version: GS Only PDF Preview 1.0.2\n"
 "Report-Msgid-Bugs-To: "
 "https://wordpress.org/support/plugin/gs-only-pdf-preview\n"
 "POT-Creation-Date: 2016-12-23 14:39:09+00:00\n"
@@ -25,7 +25,7 @@ msgstr ""
 "X-Poedit-Bookmarks: \n"
 "X-Textdomain-Support: yes\n"
 
-#: gs-only-pdf-preview.php:91
+#: gs-only-pdf-preview.php:93
 #. translators: %s: url to admin plugins page.
 msgid ""
 "The plugin \"GS Only PDF Preview\" cannot be activated as it relies on the "
@@ -34,7 +34,7 @@ msgid ""
 "href=\"%s\">Return to Plugins page.</a>"
 msgstr ""
 
-#: gs-only-pdf-preview.php:97
+#: gs-only-pdf-preview.php:99
 #. translators: %s: url to admin plugins page.
 msgid ""
 "The plugin \"GS Only PDF Preview\" cannot be activated as it relies on the "
@@ -42,7 +42,7 @@ msgid ""
 "href=\"%s\">Return to Plugins page.</a>"
 msgstr ""
 
-#: gs-only-pdf-preview.php:110
+#: gs-only-pdf-preview.php:112
 #. translators: %s: url to admin plugins page.
 msgid ""
 "The plugin \"GS Only PDF Preview\" cannot be activated as it relies on the "
@@ -52,7 +52,7 @@ msgid ""
 "Plugins page.</a>"
 msgstr ""
 
-#: gs-only-pdf-preview.php:122
+#: gs-only-pdf-preview.php:124
 #. translators: %s: url to admin plugins page.
 msgid ""
 "The plugin \"GS Only PDF Preview\" cannot be activated as it is "
@@ -61,7 +61,7 @@ msgid ""
 "Plugins page.</a>"
 msgstr ""
 
-#: gs-only-pdf-preview.php:138
+#: gs-only-pdf-preview.php:140
 #. translators: %1$s: lowest compatible WordPress version; %2$s: user's current
 #. WordPress version; %3$s: url to admin plugins page.
 msgid ""
@@ -70,7 +70,7 @@ msgid ""
 "to Plugins page.</a>"
 msgstr ""
 
-#: gs-only-pdf-preview.php:151
+#: gs-only-pdf-preview.php:153
 #. translators: %1$s: highest WordPress version tested; %2$s: user's current
 #. WordPress version.
 msgid ""
@@ -78,22 +78,22 @@ msgid ""
 "only been tested on WordPress versions up to %1$s. You have WordPress %2$s."
 msgstr ""
 
-#: gs-only-pdf-preview.php:163
+#: gs-only-pdf-preview.php:165
 msgid ""
 "<strong>Warning: no Ghostscript!</strong> The plugin \"GS Only PDF "
 "Preview\" cannot determine the server location of your Ghostscript "
 "executable."
 msgstr ""
 
-#: gs-only-pdf-preview.php:216
+#: gs-only-pdf-preview.php:218
 msgid "Invalid arguments!"
 msgstr ""
 
-#: gs-only-pdf-preview.php:221
+#: gs-only-pdf-preview.php:223
 msgid "No PDFs found!"
 msgstr ""
 
-#: gs-only-pdf-preview.php:227
+#: gs-only-pdf-preview.php:229
 #. translators: %1$s: formatted number of PDF previews regenerated; %2$s:
 #. formatted number of seconds to one decimal place it took.
 msgid "%1$s PDF preview regenerated in %2$s seconds."
@@ -101,83 +101,83 @@ msgid_plural "%1$s PDF previews regenerated in %2$s seconds."
 msgstr[0] ""
 msgstr[1] ""
 
-#: gs-only-pdf-preview.php:233
+#: gs-only-pdf-preview.php:235
 #. translators: %s: formatted number of non-PDFs ignored.
 msgid "%s non-PDF ignored."
 msgid_plural "%s non-PDFs ignored."
 msgstr[0] ""
 msgstr[1] ""
 
-#: gs-only-pdf-preview.php:238
+#: gs-only-pdf-preview.php:240
 msgid "Nothing updated!"
 msgstr ""
 
-#: gs-only-pdf-preview.php:242
+#: gs-only-pdf-preview.php:244
 #. translators: %s: formatted number of non-PDFs ignored.
 msgid "Nothing updateable! %s non-PDF ignored."
 msgid_plural "Nothing updateable! %s non-PDFs ignored."
 msgstr[0] ""
 msgstr[1] ""
 
-#: gs-only-pdf-preview.php:249
+#: gs-only-pdf-preview.php:251
 #. translators: %s: formatted number of PDF previews that failed to regenerate.
 msgid "%s PDF preview not regenerated."
 msgid_plural "%s PDF previews not regenerated."
 msgstr[0] ""
 msgstr[1] ""
 
-#: gs-only-pdf-preview.php:255
+#: gs-only-pdf-preview.php:257
 msgid "You can go again below if you want."
 msgstr ""
 
-#: gs-only-pdf-preview.php:293 gs-only-pdf-preview.php:429
-#: gs-only-pdf-preview.php:519
+#: gs-only-pdf-preview.php:295 gs-only-pdf-preview.php:449
+#: gs-only-pdf-preview.php:543
 msgid "Regenerate PDF Previews"
 msgstr ""
 
-#: gs-only-pdf-preview.php:293
+#: gs-only-pdf-preview.php:295
 msgid "Regen. PDF Previews"
 msgstr ""
 
-#: gs-only-pdf-preview.php:307 gs-only-pdf-preview.php:394
-#: gs-only-pdf-preview.php:590
+#: gs-only-pdf-preview.php:309 gs-only-pdf-preview.php:414
+#: gs-only-pdf-preview.php:614
 msgid "Sorry, you are not allowed to access this page."
 msgstr ""
 
-#: gs-only-pdf-preview.php:400
+#: gs-only-pdf-preview.php:420
 msgid "GS Only PDF Preview - Regenerate PDF Previews"
 msgstr ""
 
-#: gs-only-pdf-preview.php:405
+#: gs-only-pdf-preview.php:425
 msgid ""
 "This tool is for regenerating the thumbnail previews of PDFs, but no PDFs "
 "have been uploaded, so it has nothing to do."
 msgstr ""
 
-#: gs-only-pdf-preview.php:412
+#: gs-only-pdf-preview.php:432
 msgid ""
 "<strong>Warning: cannot set max execution time!</strong> The maximum time "
 "allowed for a PHP script to run on your system could not be set, so you may "
 "experience the White Screen Of Death (WSOD) on trying this."
 msgstr ""
 
-#: gs-only-pdf-preview.php:421
+#: gs-only-pdf-preview.php:441
 msgid "Regenerate the thumbnail previews of PDFs uploaded to your system."
 msgstr ""
 
-#: gs-only-pdf-preview.php:426
+#: gs-only-pdf-preview.php:446
 #. translators: %s: formatted number of PDFs found.
 msgid "<strong>%s</strong> PDF has been found."
 msgid_plural "<strong>%s</strong> PDFs have been found."
 msgstr[0] ""
 msgstr[1] ""
 
-#: gs-only-pdf-preview.php:434
+#: gs-only-pdf-preview.php:454
 #. translators: %s: formatted number (greater than 10) of PDFs found.
 msgid "Regenerating %s PDF previews can take a long time."
 msgstr ""
 
-#: gs-only-pdf-preview.php:446
+#: gs-only-pdf-preview.php:466
 #. translators: %s: url to the Media Library page in list mode.
 msgid ""
 "Note that you can also regenerate PDF previews in batches or individually "
@@ -186,52 +186,56 @@ msgid ""
 "Media Library</a>."
 msgstr ""
 
-#: gs-only-pdf-preview.php:483
+#: gs-only-pdf-preview.php:505
 msgid "Please wait..."
 msgstr ""
 
-#: gs-only-pdf-preview.php:487
+#: gs-only-pdf-preview.php:509
 msgid "No items selected!"
 msgstr ""
 
-#: gs-only-pdf-preview.php:488
+#: gs-only-pdf-preview.php:510
 msgid "Regenerate Preview ajax action not available!"
 msgstr ""
 
-#: gs-only-pdf-preview.php:574
+#: gs-only-pdf-preview.php:514
+msgid "Document Link Only"
+msgstr ""
+
+#: gs-only-pdf-preview.php:598
 #. translators: %s: attachment title
 msgid "Regenerate the PDF preview for &#8220;%s&#8221;"
 msgstr ""
 
-#: gs-only-pdf-preview.php:575
+#: gs-only-pdf-preview.php:599
 msgid "Regenerate&nbsp;Preview"
 msgstr ""
 
-#: gs-only-pdf-preview.php:595
+#: gs-only-pdf-preview.php:619
 msgid "Invalid nonce."
 msgstr ""
 
-#: gs-only-pdf-preview.php:598
+#: gs-only-pdf-preview.php:622
 msgid "Invalid ID."
 msgstr ""
 
-#: gs-only-pdf-preview.php:604
+#: gs-only-pdf-preview.php:628
 msgid "Failed to generate the PDF preview."
 msgstr ""
 
-#: gs-only-pdf-preview.php:609
+#: gs-only-pdf-preview.php:633
 msgid ""
 "Successfully regenerated the PDF preview. It's best to refresh your browser "
 "to see the updated thumbnail correctly."
 msgstr ""
 
-#: gs-only-pdf-preview.php:611
+#: gs-only-pdf-preview.php:635
 msgid ""
 "Successfully regenerated the PDF preview. You will need to refresh your "
 "browser to see the updated thumbnail."
 msgstr ""
 
-#: gs-only-pdf-preview.php:640
+#: gs-only-pdf-preview.php:664
 #. translators: %1$d: percentage of PDF previews completed; %2$d: completed
 #. count.
 msgid "%d%% (%d)"
@@ -241,49 +245,53 @@ msgstr ""
 msgid "Unsupported MIME type."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:169
+#: includes/class-gopp-image-editor-gs.php:165
+msgid "Unsupported destination."
+msgstr ""
+
+#: includes/class-gopp-image-editor-gs.php:172
 msgid "No Ghostscript."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:175
+#: includes/class-gopp-image-editor-gs.php:178
 msgid "Image Editor Save Failed"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:182
+#: includes/class-gopp-image-editor-gs.php:185
 msgid "Could not read image size."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:220
+#: includes/class-gopp-image-editor-gs.php:223
 msgid "Loading from URL not supported."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:225
-#: includes/class-gopp-image-editor-gs.php:230
+#: includes/class-gopp-image-editor-gs.php:228
+#: includes/class-gopp-image-editor-gs.php:233
 msgid "Unsupported file name."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:240
+#: includes/class-gopp-image-editor-gs.php:243
 msgid "File doesn&#8217;t exist?"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:247
+#: includes/class-gopp-image-editor-gs.php:250
 msgid "File is not a PDF."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:629
+#: includes/class-gopp-image-editor-gs.php:632
 msgid "Attempted to set PDF preview resolution to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:684
+#: includes/class-gopp-image-editor-gs.php:687
 msgid "Attempted to set PDF preview page to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:703
-#: includes/class-gopp-image-editor-gs.php:724
-#: includes/class-gopp-image-editor-gs.php:743
-#: includes/class-gopp-image-editor-gs.php:756
-#: includes/class-gopp-image-editor-gs.php:770
-#: includes/class-gopp-image-editor-gs.php:783
+#: includes/class-gopp-image-editor-gs.php:706
+#: includes/class-gopp-image-editor-gs.php:727
+#: includes/class-gopp-image-editor-gs.php:746
+#: includes/class-gopp-image-editor-gs.php:759
+#: includes/class-gopp-image-editor-gs.php:773
+#: includes/class-gopp-image-editor-gs.php:786
 msgid "Unsupported operation."
 msgstr ""
 

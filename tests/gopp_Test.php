@@ -62,32 +62,48 @@ class Tests_GOPP extends WP_UnitTestCase {
 		set_current_screen( $pagenow );
 
 		$this->assertTrue( is_admin() );
+		if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
+			GS_Only_PDF_Preview::init();
+			$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
+			$this->assertSame( 10, has_action( 'admin_init', array( 'GS_Only_PDF_Preview', 'admin_init' ) ) );
+			$this->assertSame( 10, has_action( 'admin_menu', array( 'GS_Only_PDF_Preview', 'admin_menu' ) ) );
+			$this->assertSame( 10, has_action( 'admin_enqueue_scripts', array( 'GS_Only_PDF_Preview', 'admin_enqueue_scripts' ) ) );
+
+			$this->assertSame( 10, has_filter( 'bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'bulk_actions_upload' ) ) );
+			$this->assertSame( 10, has_filter( 'handle_bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'handle_bulk_actions_upload' ) ) );
+			$this->assertSame( 10, has_filter( 'removable_query_args', array( 'GS_Only_PDF_Preview', 'removable_query_args' ) ) );
+
+			$this->assertSame( 10, has_action( 'current_screen', array( 'GS_Only_PDF_Preview', 'current_screen' ) ) );
+			$this->assertSame( 100, has_action( 'media_row_actions', array( 'GS_Only_PDF_Preview', 'media_row_actions' ) ) );
+			$this->assertSame( 10, has_action( 'wp_ajax_gopp_media_row_action', array( 'GS_Only_PDF_Preview', 'gopp_media_row_action' ) ) );
+			$this->assertSame( 10, has_action( 'wp_ajax_gopp_poll_regen_pdf_previews', array( 'GS_Only_PDF_Preview', 'gopp_poll_regen_pdf_previews' ) ) );
+
+			remove_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) );
+			remove_action( 'admin_init', array( 'GS_Only_PDF_Preview', 'admin_init' ) );
+			remove_action( 'admin_menu', array( 'GS_Only_PDF_Preview', 'admin_menu' ) );
+			remove_action( 'admin_enqueue_scripts', array( 'GS_Only_PDF_Preview', 'admin_enqueue_scripts' ) );
+
+			remove_filter( 'bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'bulk_actions_upload' ) );
+			remove_filter( 'handle_bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'handle_bulk_actions_upload' ) );
+			remove_filter( 'removable_query_args', array( 'GS_Only_PDF_Preview', 'removable_query_args' ) );
+
+			remove_action( 'current_screen', array( 'GS_Only_PDF_Preview', 'current_screen' ) );
+			remove_action( 'media_row_actions', array( 'GS_Only_PDF_Preview', 'media_row_actions' ) );
+			remove_action( 'wp_ajax_gopp_media_row_action', array( 'GS_Only_PDF_Preview', 'gopp_media_row_action' ) );
+			remove_action( 'wp_ajax_gopp_poll_regen_pdf_previews', array( 'GS_Only_PDF_Preview', 'gopp_poll_regen_pdf_previews' ) );
+
+			define( 'DOING_AJAX', true );
+		}
+
+		$this->assertTrue( DOING_AJAX );
 		GS_Only_PDF_Preview::init();
-		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
-		$this->assertSame( 10, has_action( 'admin_init', array( 'GS_Only_PDF_Preview', 'admin_init' ) ) );
-		$this->assertSame( 10, has_action( 'admin_menu', array( 'GS_Only_PDF_Preview', 'admin_menu' ) ) );
-		$this->assertSame( 10, has_action( 'admin_enqueue_scripts', array( 'GS_Only_PDF_Preview', 'admin_enqueue_scripts' ) ) );
-
-		$this->assertSame( 10, has_filter( 'bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'bulk_actions_upload' ) ) );
-		$this->assertSame( 10, has_filter( 'handle_bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'handle_bulk_actions_upload' ) ) );
-		$this->assertSame( 10, has_filter( 'removable_query_args', array( 'GS_Only_PDF_Preview', 'removable_query_args' ) ) );
-
-		$this->assertSame( 10, has_action( 'current_screen', array( 'GS_Only_PDF_Preview', 'current_screen' ) ) );
-		$this->assertSame( 100, has_action( 'media_row_actions', array( 'GS_Only_PDF_Preview', 'media_row_actions' ) ) );
+		$this->assertSame( 10, has_action( 'media_send_to_editor', array( 'GS_Only_PDF_Preview', 'media_send_to_editor' ) ) );
 		$this->assertSame( 10, has_action( 'wp_ajax_gopp_media_row_action', array( 'GS_Only_PDF_Preview', 'gopp_media_row_action' ) ) );
+		$this->assertSame( 10, has_action( 'wp_ajax_gopp_poll_regen_pdf_previews', array( 'GS_Only_PDF_Preview', 'gopp_poll_regen_pdf_previews' ) ) );
 
-		remove_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) );
-		remove_action( 'admin_init', array( 'GS_Only_PDF_Preview', 'admin_init' ) );
-		remove_action( 'admin_menu', array( 'GS_Only_PDF_Preview', 'admin_menu' ) );
-		remove_action( 'admin_enqueue_scripts', array( 'GS_Only_PDF_Preview', 'admin_enqueue_scripts' ) );
-
-		remove_filter( 'bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'bulk_actions_upload' ) );
-		remove_filter( 'handle_bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'handle_bulk_actions_upload' ) );
-		remove_filter( 'removable_query_args', array( 'GS_Only_PDF_Preview', 'removable_query_args' ) );
-
-		remove_action( 'current_screen', array( 'GS_Only_PDF_Preview', 'current_screen' ) );
-		remove_action( 'media_row_actions', array( 'GS_Only_PDF_Preview', 'media_row_actions' ) );
+		remove_action( 'media_send_to_editor', array( 'GS_Only_PDF_Preview', 'media_send_to_editor' ) );
 		remove_action( 'wp_ajax_gopp_media_row_action', array( 'GS_Only_PDF_Preview', 'gopp_media_row_action' ) );
+		remove_action( 'wp_ajax_gopp_poll_regen_pdf_previews', array( 'GS_Only_PDF_Preview', 'gopp_poll_regen_pdf_previews' ) );
 
 		$pagenow = $old_pagenow;
 	}
@@ -571,6 +587,20 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertTrue( false !== stripos( $out, 'gopp_regen_pdf_previews_form' ) );
 		$this->assertSame( force_balance_tags( $out ), $out );
 
+		// Do with 11 pdfs.
+		for ( $i = 0; $i < 10; $i++ ) {
+			$attachment_id = $this->factory->attachment->create_upload_object( $test_file );
+			$this->assertNotEmpty( $attachment_id );
+		}
+
+		ob_start();
+		GS_Only_PDF_Preview::regen_pdf_previews();
+		$out = ob_get_clean();
+		$this->assertTrue( false !== stripos( $out, '<strong>11</strong> PDF' ) );
+		$this->assertTrue( false !== stripos( $out, 'gopp_regen_pdf_previews_form' ) );
+		$this->assertTrue( false !== stripos( $out, 'can take a long time' ) );
+		$this->assertSame( force_balance_tags( $out ), $out );
+
 		$out = wp_set_current_user( 0 );
 	}
 
@@ -608,6 +638,16 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertTrue( false !== stripos( $out, 'gs-only-pdf-preview' ) );
 		$this->assertTrue( false !== stripos( $out, 'gopp_plugin_params' ) );
 		$this->assertTrue( false !== stripos( $out, 'no_items_selected_msg' ) );
+
+		$wp_scripts = null;
+		GS_Only_PDF_Preview::admin_enqueue_scripts( 'post.php' );
+		ob_start();
+		wp_scripts()->do_items();
+		$out = ob_get_clean();
+		$this->assertTrue( false !== stripos( $out, 'jquery-migrate' ) );
+		$this->assertTrue( false !== stripos( $out, 'gs-only-pdf-preview' ) );
+		$this->assertTrue( false !== stripos( $out, 'gopp_plugin_params' ) );
+		$this->assertTrue( false !== stripos( $out, 'document_link_only' ) );
 
 		$old_wp_scripts = $wp_scripts;
 	}
@@ -848,6 +888,39 @@ class Tests_GOPP extends WP_UnitTestCase {
 		set_transient( 'gopp_plugin_poll_rpp', array( 1, 0 ) );
 		$out = GS_Only_PDF_Preview::gopp_poll_regen_pdf_previews();
 		$this->assertSame( '{"msg":"100% (1)"}', $out );
+	}
+
+	/**
+	 * Test media_send_to_editor.
+	 */
+	function test_media_send_to_editor() {
+		$html = 'asdf';
+		$id = 1;
+		$attachment = array();
+
+		$output = GS_Only_PDF_Preview::media_send_to_editor( $html, $id, $attachment );
+		$this->assertSame( $html, $output );
+
+		$attachment['image-size'] = 'thumbnail';
+		$output = GS_Only_PDF_Preview::media_send_to_editor( $html, $id, $attachment );
+		$this->assertSame( $html, $output );
+
+		$html = '<img>';
+		$attachment['post_title'] = 'Title';
+		$output = GS_Only_PDF_Preview::media_send_to_editor( $html, $id, $attachment );
+		$this->assertSame( $html, $output );
+
+		$html = 'blah';
+		$test_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
+		$id = $this->factory->attachment->create_upload_object( $test_file );
+		$attachment['url'] = wp_get_attachment_url( $id );
+
+		$attachment['image-size'] = 'thumbnail';
+		$output = GS_Only_PDF_Preview::media_send_to_editor( $html, $id, $attachment );
+		$this->assertTrue( false !== strpos( $output, '<a href="' . $attachment['url'] . '"' ) );
+		$meta = get_metadata( 'post', $id, '_wp_attachment_metadata' );
+		$this->assertNotEmpty( $meta[0]['sizes']['thumbnail']['file'] );
+		$this->assertTrue( 1 === preg_match( '/<img src="[^"]+' . preg_quote( $meta[0]['sizes']['thumbnail']['file'] ) . '"/', $output ) );
 	}
 }
 
