@@ -125,6 +125,7 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 4. Regenerate PDF Previews administration tool after processing.
 5. Regenerate PDF Previews bulk action in list mode of Media Library.
 6. Regenerate Preview row action in list mode of Media Library.
+7. Link to preview image in "Add Media".
 
 == Changelog ==
 
