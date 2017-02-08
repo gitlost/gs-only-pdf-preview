@@ -139,6 +139,9 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 ### 6. Regenerate Preview row action in list mode of Media Library. ###
 ![Regenerate Preview row action in list mode of Media Library.](https://github.com/gitlost/gs-only-pdf-preview/raw/master/assets/screenshot-6.png)
 
+### 7. Link to preview image in "Add Media". ###
+![Link to preview image in "Add Media".](https://github.com/gitlost/gs-only-pdf-preview/raw/master/assets/screenshot-7.png)
+
 
 ## Changelog ##
 
