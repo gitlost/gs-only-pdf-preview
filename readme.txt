@@ -3,7 +3,7 @@ Contributors: gitlost
 Tags: Ghostscript, PDF, PDF Preview, Ghostscript Only
 Requires at least: 4.7.0
 Tested up to: 4.7.2
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,7 +55,7 @@ As workarounds for the possible WSOD issue above, and as facilities in themselve
 
 = Patches =
 
-As a bonus version 1.0.2 patches WordPress to allow linking to the preview image in "Add Media" when editing a post ([#39618 Insert PDF Thumbnail into Editor](https://core.trac.wordpress.org/ticket/39618)). Also patches [#39630 PDF Thumbnails in Media Library Don't Fall Back to Full Size](https://core.trac.wordpress.org/ticket/39630).
+As a bonus version 1.0.2+ patches WordPress to allow linking to the preview image in "Add Media" when editing a post ([#39618 Insert PDF Thumbnail into Editor](https://core.trac.wordpress.org/ticket/39618)). Also patches [#39630 PDF Thumbnails in Media Library Don't Fall Back to Full Size](https://core.trac.wordpress.org/ticket/39630).
 
 = And =
 
@@ -129,6 +129,9 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 
 == Changelog ==
 
+= 1.0.3 (9 Feb 2017) =
+* Rename "wp-image-id" class to "wp-pdf-image-id" on linked preview thumbnail so that wp_make_content_images_responsive() ignores it.
+
 = 1.0.2 (8 Feb 2017) =
 * Don't overwrite existing JPEGs with same name as preview.
 * Remove existing preview intermediates when regenerating.
@@ -146,6 +149,9 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 * Initial github version.
 
 == Upgrade Notice ==
+
+= 1.0.3 =
+Avoids PHP warning on linked pdf thumbnails.
 
 = 1.0.2 =
 Doesn't overwrite existing JPEGs with same name as preview. Removes existing preview thumbnails on regeneration.
