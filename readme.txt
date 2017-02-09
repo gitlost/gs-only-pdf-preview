@@ -17,7 +17,7 @@ This means that only Ghostscript is required on the server. Neither the PHP modu
 
 = Background =
 
-The plugin was prompted by the demonstration `WP_Image_Editor_Imagick_External` class uploaded to the WP Trac ticket [#39262 Fall back to ImageMagick command line when the pecl imagic is not available on the server](https://core.trac.wordpress.org/ticket/39262) by [Hristo Pandjarov](https://profiles.wordpress.org/hristo-sg), and by the wish to solve the WP Trac ticket [#39216 PDFs with non-opaque alpha channels can result in previews with black backgrounds.](https://core.trac.wordpress.org/ticket/39216), which particularly affects PDFs with CMYK color spaces (common in the print world).
+The plugin was prompted by the `WP_Image_Editor_Imagick_External` demonstration class uploaded to the WP Trac ticket [#39262 Fall back to ImageMagick command line when the pecl imagic is not available on the server](https://core.trac.wordpress.org/ticket/39262) by [Hristo Pandjarov](https://profiles.wordpress.org/hristo-sg), and by the wish to solve the WP Trac ticket [#39216 PDFs with non-opaque alpha channels can result in previews with black backgrounds.](https://core.trac.wordpress.org/ticket/39216), which particularly affects PDFs with CMYK color spaces (common in the print world).
 
 The plugin by-passes (as far as PDF previews are concerned) #39216, and also by-passes the related issue [#39331 unsharpMaskImage in Imagick's thumbnail_image is not compatible with CMYK jpegs.](https://core.trac.wordpress.org/ticket/39331), as the preview jpegs produced directly by Ghostscript use sRGB color spaces.
 
@@ -49,7 +49,7 @@ On jpeg thumbnail size it appears to be comparable, maybe a bit larger on averag
 
 = Tool =
 
-A basic administration tool to regenerate (or generate, if they previously didn't have a preview) the previews of all PDFs uploaded to the system is included (any previously generated intermediate preview thumbnails will be removed if their dimensions differ). Note that if you have a lot of PDFs you may experience the White Screen Of Death (WSOD) if the tool exceeds the [maximum execution time](http://php.net/manual/en/info.configuration.php#ini.max-execution-time) allowed. Note also that as the filenames of the previews don't (normally) change, you will probably have to refresh your browser to see the updated thumbnails.
+A basic administration tool to regenerate (or generate, if they previously didn't have a preview) the previews of all PDFs uploaded to the system is included (any previously generated intermediate preview thumbnails will be removed if their dimensions differ). Note that if you have a lot of PDFs you may experience the White Screen Of Death (WSOD) if the tool exceeds the [maximum execution time](http://php.net/manual/en/info.configuration.php#ini.max-execution-time) allowed. Note also that as the file names of the previews don't (normally) change, you will probably have to refresh your browser to see the updated thumbnails.
 
 As workarounds for the possible WSOD issue above, and as facilities in themselves, a "Regenerate PDF Previews" bulk action is added to the list mode of the Media Library, and a "Regenerate Preview" row action is added to each PDF entry in the list. So previews can be regenerated in batches or individually instead.
 
@@ -129,8 +129,8 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 
 == Changelog ==
 
-= 1.0.4 (10 Feb 2017) =
-* Remove "+" from banned characters in file name.
+= 1.0.4 (X Feb 2017) =
+* Remove "+" from banned characters in file name, for BC with older uploads.
 
 = 1.0.3 (9 Feb 2017) =
 * Add dummy srcset on linked preview thumbnail so that wp_make_content_images_responsive() ignores it.
@@ -155,7 +155,7 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 == Upgrade Notice ==
 
 = 1.0.4 =
-Allows filenames with "+".
+Allows file names with "+".
 
 = 1.0.3 =
 Avoids PHP warning on linked pdf thumbnails.
