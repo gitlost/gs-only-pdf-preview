@@ -146,7 +146,8 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 ## Changelog ##
 
 ### 1.0.3 (9 Feb 2017) ###
-* Rename "wp-image-id" class to "wp-pdf-image-id" on linked preview thumbnail so that wp_make_content_images_responsive() ignores it.
+* Add dummy srcset on linked preview thumbnail so that wp_make_content_images_responsive() ignores it.
+* Remove Attachment from Link To for pdfs.
 
 ### 1.0.2 (8 Feb 2017) ###
 * Don't overwrite existing JPEGs with same name as preview.
