@@ -5,7 +5,7 @@
 **Tags:** Ghostscript, PDF, PDF Preview, Ghostscript Only  
 **Requires at least:** 4.7.0  
 **Tested up to:** 4.7.2  
-**Stable tag:** 1.0.3  
+**Stable tag:** 1.0.4  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -145,6 +145,9 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 
 ## Changelog ##
 
+### 1.0.4 (10 Feb 2017) ###
+* Remove "+" from banned characters in file name.
+
 ### 1.0.3 (9 Feb 2017) ###
 * Add dummy srcset on linked preview thumbnail so that wp_make_content_images_responsive() ignores it.
 * Remove Attachment from Link To for pdfs.
@@ -166,6 +169,9 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 * Initial github version.
 
 ## Upgrade Notice ##
+
+### 1.0.4 ###
+Allows filenames with "+".
 
 ### 1.0.3 ###
 Avoids PHP warning on linked pdf thumbnails.

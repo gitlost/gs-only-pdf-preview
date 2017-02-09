@@ -228,8 +228,9 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			return __( 'Unsupported file name.', 'gs-only-pdf-preview' );
 		}
 
-		// Check for suspect chars in base filename - same as $special_chars in sanitize_file_name() with ctrls, space and del added.
-		if ( preg_match( '/[?\[\]\/\\\\=<>:;,\'"&$#*()|~`!{}%+\x00-\x20\x7f]/', wp_basename( $file ) ) ) {
+		// Check for suspect chars in base filename - same as $special_chars in sanitize_file_name() with ctrls, space and del added
+		// but (for BC with common older uploads) with "+" removed - see #16226 for its addition (along with "%") Oct 2015.
+		if ( preg_match( '/[?\[\]\/\\\\=<>:;,\'"&$#*()|~`!{}%\x00-\x20\x7f]/', wp_basename( $file ) ) ) {
 			return __( 'Unsupported file name.', 'gs-only-pdf-preview' );
 		}
 

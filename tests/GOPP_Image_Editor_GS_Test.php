@@ -209,10 +209,13 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 			array( 'non_existent', false, 'File doesn&#8217;t exist?' ), // Non-existent.
 			array( 'non_existent', true, true ), // Non-existent.
 			array( 'http://external', false, 'Loading from URL not supported.' ), // Non-local.
-			array( '@args_file', false, 'Unsupported file name.' ), // Ghostscript argument file.
-			array( 'space filename', false, 'Unsupported file name.' ), // File name containing space.
-			array( 'quote\'filename', false, 'Unsupported file name.' ), // File name containing single quote.
-			array( 'double_quote"filename', false, 'Unsupported file name.' ), // File name containing double quote.
+			array( '@args_file', true, 'Unsupported file name.' ), // Ghostscript argument file.
+			array( 'space filename', true, 'Unsupported file name.' ), // File name containing space.
+			array( 'quote\'filename', true, 'Unsupported file name.' ), // File name containing single quote.
+			array( 'double_quote"filename', true, 'Unsupported file name.' ), // File name containing double quote.
+			array( 'percent_file%name', true, 'Unsupported file name.' ), // File name containing percent.
+			array( 'plus+file+name', true, true ), // Success: allow filnames with pluses for BC with common older uploads.
+			array( 'bang_!filename', true, 'Unsupported file name.' ), // File name containing exclaimation mark.
 			array( dirname( __FILE__ ) . '/images/test-image.jpg', false, 'File is not a PDF.' ), // Not a PDF.
 			array( dirname( __FILE__ ) . '/images/test-image.jpg', true, true ), // Not a PDF.
 			array( dirname( __FILE__ ) . '/images/test-bad.pdf', false, 'File is not a PDF.' ), // Bad PDF.

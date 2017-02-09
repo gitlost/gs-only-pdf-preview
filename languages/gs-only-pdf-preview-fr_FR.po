@@ -2,11 +2,11 @@
 # This file is distributed under the GPLv2.
 msgid ""
 msgstr ""
-"Project-Id-Version: GS Only PDF Preview 1.0.3\n"
+"Project-Id-Version: GS Only PDF Preview 1.0.4\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/gs-only-pdf-"
 "preview\n"
-"POT-Creation-Date: 2017-02-09 07:40+0000\n"
-"PO-Revision-Date: 2017-02-09 07:40+0000\n"
+"POT-Creation-Date: 2017-02-09 16:12+0000\n"
+"PO-Revision-Date: 2017-02-09 16:12+0000\n"
 "Last-Translator: gitlost <gitlost@gitlostbonger.com>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -310,36 +310,36 @@ msgid "Loading from URL not supported."
 msgstr "Chargement à partir de l&rsquo;URL non pris en charge."
 
 #: includes/class-gopp-image-editor-gs.php:228
-#: includes/class-gopp-image-editor-gs.php:233
+#: includes/class-gopp-image-editor-gs.php:234
 msgid "Unsupported file name."
 msgstr "Nom du fichier non supporté."
 
-#: includes/class-gopp-image-editor-gs.php:243
+#: includes/class-gopp-image-editor-gs.php:244
 msgid "File doesn&#8217;t exist?"
 msgstr "Le fichier n&rsquo;existe pas&nbsp;?"
 
-#: includes/class-gopp-image-editor-gs.php:250
+#: includes/class-gopp-image-editor-gs.php:251
 msgid "File is not a PDF."
 msgstr "Le fichier n&rsquo;est pas un PDF ."
 
-#: includes/class-gopp-image-editor-gs.php:632
+#: includes/class-gopp-image-editor-gs.php:633
 msgid "Attempted to set PDF preview resolution to an invalid value."
 msgstr ""
 "Tentative de fixer la résolution d&rsquo;aperçu de miniature de PDF à une "
 "valeur non valide."
 
-#: includes/class-gopp-image-editor-gs.php:687
+#: includes/class-gopp-image-editor-gs.php:688
 msgid "Attempted to set PDF preview page to an invalid value."
 msgstr ""
 "Tentative de fixer la page d&rsquo;aperçu de miniature de PDF à une valeur "
 "non valide."
 
-#: includes/class-gopp-image-editor-gs.php:706
-#: includes/class-gopp-image-editor-gs.php:727
-#: includes/class-gopp-image-editor-gs.php:746
-#: includes/class-gopp-image-editor-gs.php:759
-#: includes/class-gopp-image-editor-gs.php:773
-#: includes/class-gopp-image-editor-gs.php:786
+#: includes/class-gopp-image-editor-gs.php:707
+#: includes/class-gopp-image-editor-gs.php:728
+#: includes/class-gopp-image-editor-gs.php:747
+#: includes/class-gopp-image-editor-gs.php:760
+#: includes/class-gopp-image-editor-gs.php:774
+#: includes/class-gopp-image-editor-gs.php:787
 msgid "Unsupported operation."
 msgstr "Opération non supportée."
 

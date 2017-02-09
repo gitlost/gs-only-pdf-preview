@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2.
 msgid ""
 msgstr ""
-"Project-Id-Version: GS Only PDF Preview 1.0.3\n"
+"Project-Id-Version: GS Only PDF Preview 1.0.4\n"
 "Report-Msgid-Bugs-To: "
 "https://wordpress.org/support/plugin/gs-only-pdf-preview\n"
 "POT-Creation-Date: 2016-12-23 14:39:09+00:00\n"
@@ -266,32 +266,32 @@ msgid "Loading from URL not supported."
 msgstr ""
 
 #: includes/class-gopp-image-editor-gs.php:228
-#: includes/class-gopp-image-editor-gs.php:233
+#: includes/class-gopp-image-editor-gs.php:234
 msgid "Unsupported file name."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:243
+#: includes/class-gopp-image-editor-gs.php:244
 msgid "File doesn&#8217;t exist?"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:250
+#: includes/class-gopp-image-editor-gs.php:251
 msgid "File is not a PDF."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:632
+#: includes/class-gopp-image-editor-gs.php:633
 msgid "Attempted to set PDF preview resolution to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:687
+#: includes/class-gopp-image-editor-gs.php:688
 msgid "Attempted to set PDF preview page to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:706
-#: includes/class-gopp-image-editor-gs.php:727
-#: includes/class-gopp-image-editor-gs.php:746
-#: includes/class-gopp-image-editor-gs.php:759
-#: includes/class-gopp-image-editor-gs.php:773
-#: includes/class-gopp-image-editor-gs.php:786
+#: includes/class-gopp-image-editor-gs.php:707
+#: includes/class-gopp-image-editor-gs.php:728
+#: includes/class-gopp-image-editor-gs.php:747
+#: includes/class-gopp-image-editor-gs.php:760
+#: includes/class-gopp-image-editor-gs.php:774
+#: includes/class-gopp-image-editor-gs.php:787
 msgid "Unsupported operation."
 msgstr ""
 
