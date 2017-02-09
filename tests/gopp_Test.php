@@ -920,7 +920,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertTrue( false !== strpos( $output, '<a href="' . $attachment['url'] . '"' ) );
 		$meta = get_metadata( 'post', $id, '_wp_attachment_metadata' );
 		$this->assertNotEmpty( $meta[0]['sizes']['thumbnail']['file'] );
-		$this->assertTrue( 1 === preg_match( '/<img src="[^"]+' . preg_quote( $meta[0]['sizes']['thumbnail']['file'] ) . '"/', $output ) );
+		$this->assertTrue( 1 === preg_match( '/<img srcset="" src="[^"]+' . preg_quote( $meta[0]['sizes']['thumbnail']['file'] ) . '"/', $output ) );
 	}
 }
 

@@ -694,8 +694,8 @@ class GS_Only_PDF_Preview {
 
 			$title = ''; // We no longer insert title tags into <img> tags, as they are redundant.
 			$html = get_image_send_to_editor( $id, $caption, $title, $align, $url, $rel, $size, $alt );
-			// Rename "wp-image-id" class so that wp_make_content_images_responsive() doesn't try to use it.
-			$html = preg_replace( '/(class="[^"]*)wp-image-' . $id . '([^"]*")/', '$1wp-pdf-image-' . $id . '$2', $html );
+			// Add a dummy srcset so that wp_make_content_images_responsive() doesn't try to use it.
+			$html = str_replace( '<img ', '<img srcset="" ', $html );
 		}
 		return $html;
 	}

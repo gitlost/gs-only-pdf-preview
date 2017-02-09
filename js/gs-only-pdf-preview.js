@@ -130,11 +130,13 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 	gopp_plugin.post = function () {
 		var $tmpl_attachment_details, $tmpl_attachment_display_settings, $tmpl_image_details, html_before,
 			html_attachment_details,
-			attachment_details_re = /(<# } else if \( 'image' === data\.type && data\.sizes \) { #>[\s]+<img src="{{ data\.size\.url }}" draggable="false" alt="" \/>[\s]+)(<# } else { #>)/,
-			attachment_details_with = '$1\n<# } else if ( data.sizes && data.sizes.thumbnail ) { #>\n<img src="{{ data.sizes.thumbnail.url }}" draggable="false" alt="" />$2',
+			attachment_details_re = /(<# } else if \( 'image' === data\.type && data\.sizes \) { #>\s+<img src="{{ data\.size\.url }}" draggable="false" alt="" \/>)(\s+<# } else { #>)/,
+			attachment_details_with = '$1\n<# } else if ( data.sizes && data.sizes.thumbnail ) { #>\n<img src="{{ data.sizes.thumbnail.url }}" draggable="false" alt="" />\n$2',
 			html_attachment_display_settings,
-			attachment_display_settings_re = /(<# if \( data\.userSettings \) { #>[\s]+data-user-setting="imgsize"[\s]+<# } #>>)([\s]+<#)/,
-			attachment_display_settings_with = '$1\n<# if ( \'application\' === data.type ) { #>\n<option value="">\n' + gopp_plugin_params.document_link_only + '\n</option>\n<# } #>\n$2',
+			attachment_display_settings_re = /<option value="post">\n\s+<# if \( data\.model\.canEmbed \) { #>\n[^\n]+\n[^\n]+\n\s+<\/option>/,
+			attachment_display_settings_with = '<# if ( \'application\' !== data.type ) { #>\n$&\n<# } #>\n',
+			attachment_display_settings2_re = /(<# if \( data\.userSettings \) { #>\s+data-user-setting="imgsize"\s+<# } #>>)(\s+<#)/,
+			attachment_display_settings2_with = '$1\n<# if ( \'application\' === data.type ) { #>\n<option value="">\n' + gopp_plugin_params.document_link_only + '\n</option>\n<# } #>\n$2',
 			html_image_details,
 			image_details_re = /(<# if \( data\.attachment && window\.imageEdit)( \) { #>)/,
 			image_details_with = '$1 && \'image\' === data.type $2';
@@ -154,9 +156,15 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 					return false;
 				}
 
-				// #39618 Adds "Document Link Only" option to Size select of Attachment Details.
+				// #39618 Removes "Attachment" option from Link To select of Attachment Details.
 				html_before = $tmpl_attachment_display_settings.html();
 				html_attachment_display_settings = html_before.replace( attachment_display_settings_re, attachment_display_settings_with );
+				if ( html_before === html_attachment_display_settings ) {
+					return false;
+				}
+				// #39618 Adds "Document Link Only" option to Size select of Attachment Details.
+				html_before = html_attachment_display_settings;
+				html_attachment_display_settings = html_before.replace( attachment_display_settings2_re, attachment_display_settings2_with );
 				if ( html_before === html_attachment_display_settings ) {
 					return false;
 				}
@@ -254,7 +262,7 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 	 */
 	gopp_plugin.patch_39630 = function () {
 		var $tmpl_attachment = $( '#tmpl-attachment' ), html_before, html_attachment,
-			attachment_re = /(<# } else if \( data\.sizes && )data\.sizes\.medium( \) { #>[\s]+<img src="{{ )data\.sizes\.medium(\.url }}" class="thumbnail" draggable="false" alt="" \/>[\s]+<# } else { #>)/,
+			attachment_re = /(<# } else if \( data\.sizes && )data\.sizes\.medium( \) { #>\s+<img src="{{ )data\.sizes\.medium(\.url }}" class="thumbnail" draggable="false" alt="" \/>\s+<# } else { #>)/,
 			attachment_with = '$1( data.sizes.thumbnail || data.sizes.medium )$2( data.sizes.thumbnail || data.sizes.medium )$3';
 
 		if ( $tmpl_attachment.length ) {
