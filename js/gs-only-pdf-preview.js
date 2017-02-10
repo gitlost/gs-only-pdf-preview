@@ -133,8 +133,8 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 			attachment_details_re = /(<# } else if \( 'image' === data\.type && data\.sizes \) { #>\s+<img src="{{ data\.size\.url }}" draggable="false" alt="" \/>)(\s+<# } else { #>)/,
 			attachment_details_with = '$1\n<# } else if ( data.sizes && data.sizes.thumbnail ) { #>\n<img src="{{ data.sizes.thumbnail.url }}" draggable="false" alt="" />\n$2',
 			html_attachment_display_settings,
-			attachment_display_settings_re = /<option value="post">\n\s+<# if \( data\.model\.canEmbed \) { #>\n[^\n]+\n[^\n]+\n\s+<\/option>/,
-			attachment_display_settings_with = '<# if ( \'application\' !== data.type ) { #>\n$&\n<# } #>\n',
+			attachment_display_settings_re = /(<# if \( 'image' === data.type)( \) { #>\s+<label class="setting">)/,
+			attachment_display_settings_with = '$1 || ( \'application\' === data.type && data.sizes )$2',
 			attachment_display_settings2_re = /(<# if \( data\.userSettings \) { #>\s+data-user-setting="imgsize"\s+<# } #>>)(\s+<#)/,
 			attachment_display_settings2_with = '$1\n<# if ( \'application\' === data.type ) { #>\n<option value="">\n' + gopp_plugin_params.document_link_only + '\n</option>\n<# } #>\n$2',
 			html_image_details,
@@ -156,13 +156,13 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 					return false;
 				}
 
-				// #39618 Removes "Attachment" option from Link To select of Attachment Details.
+				// #39618 Enables "Align" select of Attachment Display Settings.
 				html_before = $tmpl_attachment_display_settings.html();
 				html_attachment_display_settings = html_before.replace( attachment_display_settings_re, attachment_display_settings_with );
 				if ( html_before === html_attachment_display_settings ) {
 					return false;
 				}
-				// #39618 Adds "Document Link Only" option to Size select of Attachment Details.
+				// #39618 Adds "Document Link Only" option to Size select of Attachment Display Settings.
 				html_before = html_attachment_display_settings;
 				html_attachment_display_settings = html_before.replace( attachment_display_settings2_re, attachment_display_settings2_with );
 				if ( html_before === html_attachment_display_settings ) {
@@ -217,6 +217,12 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 		if ( props.linkUrl ) {
 			options.url = props.linkUrl;
 		}
+		// gitlost begin.
+		if ( props.link ) {
+			// Want this to know whether to get_attachment_link() or not for link to Attachment Page as url could change if previously detached.
+			options.link_to = props.link;
+		}
+		// gitlost end.
 
 		if ( 'image' === attachment.type ) {
 			html = wp.media.string.image( props );
@@ -236,7 +242,7 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 		} else {
 			html = wp.media.string.link( props );
 			options.post_title = props.title;
-			// Begin hack.
+			// gitlost begin.
 			if ( 'application' === attachment.type && 'pdf' === attachment.subtype ) {
 				_.each({
 					align: 'align',
@@ -246,7 +252,7 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 						options[ option ] = props[ prop ];
 				});
 			}
-			// End hack.
+			// gitlost end.
 		}
 
 		return wp.media.post( 'send-attachment-to-editor', {

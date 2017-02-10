@@ -131,6 +131,8 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 
 = 1.0.4 (X Feb 2017) =
 * Remove "+" from banned characters in file name, for BC with older uploads.
+* Enable "Align" select of Attachment Display Settings.
+* Workaround changing Attachment Page url and revert remove Attachment from Link To for pdfs.
 
 = 1.0.3 (9 Feb 2017) =
 * Add dummy srcset on linked preview thumbnail so that wp_make_content_images_responsive() ignores it.
@@ -155,7 +157,7 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 == Upgrade Notice ==
 
 = 1.0.4 =
-Allows file names with "+".
+Allows file names containing "+".
 
 = 1.0.3 =
 Avoids PHP warning on linked pdf thumbnails.

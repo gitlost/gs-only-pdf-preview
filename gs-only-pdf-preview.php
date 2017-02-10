@@ -678,8 +678,9 @@ class GS_Only_PDF_Preview {
 	static function media_send_to_editor( $html, $id, $attachment ) {
 		// Using the fact that 'post_title' is only set for non-image/audio/video links. See wp.media.editor.send.attachment in "wp-includes/js/media-editor.js" (line 1018).
 		if ( ! empty( $attachment['image-size'] ) && isset( $attachment['post_title'] ) && false === strpos( $html, '<img' ) ) {
-			$url = empty( $attachment['url'] ) ? '' : $attachment['url'];
-			$rel = ( strpos( $url, 'attachment_id') || get_attachment_link( $id ) == $url );
+			$is_attachment_link = isset( $attachment['link_to'] ) && 'post' === $attachment['link_to'];
+			$url = $is_attachment_link ? get_attachment_link( $id ) : ( isset( $attachment['url'] ) ? $attachment['url'] : '' );
+			$rel = $is_attachment_link;
 
 			// Based on wp_ajax_send_attachment_to_editor() in "wp-admin/includes/ajax-actions.php".
 			$align = isset( $attachment['align'] ) ? $attachment['align'] : 'none';
