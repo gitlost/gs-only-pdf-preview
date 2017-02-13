@@ -129,7 +129,7 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 
 == Changelog ==
 
-= 1.0.4 (X Feb 2017) =
+= 1.0.4 (13 Feb 2017) =
 * Remove "+" from banned characters in file name, for BC with older uploads.
 * Enable "Align" select of Attachment Display Settings.
 * Workaround changing Attachment Page url and revert remove Attachment from Link To for pdfs.
