@@ -230,9 +230,10 @@ class GS_Only_PDF_Preview {
 									number_format_i18n( $num_updates ), number_format_i18n( $time, self::$timing_dec_places )
 							) );
 							if ( $cnt > $num_updates + $num_fails ) {
+								$num_ignores = $cnt - ( $num_updates + $num_fails );
 								$admin_notices[] = array( 'warning', sprintf(
 									/* translators: %s: formatted number of non-PDFs ignored. */
-									_n( '%s non-PDF ignored.', '%s non-PDFs ignored.', $cnt, 'gs-only-pdf-preview' ), number_format_i18n( $cnt - ( $num_updates + $num_fails ) )
+									_n( '%s non-PDF ignored.', '%s non-PDFs ignored.', $num_ignores, 'gs-only-pdf-preview' ), number_format_i18n( $num_ignores )
 								) );
 							}
 						} else {
