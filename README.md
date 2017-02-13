@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/gitlost/gs-only-pdf-preview.png?branch=master)](https://travis-ci.org/gitlost/gs-only-pdf-preview)
 [![codecov.io](http://codecov.io/github/gitlost/gs-only-pdf-preview/coverage.svg?branch=master)](http://codecov.io/github/gitlost/gs-only-pdf-preview?branch=master)
+[![WordPress plugin](https://img.shields.io/wordpress/plugin/v/gs-only-pdf-preview.svg)](https://wordpress.org/plugins/gs-only-pdf-preview/)
 # GS Only PDF Preview #
 **Contributors:** [gitlost](https://profiles.wordpress.org/gitlost)  
 **Tags:** Ghostscript, PDF, PDF Preview, Ghostscript Only  
