@@ -2,7 +2,7 @@
 # This file is distributed under the GPLv2.
 msgid ""
 msgstr ""
-"Project-Id-Version: GS Only PDF Preview 1.0.4\n"
+"Project-Id-Version: GS Only PDF Preview 1.0.5\n"
 "Report-Msgid-Bugs-To: "
 "https://wordpress.org/support/plugin/gs-only-pdf-preview\n"
 "POT-Creation-Date: 2016-12-23 14:39:09+00:00\n"
@@ -278,20 +278,20 @@ msgstr ""
 msgid "File is not a PDF."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:633
+#: includes/class-gopp-image-editor-gs.php:636
 msgid "Attempted to set PDF preview resolution to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:688
+#: includes/class-gopp-image-editor-gs.php:691
 msgid "Attempted to set PDF preview page to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:707
-#: includes/class-gopp-image-editor-gs.php:728
-#: includes/class-gopp-image-editor-gs.php:747
-#: includes/class-gopp-image-editor-gs.php:760
-#: includes/class-gopp-image-editor-gs.php:774
-#: includes/class-gopp-image-editor-gs.php:787
+#: includes/class-gopp-image-editor-gs.php:710
+#: includes/class-gopp-image-editor-gs.php:731
+#: includes/class-gopp-image-editor-gs.php:750
+#: includes/class-gopp-image-editor-gs.php:763
+#: includes/class-gopp-image-editor-gs.php:777
+#: includes/class-gopp-image-editor-gs.php:790
 msgid "Unsupported operation."
 msgstr ""
 

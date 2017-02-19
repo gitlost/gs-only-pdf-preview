@@ -2,8 +2,8 @@
 Contributors: gitlost
 Tags: Ghostscript, PDF, PDF Preview, Ghostscript Only
 Requires at least: 4.7.0
-Tested up to: 4.7.2
-Stable tag: 1.0.4
+Tested up to: 4.7.3
+Stable tag: 1.0.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -61,7 +61,7 @@ As a bonus version 1.0.2+ patches WordPress to allow linking to the preview imag
 
 A google-cheating schoolboy French translation is supplied.
 
-The plugin runs on WP 4.7.0 to 4.7.2, and requires Ghostscript to be installed on the server. The plugin should run on PHP 5.2.17 to 7.1, and on both Unix and Windows servers.
+The plugin runs on WP 4.7.0 to 4.7.3, and requires Ghostscript to be installed on the server. The plugin should run on PHP 5.2.17 to 7.1, and on both Unix and Windows servers.
 
 The project is on [github](https://github.com/gitlost/gs-only-pdf-preview).
 
@@ -129,6 +129,11 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 
 == Changelog ==
 
+= 1.0.5 (X Feb 2017) =
+* Fix Windows cmd path highest version/best match.
+* Fix test to be preview name agnostic.
+* WP 4.7.3 compatible
+
 = 1.0.4 (13 Feb 2017) =
 * Remove "+" from banned characters in file name, for BC with older uploads.
 * Enable "Align" select of Attachment Display Settings.
@@ -155,6 +160,9 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 * Initial github version.
 
 == Upgrade Notice ==
+
+= 1.0.5 =
+Determines Windows command path better.
 
 = 1.0.4 =
 Allows file names containing "+".

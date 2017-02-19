@@ -2,11 +2,11 @@
 # This file is distributed under the GPLv2.
 msgid ""
 msgstr ""
-"Project-Id-Version: GS Only PDF Preview 1.0.4\n"
+"Project-Id-Version: GS Only PDF Preview 1.0.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/gs-only-pdf-"
 "preview\n"
-"POT-Creation-Date: 2017-02-13 03:13+0000\n"
-"PO-Revision-Date: 2017-02-13 03:13+0000\n"
+"POT-Creation-Date: 2017-02-19 02:40+0000\n"
+"PO-Revision-Date: 2017-02-19 02:40+0000\n"
 "Last-Translator: gitlost <gitlost@gitlostbonger.com>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -322,24 +322,24 @@ msgstr "Le fichier n&rsquo;existe pas&nbsp;?"
 msgid "File is not a PDF."
 msgstr "Le fichier n&rsquo;est pas un PDF ."
 
-#: includes/class-gopp-image-editor-gs.php:633
+#: includes/class-gopp-image-editor-gs.php:636
 msgid "Attempted to set PDF preview resolution to an invalid value."
 msgstr ""
 "Tentative de fixer la résolution d&rsquo;aperçu de miniature de PDF à une "
 "valeur non valide."
 
-#: includes/class-gopp-image-editor-gs.php:688
+#: includes/class-gopp-image-editor-gs.php:691
 msgid "Attempted to set PDF preview page to an invalid value."
 msgstr ""
 "Tentative de fixer la page d&rsquo;aperçu de miniature de PDF à une valeur "
 "non valide."
 
-#: includes/class-gopp-image-editor-gs.php:707
-#: includes/class-gopp-image-editor-gs.php:728
-#: includes/class-gopp-image-editor-gs.php:747
-#: includes/class-gopp-image-editor-gs.php:760
-#: includes/class-gopp-image-editor-gs.php:774
-#: includes/class-gopp-image-editor-gs.php:787
+#: includes/class-gopp-image-editor-gs.php:710
+#: includes/class-gopp-image-editor-gs.php:731
+#: includes/class-gopp-image-editor-gs.php:750
+#: includes/class-gopp-image-editor-gs.php:763
+#: includes/class-gopp-image-editor-gs.php:777
+#: includes/class-gopp-image-editor-gs.php:790
 msgid "Unsupported operation."
 msgstr "Opération non supportée."
 

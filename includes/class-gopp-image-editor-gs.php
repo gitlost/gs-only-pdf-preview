@@ -381,6 +381,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 								$possible_path = $matches[1] . '\\gs' . $matches[2] . '\\bin\\gswin' . $matches[3] . 'c.exe';
 								if ( self::test_gs_cmd( $possible_path ) ) {
 									$best_match = $possible_path;
+									$highest_ver = $ver;
 								}
 							}
 						}
@@ -430,8 +431,10 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 							if ( $highest_ver < $ver ) {
 								if ( @ is_executable( $gs_entry . '\\bin\\gswin64c.exe' ) && self::test_gs_cmd( $gs_entry . '\\bin\\gswin64c.exe' ) ) {
 									$best_match = $gs_entry . '\\bin\\gswin64c.exe';
+									$highest_ver = $ver;
 								} elseif ( @ is_executable( $gs_entry . '\\bin\\gswin32c.exe' ) && self::test_gs_cmd( $gs_entry . '\\bin\\gswin32c.exe' ) ) {
 									$best_match = $gs_entry . '\\bin\\gswin32c.exe';
+									$highest_ver = $ver;
 								}
 							}
 						}

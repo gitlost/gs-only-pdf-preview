@@ -594,7 +594,13 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		$attached_file = get_attached_file( $attachment_id );
 		$this->assertNotEmpty( $attached_file );
 
-		$check_file = str_replace( '.pdf', '.jpg', $attached_file );
+		$metadata = get_metadata( 'post', $attachment_id, '_wp_attachment_metadata' );
+		$this->assertNotEmpty( $metadata );
+		$this->assertNotEmpty( $metadata[0] );
+		$this->assertNotEmpty( $metadata[0]['sizes'] );
+		$this->assertNotEmpty( $metadata[0]['sizes']['full'] );
+		$this->assertNotEmpty( $metadata[0]['sizes']['full']['file'] );
+		$check_file = dirname( $attached_file ) . '/' . $metadata[0]['sizes']['full']['file'];
 
 		$gd_image = imagecreatefromjpeg( $check_file );
 		$output = dechex( imagecolorat( $gd_image, 100, 100 ) );
