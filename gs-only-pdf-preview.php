@@ -333,7 +333,6 @@ class GS_Only_PDF_Preview {
 	 * Does the actual PDF preview regenerate.
 	 */
 	static function do_regen_pdf_previews( $ids, $check_mime_type = false, $do_transient = true ) {
-		static $upload_dir = null, $basedir = null;
 
 		$cnt = $num_updates = $num_fails = $time = 0;
 		if ( $ids ) {
@@ -359,14 +358,9 @@ class GS_Only_PDF_Preview {
 					}
 					// Remove old intermediate thumbnails if any.
 					if ( $old_value && ! empty( $old_value[0]['sizes'] ) && is_array( $old_value[0]['sizes'] ) ) {
-						if ( null === $upload_dir ) {
-							$upload_dir = wp_get_upload_dir();
-							$basedir = $upload_dir['basedir'];
-						}
 						$dirname = dirname( $file ) . '/';
 						foreach ( $old_value[0]['sizes'] as $sizeinfo ) {
-							$intermediate_file = $dirname . $sizeinfo['file'];
-							@ unlink( path_join( $basedir, $intermediate_file ) );
+							@ unlink( $dirname . $sizeinfo['file'] );
 						}
 					}
 					// Generate new intermediate thumbnails.

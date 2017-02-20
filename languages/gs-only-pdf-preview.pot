@@ -130,8 +130,8 @@ msgstr[1] ""
 msgid "You can go again below if you want."
 msgstr ""
 
-#: gs-only-pdf-preview.php:296 gs-only-pdf-preview.php:450
-#: gs-only-pdf-preview.php:544
+#: gs-only-pdf-preview.php:296 gs-only-pdf-preview.php:444
+#: gs-only-pdf-preview.php:538
 msgid "Regenerate PDF Previews"
 msgstr ""
 
@@ -139,45 +139,45 @@ msgstr ""
 msgid "Regen. PDF Previews"
 msgstr ""
 
-#: gs-only-pdf-preview.php:310 gs-only-pdf-preview.php:415
-#: gs-only-pdf-preview.php:615
+#: gs-only-pdf-preview.php:310 gs-only-pdf-preview.php:409
+#: gs-only-pdf-preview.php:609
 msgid "Sorry, you are not allowed to access this page."
 msgstr ""
 
-#: gs-only-pdf-preview.php:421
+#: gs-only-pdf-preview.php:415
 msgid "GS Only PDF Preview - Regenerate PDF Previews"
 msgstr ""
 
-#: gs-only-pdf-preview.php:426
+#: gs-only-pdf-preview.php:420
 msgid ""
 "This tool is for regenerating the thumbnail previews of PDFs, but no PDFs "
 "have been uploaded, so it has nothing to do."
 msgstr ""
 
-#: gs-only-pdf-preview.php:433
+#: gs-only-pdf-preview.php:427
 msgid ""
 "<strong>Warning: cannot set max execution time!</strong> The maximum time "
 "allowed for a PHP script to run on your system could not be set, so you may "
 "experience the White Screen Of Death (WSOD) on trying this."
 msgstr ""
 
-#: gs-only-pdf-preview.php:442
+#: gs-only-pdf-preview.php:436
 msgid "Regenerate the thumbnail previews of PDFs uploaded to your system."
 msgstr ""
 
-#: gs-only-pdf-preview.php:447
+#: gs-only-pdf-preview.php:441
 #. translators: %s: formatted number of PDFs found.
 msgid "<strong>%s</strong> PDF has been found."
 msgid_plural "<strong>%s</strong> PDFs have been found."
 msgstr[0] ""
 msgstr[1] ""
 
-#: gs-only-pdf-preview.php:455
+#: gs-only-pdf-preview.php:449
 #. translators: %s: formatted number (greater than 10) of PDFs found.
 msgid "Regenerating %s PDF previews can take a long time."
 msgstr ""
 
-#: gs-only-pdf-preview.php:467
+#: gs-only-pdf-preview.php:461
 #. translators: %s: url to the Media Library page in list mode.
 msgid ""
 "Note that you can also regenerate PDF previews in batches or individually "
@@ -186,56 +186,56 @@ msgid ""
 "Media Library</a>."
 msgstr ""
 
-#: gs-only-pdf-preview.php:506
+#: gs-only-pdf-preview.php:500
 msgid "Please wait..."
 msgstr ""
 
-#: gs-only-pdf-preview.php:510
+#: gs-only-pdf-preview.php:504
 msgid "No items selected!"
 msgstr ""
 
-#: gs-only-pdf-preview.php:511
+#: gs-only-pdf-preview.php:505
 msgid "Regenerate Preview ajax action not available!"
 msgstr ""
 
-#: gs-only-pdf-preview.php:515
+#: gs-only-pdf-preview.php:509
 msgid "Document Link Only"
 msgstr ""
 
-#: gs-only-pdf-preview.php:599
+#: gs-only-pdf-preview.php:593
 #. translators: %s: attachment title
 msgid "Regenerate the PDF preview for &#8220;%s&#8221;"
 msgstr ""
 
-#: gs-only-pdf-preview.php:600
+#: gs-only-pdf-preview.php:594
 msgid "Regenerate&nbsp;Preview"
 msgstr ""
 
-#: gs-only-pdf-preview.php:620
+#: gs-only-pdf-preview.php:614
 msgid "Invalid nonce."
 msgstr ""
 
-#: gs-only-pdf-preview.php:623
+#: gs-only-pdf-preview.php:617
 msgid "Invalid ID."
 msgstr ""
 
-#: gs-only-pdf-preview.php:629
+#: gs-only-pdf-preview.php:623
 msgid "Failed to generate the PDF preview."
 msgstr ""
 
-#: gs-only-pdf-preview.php:634
+#: gs-only-pdf-preview.php:628
 msgid ""
 "Successfully regenerated the PDF preview. It's best to refresh your browser "
 "to see the updated thumbnail correctly."
 msgstr ""
 
-#: gs-only-pdf-preview.php:636
+#: gs-only-pdf-preview.php:630
 msgid ""
 "Successfully regenerated the PDF preview. You will need to refresh your "
 "browser to see the updated thumbnail."
 msgstr ""
 
-#: gs-only-pdf-preview.php:665
+#: gs-only-pdf-preview.php:659
 #. translators: %1$d: percentage of PDF previews completed; %2$d: completed
 #. count.
 msgid "%d%% (%d)"
