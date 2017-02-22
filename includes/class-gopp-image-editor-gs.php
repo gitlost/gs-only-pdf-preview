@@ -178,11 +178,9 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			return new WP_Error( 'image_save_error', __( 'Image Editor Save Failed', 'gs-only-pdf-preview' ) );
 		}
 
-		// As this editor is immediately thrown away just do dummy size. Saves some cycles.
-		$size = array( 1088, 1408 ); // US Letter size at 128 DPI. Makes it pass the unit test Tests_Image_Functions::test_wp_generate_attachment_metadata_pdf().
-		//$size = @ getimagesize( $filename );
+		$size = @ getimagesize( $filename );
 		if ( ! $size ) {
-			return new WP_Error( 'image_save_error', __( 'Could not read image size.', 'gs-only-pdf-preview' ) ); // @codeCoverageIgnore
+			return new WP_Error( 'image_save_error', __( 'Could not read image size.', 'gs-only-pdf-preview' ) );
 		}
 
 		// Transmogrify into the JPEG file.

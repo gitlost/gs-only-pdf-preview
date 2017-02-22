@@ -257,41 +257,41 @@ msgstr ""
 msgid "Image Editor Save Failed"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:185
+#: includes/class-gopp-image-editor-gs.php:183
 msgid "Could not read image size."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:223
+#: includes/class-gopp-image-editor-gs.php:221
 msgid "Loading from URL not supported."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:228
-#: includes/class-gopp-image-editor-gs.php:234
+#: includes/class-gopp-image-editor-gs.php:226
+#: includes/class-gopp-image-editor-gs.php:232
 msgid "Unsupported file name."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:244
+#: includes/class-gopp-image-editor-gs.php:242
 msgid "File doesn&#8217;t exist?"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:251
+#: includes/class-gopp-image-editor-gs.php:249
 msgid "File is not a PDF."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:636
+#: includes/class-gopp-image-editor-gs.php:634
 msgid "Attempted to set PDF preview resolution to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:691
+#: includes/class-gopp-image-editor-gs.php:689
 msgid "Attempted to set PDF preview page to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:710
-#: includes/class-gopp-image-editor-gs.php:731
-#: includes/class-gopp-image-editor-gs.php:750
-#: includes/class-gopp-image-editor-gs.php:763
-#: includes/class-gopp-image-editor-gs.php:777
-#: includes/class-gopp-image-editor-gs.php:790
+#: includes/class-gopp-image-editor-gs.php:708
+#: includes/class-gopp-image-editor-gs.php:729
+#: includes/class-gopp-image-editor-gs.php:748
+#: includes/class-gopp-image-editor-gs.php:761
+#: includes/class-gopp-image-editor-gs.php:775
+#: includes/class-gopp-image-editor-gs.php:788
 msgid "Unsupported operation."
 msgstr ""
 

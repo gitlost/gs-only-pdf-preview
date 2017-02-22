@@ -124,10 +124,35 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 	};
 
 	/**
-	 * Patches templates and wp.media.editor.send.attachment to allow PDF thumbnail insertion (see #39618).
-	 * Also addresses #39630 by using either thumbnail or medium sized thumbnails in Media Library, favouring thumbnail size.
+	 * Patches Attachment Details template.
 	 */
-	gopp_plugin.post = function () {
+	gopp_plugin.upload_patch = function () {
+		var $tmpl_attachment_details_two_column, html_before,
+			html_attachment_details_two_column,
+			attachment_details_two_column_re = /(<# if \( 'image' === data.type)( \) { #>\s+<label class="setting" data-setting="alt">)/,
+			attachment_details_two_column_with = '$1 || data.sizes )$2';
+
+		$tmpl_attachment_details_two_column = $( '#tmpl-attachment-details-two-column' );
+		if ( $tmpl_attachment_details_two_column.length ) {
+
+			// Enable "Alt Text" in Attachment Details Two Column.
+			html_before = $tmpl_attachment_details_two_column.html();
+			html_attachment_details_two_column = html_before.replace( attachment_details_two_column_re, attachment_details_two_column_with );
+			if ( html_before === html_attachment_details_two_column ) {
+				return false;
+			}
+
+			$tmpl_attachment_details_two_column.html( html_attachment_details_two_column );
+
+			return true;
+		}
+		return false;
+	};
+
+	/**
+	 * Patches templates and wp.media.editor.send.attachment to allow PDF thumbnail insertion (see #39618).
+	 */
+	gopp_plugin.post_patch = function () {
 		var $tmpl_attachment_details, $tmpl_attachment_display_settings, $tmpl_image_details, html_before,
 			html_attachment_details,
 			attachment_details_re = /(<# } else if \( 'image' === data\.type && data\.sizes \) { #>\s+<img src="{{ data\.size\.url }}" draggable="false" alt="" \/>)(\s+<# } else { #>)/,
@@ -173,11 +198,6 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 				html_before = $tmpl_image_details.html();
 				html_image_details = html_before.replace( image_details_re, image_details_with );
 				if ( html_before === html_image_details ) {
-					return false;
-				}
-
-				// #39630 Use either thumbnail or medium sized thumbnails in Media Library.
-				if ( false === gopp_plugin.patch_39630() ) {
 					return false;
 				}
 
@@ -243,10 +263,11 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 			html = wp.media.string.link( props );
 			options.post_title = props.title;
 			// gitlost begin.
-			if ( 'application' === attachment.type && 'pdf' === attachment.subtype ) {
+			if ( attachment.sizes ) {
 				_.each({
 					align: 'align',
-					size:  'image-size'
+					size:  'image-size',
+					alt:   'image_alt'
 				}, function( option, prop ) {
 					if ( props[ prop ] )
 						options[ option ] = props[ prop ];
@@ -264,7 +285,7 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 	};
 
 	/**
-	 * Patches 'tmpl-attachment in "wp-includes/media-templates.php" to use either thumbnail or medium sized thumbnails in Media Library, favouring thumbnail size.
+	 * Addresses #39630 by patching 'tmpl-attachment' in "wp-includes/media-templates.php" to use either thumbnail or medium sized thumbnails in Media Library, favouring thumbnail size.
 	 */
 	gopp_plugin.patch_39630 = function () {
 		var $tmpl_attachment = $( '#tmpl-attachment' ), html_before, html_attachment,
@@ -292,9 +313,11 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 				gopp_plugin.regen_pdf_preview();
 			} else if ( gopp_plugin_params.val.is_upload ) {
 				gopp_plugin.upload();
+				gopp_plugin.upload_patch();
 				gopp_plugin.patch_39630();
 			} else if ( gopp_plugin_params.val.is_post ) {
-				gopp_plugin.post();
+				gopp_plugin.post_patch();
+				gopp_plugin.patch_39630();
 			}
 		}
 	} );

@@ -131,6 +131,7 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 
 = 1.0.5 (X Feb 2017) =
 * Fix Windows cmd path highest version/best match.
+* Set real size not dummy for preview.
 * Fix test to be preview name agnostic.
 * Remove unnecessary upload_dir calc re old preview thumbnails.
 * WP 4.7.3 compatible

@@ -5,8 +5,8 @@ msgstr ""
 "Project-Id-Version: GS Only PDF Preview 1.0.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/gs-only-pdf-"
 "preview\n"
-"POT-Creation-Date: 2017-02-20 22:30+0000\n"
-"PO-Revision-Date: 2017-02-20 22:31+0000\n"
+"POT-Creation-Date: 2017-02-22 10:40+0000\n"
+"PO-Revision-Date: 2017-02-22 10:40+0000\n"
 "Last-Translator: gitlost <gitlost@gitlostbonger.com>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -301,45 +301,45 @@ msgstr "Pas de Ghostscript."
 msgid "Image Editor Save Failed"
 msgstr "L&rsquo;enregistrement de l&rsquo;éditeur d&rsquo;images a échoué."
 
-#: includes/class-gopp-image-editor-gs.php:185
+#: includes/class-gopp-image-editor-gs.php:183
 msgid "Could not read image size."
 msgstr "Impossible de lire la taille de l&rsquo;image."
 
-#: includes/class-gopp-image-editor-gs.php:223
+#: includes/class-gopp-image-editor-gs.php:221
 msgid "Loading from URL not supported."
 msgstr "Chargement à partir de l&rsquo;URL non pris en charge."
 
-#: includes/class-gopp-image-editor-gs.php:228
-#: includes/class-gopp-image-editor-gs.php:234
+#: includes/class-gopp-image-editor-gs.php:226
+#: includes/class-gopp-image-editor-gs.php:232
 msgid "Unsupported file name."
 msgstr "Nom du fichier non supporté."
 
-#: includes/class-gopp-image-editor-gs.php:244
+#: includes/class-gopp-image-editor-gs.php:242
 msgid "File doesn&#8217;t exist?"
 msgstr "Le fichier n&rsquo;existe pas&nbsp;?"
 
-#: includes/class-gopp-image-editor-gs.php:251
+#: includes/class-gopp-image-editor-gs.php:249
 msgid "File is not a PDF."
 msgstr "Le fichier n&rsquo;est pas un PDF ."
 
-#: includes/class-gopp-image-editor-gs.php:636
+#: includes/class-gopp-image-editor-gs.php:634
 msgid "Attempted to set PDF preview resolution to an invalid value."
 msgstr ""
 "Tentative de fixer la résolution d&rsquo;aperçu de miniature de PDF à une "
 "valeur non valide."
 
-#: includes/class-gopp-image-editor-gs.php:691
+#: includes/class-gopp-image-editor-gs.php:689
 msgid "Attempted to set PDF preview page to an invalid value."
 msgstr ""
 "Tentative de fixer la page d&rsquo;aperçu de miniature de PDF à une valeur "
 "non valide."
 
-#: includes/class-gopp-image-editor-gs.php:710
-#: includes/class-gopp-image-editor-gs.php:731
-#: includes/class-gopp-image-editor-gs.php:750
-#: includes/class-gopp-image-editor-gs.php:763
-#: includes/class-gopp-image-editor-gs.php:777
-#: includes/class-gopp-image-editor-gs.php:790
+#: includes/class-gopp-image-editor-gs.php:708
+#: includes/class-gopp-image-editor-gs.php:729
+#: includes/class-gopp-image-editor-gs.php:748
+#: includes/class-gopp-image-editor-gs.php:761
+#: includes/class-gopp-image-editor-gs.php:775
+#: includes/class-gopp-image-editor-gs.php:788
 msgid "Unsupported operation."
 msgstr "Opération non supportée."
 
