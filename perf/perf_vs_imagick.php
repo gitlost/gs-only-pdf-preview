@@ -22,20 +22,31 @@ require_once ABSPATH . WPINC . '/class-wp-image-editor.php';
 require_once ABSPATH . WPINC . '/class-wp-image-editor-imagick.php';
 require $dirdirname . '/includes/class-gopp-image-editor-gs.php';
 
-$loop_num = 20; // Warning it's slow!
+$loop_num = 1; // Warning it's slow!
 $pdfs_begin = 0;
-$pdfs_end = 1; // Choose to include problematic data or not.
+$pdfs_end = 5; // Choose to include problematic data or not.
 
 $pdfs = array(
 	$dirname . '/data/wordpress-gsoc-flyer.pdf', // sRGB color space, no alpha issues.
+	$dirname . '/data/minimal-us-letter.pdf', // sRGB color space, no alpha issues.
+	$dirname . '/data/duotone.pdf', // sRGB color space, no alpha issues.
+	$dirname . '/data/BUDGET 2017.pdf', // sRGB color space, no alpha issues.
+	$dirname . '/data/SWEBOKv3.pdf', // sRGB color space, no alpha issues.
+
 	$dirname . '/data/test_alpha.pdf', // Non-opaque alpha channel.
 	$dirname . '/data/test_cmyk.pdf', // CMYK color space.
 	$dirname . '/data/test_cmyk_alpha.pdf', // Non-opaque alpha channel and CMYK color space.
 	$dirname . '/data/Contents-CR-51-2.pdf', // CMYK color space.
 	$dirname . '/data/contents-hs-issue-41.pdf', // Non-opaque alpha channel.
+
+	$dirname . '/data/kp_sample.pdf', //  CMYK color space.
+	$dirname . '/data/text_graph_image_cmyk_rgb.pdf', // CMYK color space.
 );
-array_slice( $pdfs, $pdfs_begin, $pdfs_end );
 $cnt_pdfs = count( $pdfs );
+$pdfs_end = $cnt_pdfs;
+if ( $pdfs_end && $pdfs_end !== $cnt_pdfs ) {
+	$pdfs = array_slice( $pdfs, $pdfs_begin, $pdfs_end );
+}
 
 $tots_g = 0;
 $tots_i = 0;
@@ -44,19 +55,21 @@ $gs = $imagick = null;
 
 for ( $i = 0; $i < $loop_num; $i++ ) {
 	foreach ( $pdfs as $pdf ) {
-		$tots_g += -microtime( true );
-		$gs = new GOPP_Image_Editor_GS( $pdf );
-		$gs->load();
-		$gs->save( $pdf, 'image/jpeg' );
-		$tots_g += microtime( true );
-		unset( $gs );
 
+		// Do Imagick first as it overwrites previews.
 		$tots_i += -microtime( true );
 		$imagick = new WP_Image_Editor_Imagick( $pdf );
 		$imagick->load();
 		$imagick->save( $pdf, 'image/jpeg' );
 		$tots_i += microtime( true );
 		unset( $imagick );
+
+		$tots_g += -microtime( true );
+		$gs = new GOPP_Image_Editor_GS( $pdf );
+		$gs->load();
+		$gs->save( $pdf, 'image/jpeg' );
+		$tots_g += microtime( true );
+		unset( $gs );
 	}
 }
 

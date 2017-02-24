@@ -93,6 +93,8 @@ class GS_Only_PDF_Preview {
 					__( 'The plugin "GS Only PDF Preview" cannot be activated as it relies on the PHP function <code>exec</code>, which has been disabled on your system via the <code>php.ini</code> directive <code>disable_functions</code>. <a href="%s">Return to Plugins page.</a>', 'gs-only-pdf-preview' ),
 					esc_url( self_admin_url( 'plugins.php' ) )
 				);
+			} elseif ( $suhosin_disabled_msg = self::suhosin_disabled_msg() ) {
+				$msg = $suhosin_disabled_msg;
 			} else {
 				$msg = sprintf(
 					/* translators: %s: url to admin plugins page. */
@@ -103,16 +105,10 @@ class GS_Only_PDF_Preview {
 			wp_die( $msg );
 		}
 
-		// If the (somewhat outdated) suhosin extension is loaded, then need to check its function blacklist also, as it doesn't reflect in function_exists().
-		// Theoretically should first check whether the function whitelist exists and whether exec() is not in it, as it overrides the blacklist, but it's unlikely to be used.
-		if ( extension_loaded( 'suhosin' ) && in_array( 'exec', array_map( 'trim', explode( ',', strtolower( ini_get( 'suhosin.executor.func.blacklist' ) ) ) ), true ) ) {
+		// Apparently if the suhosin extension is installed, disabled functions may not be reflected in function_exists().
+		if ( $suhosin_disabled_msg = self::suhosin_disabled_msg() ) {
 			deactivate_plugins( $plugin_basename );
-			$msg = sprintf(
-				/* translators: %s: url to admin plugins page. */
-				__( 'The plugin "GS Only PDF Preview" cannot be activated as it relies on the PHP function <code>exec</code>, which has been disabled on your system via the suhosin extension directive <code>suhosin.executor.func.blacklist</code>. <a href="%s">Return to Plugins page.</a>', 'gs-only-pdf-preview' ),
-				esc_url( self_admin_url( 'plugins.php' ) )
-			);
-			wp_die( $msg );
+			wp_die( $suhosin_disabled_msg );
 		}
 
 		// Not compatible with safe_mode, which was deprecated in PHP 5.3.0 & removed in 5.4.0. See http://php.net/manual/en/features.safe-mode.php
@@ -168,6 +164,39 @@ class GS_Only_PDF_Preview {
 		if ( $admin_notices ) {
 			set_transient( 'gopp_plugin_admin_notices', $admin_notices, 5 * MINUTE_IN_SECONDS );
 		}
+	}
+
+	/**
+	 * Helper to check if suhosin extension has disabled exec().
+	 */
+	static function suhosin_disabled_msg() {
+		if ( extension_loaded( 'suhosin' ) || extension_loaded( 'suhosin7' ) ) {
+			// Whitelist overrides blacklist according to doc https://suhosin.org/stories/configuration.html#suhosin.executor.func.whitelist
+			$directive = 'suhosin.executor.func.whitelist';
+			$ini_get = ini_get( $directive );
+			if ( $ini_get ) {
+				// Good luck getting WP to work if you use this!
+				if ( in_array( 'exec', array_map( 'trim', explode( ',', strtolower( $ini_get ) ) ), true ) ) {
+					return false;
+				}
+				$msg = sprintf(
+					/* translators: %1$s: name of suhosin extension directive; %2$s: url to admin plugins page. */
+					__( 'The plugin "GS Only PDF Preview" cannot be activated as it relies on the PHP function <code>exec</code>, which has been disabled on your system via the suhosin extension directive <code>%1$s</code>. <a href="%2$s">Return to Plugins page.</a>', 'gs-only-pdf-preview' ),
+					$directive, esc_url( self_admin_url( 'plugins.php' ) )
+				);
+				return $msg;
+			}
+			$directive = 'suhosin.executor.func.blacklist';
+			if ( in_array( 'exec', array_map( 'trim', explode( ',', strtolower( ini_get( $directive ) ) ) ), true ) ) {
+				$msg = sprintf(
+					/* translators: %1$s: name of suhosin extension directive; %2$s: url to admin plugins page. */
+					__( 'The plugin "GS Only PDF Preview" cannot be activated as it relies on the PHP function <code>exec</code>, which has been disabled on your system via the suhosin extension directive <code>%1$s</code>. <a href="%2$s">Return to Plugins page.</a>', 'gs-only-pdf-preview' ),
+					$directive, esc_url( self_admin_url( 'plugins.php' ) )
+				);
+				return $msg;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -292,6 +321,9 @@ class GS_Only_PDF_Preview {
 	 * Adds the "Regen. PDF Previews" administration tool.
 	 */
 	static function admin_menu() {
+		if ( ! current_user_can( self::$cap ) ) {
+			return;
+		}
 		self::$hook_suffix = add_management_page(
 			__( 'Regenerate PDF Previews', 'gs-only-pdf-preview' ), __( 'Regen. PDF Previews', 'gs-only-pdf-preview' ),
 			self::$cap, GOPP_REGEN_PDF_PREVIEWS_SLUG, array( __CLASS__, 'regen_pdf_previews' )
