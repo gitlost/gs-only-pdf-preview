@@ -18,4 +18,8 @@ class Test_GOPP_Image_Editor_GS extends GOPP_Image_Editor_GS {
 	public function public_set_resolution( $resolution ) { $this->resolution = $resolution; }
 	public function public_set_page( $page ) { $this->page = $page; }
 	public function public_set_quality( $quality ) { $this->quality = $quality; }
+
+	public function public_set_default_resolution( $default_resolution ) { $this->default_resolution = $default_resolution; }
+	public function public_set_default_page( $default_page ) { $this->default_page = $default_page; }
+	public function public_set_default_quality( $default_quality ) { $this->default_quality = $default_quality; }
 }

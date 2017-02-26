@@ -8,9 +8,11 @@ require_once dirname( __FILE__ ) . '/class-gopp-image-editor-gs.php';
 
 class DEBUG_GOPP_Image_Editor_GS extends GOPP_Image_Editor_GS {
 	static function get_test_output() {
-		$cmd = self::gs_cmd( '-dBATCH -dNOPAUSE -dNOPROMPT -dSAFER -v' );
-		exec( $cmd, $output, $return_var );
-		return array( $return_var, $output );
+		if ( $cmd = self::gs_cmd( '-dBATCH -dNOPAUSE -dNOPROMPT -dSAFER -v' ) ) {
+			exec( $cmd, $output, $return_var );
+			return array( $return_var, $output );
+		}
+		return array( -1, array( __( 'Ghostscript command not found!', 'gs-only-pdf-preview' ) ) );
 	}
 
 	static function is_win() { return self::$is_win; }

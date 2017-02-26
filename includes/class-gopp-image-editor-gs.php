@@ -127,8 +127,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @return true|WP_Error True if loaded; WP_Error on failure.
 	 */
 	public function load() {
-		$result = self::gs_valid( $this->file );
-		if ( true !== $result ) {
+		if ( true !== ( $result = self::gs_valid( $this->file ) ) ) {
 			return new WP_Error( 'invalid_image', $result, $this->file );
 		}
 
@@ -136,10 +135,14 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		$this->mime_type = $mime_type;
 
 		// Allow chance for gopp_editor_set_resolution filter to fire by calling set_resolution() with null arg (mimicking set_quality() behavior).
-		$this->set_resolution();
+		if ( is_wp_error( $result = $this->set_resolution() ) ) {
+			return $result;
+		}
 
 		// Similarly for page to render.
-		$this->set_page();
+		if ( is_wp_error( $result = $this->set_page() ) ) {
+			return $result;
+		}
 
 		return $this->set_quality();
 	}

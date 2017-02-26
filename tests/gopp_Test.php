@@ -9,11 +9,29 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 	var $old_pagenow;
 
+	static $is_win;
+	static $have_gs;
+
+	static function wpSetUpBeforeClass() {
+		self::$is_win = 0 === strncasecmp( 'WIN', PHP_OS, 3 );
+		if ( ! self::$is_win ) {
+			exec( 'which gs', $output, $return_var );
+			self::$have_gs = 0 === $return_var;
+		}
+	}
+
+	static function wpTearDownAfterClass() {
+	}
+
 	function setUp() {
 		parent::setUp();
 		self::clear_func_args();
 		add_filter( 'wp_redirect', array( __CLASS__, 'wp_redirect' ), 10, 2 );
 		add_filter( 'wp_die_ajax_handler', array( $this, 'get_wp_die_handler' ) );
+
+		if ( ! isset( $_SERVER['SCRIPT_NAME'] ) ) { // Suppress internal phpunit PHP Warning bug.
+			$_SERVER['SCRIPT_NAME'] = __FILE__;
+		}
 	}
 
 	function tearDown() {
@@ -135,15 +153,29 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$wp_version = GOPP_PLUGIN_WP_UP_TO_VERSION;
 		GS_Only_PDF_Preview::activation_hook();
 		$admin_notices = get_transient( 'gopp_plugin_admin_notices' );
-		$this->assertEmpty( $admin_notices );
+		if ( true !== self::$have_gs ) {
+			$this->assertNotEmpty( $admin_notices );
+		} else {
+			$this->assertEmpty( $admin_notices );
+		}
 
 		$wp_version = '9999.9999.9999';
 		GS_Only_PDF_Preview::activation_hook();
 		$admin_notices = get_transient( 'gopp_plugin_admin_notices' );
-		$this->assertSame( 1, count( $admin_notices ) );
-		$this->assertSame( 2, count( $admin_notices[0] ) );
-		$this->assertSame( 'warning', $admin_notices[0][0] );
-		$this->assertTrue( false !== stripos( $admin_notices[0][1], 'version' ) );
+		if ( true !== self::$have_gs ) {
+			$this->assertSame( 2, count( $admin_notices ) );
+			$this->assertSame( 2, count( $admin_notices[0] ) );
+			$this->assertSame( 'warning', $admin_notices[0][0] );
+			$this->assertTrue( false !== stripos( $admin_notices[0][1], 'version' ) );
+			$this->assertSame( 2, count( $admin_notices[1] ) );
+			$this->assertSame( 'warning', $admin_notices[1][0] );
+			$this->assertTrue( false !== stripos( $admin_notices[1][1], 'no ghostscript' ) );
+		} else {
+			$this->assertSame( 1, count( $admin_notices ) );
+			$this->assertSame( 2, count( $admin_notices[0] ) );
+			$this->assertSame( 'warning', $admin_notices[0][0] );
+			$this->assertTrue( false !== stripos( $admin_notices[0][1], 'version' ) );
+		}
 
 		ob_start();
 		GS_Only_PDF_Preview::admin_notices();
@@ -424,8 +456,14 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertSame( 'wp_redirect', $args['title'] );
 		$this->assertSame( 4, count( $args['args'] ) );
 		$this->assertSame( 1, $args['args'][0] );
-		$this->assertSame( 1, $args['args'][1] );
-		$this->assertSame( 0, $args['args'][2] );
+
+		if ( false === self::$have_gs ) {
+			$this->assertSame( 0, $args['args'][1] );
+			$this->assertSame( 1, $args['args'][2] );
+		} else {
+			$this->assertSame( 1, $args['args'][1] );
+			$this->assertSame( 0, $args['args'][2] );
+		}
 
 		$this->assertSame( 1, count( self::$func_args['wp_redirect'] ) );
 		$this->assertNotEmpty( self::$func_args['wp_redirect'][0] );
@@ -446,8 +484,14 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertSame( 'wp_redirect', $args['title'] );
 		$this->assertSame( 4, count( $args['args'] ) );
 		$this->assertSame( 2, $args['args'][0] );
-		$this->assertSame( 2, $args['args'][1] );
-		$this->assertSame( 0, $args['args'][2] );
+
+		if ( false === self::$have_gs ) {
+			$this->assertSame( 2, $args['args'][0] );
+			$this->assertSame( 0, $args['args'][1] );
+		} else {
+			$this->assertSame( 2, $args['args'][1] );
+			$this->assertSame( 0, $args['args'][2] );
+		}
 
 		$this->assertSame( 1, count( self::$func_args['wp_redirect'] ) );
 		$this->assertNotEmpty( self::$func_args['wp_redirect'][0] );
@@ -468,8 +512,14 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertNotEmpty( $args['args'] );
 		$this->assertSame( 4, count( $args['args'] ) );
 		$this->assertSame( 2, $args['args'][0] );
-		$this->assertSame( 1, $args['args'][1] );
-		$this->assertSame( 1, $args['args'][2] );
+
+		if ( false === self::$have_gs ) {
+			$this->assertSame( 0, $args['args'][1] );
+			$this->assertSame( 2, $args['args'][2] );
+		} else {
+			$this->assertSame( 1, $args['args'][1] );
+			$this->assertSame( 1, $args['args'][2] );
+		}
 
 		$out = wp_set_current_user( 0 );
 	}
@@ -521,13 +571,21 @@ class Tests_GOPP extends WP_UnitTestCase {
 		// No mime check.
 		$output = GS_Only_PDF_Preview::do_regen_pdf_previews( $ids, false /*check_mime_type*/, true /*do_transient*/ );
 		$this->assertSame( 4, count( $output ) );
-		$this->assertSame( array( count( $ids ), count( $ids ), 0 ), array_slice( $output, 0, 3 ) );
+		if ( true !== self::$have_gs ) {
+			$this->assertSame( array( count( $ids ), count( $ids ) - 3, 3 ), array_slice( $output, 0, 3 ) );
+		} else {
+			$this->assertSame( array( count( $ids ), count( $ids ), 0 ), array_slice( $output, 0, 3 ) );
+		}
 		$this->assertEmpty( get_transient( 'gopp_plugin_poll_rpp' ) );
 
 		// Mime check.
 		$output = GS_Only_PDF_Preview::do_regen_pdf_previews( $ids, true /*check_mime_type*/, true /*do_transient*/ );
 		$this->assertSame( 4, count( $output ) );
-		$this->assertSame( array( count( $ids ), 3, 0 ), array_slice( $output, 0, 3 ) );
+		if ( true !== self::$have_gs ) {
+			$this->assertSame( array( count( $ids ), 0, 3 ), array_slice( $output, 0, 3 ) );
+		} else {
+			$this->assertSame( array( count( $ids ), 3, 0 ), array_slice( $output, 0, 3 ) );
+		}
 		$this->assertEmpty( get_transient( 'gopp_plugin_poll_rpp' ) );
 
 		unlink( get_attached_file( $ids[1] ) );
@@ -536,13 +594,21 @@ class Tests_GOPP extends WP_UnitTestCase {
 		// 2 bad no mime check
 		$output = GS_Only_PDF_Preview::do_regen_pdf_previews( $ids, false /*check_mime_type*/, true /*do_transient*/ );
 		$this->assertSame( 4, count( $output ) );
-		$this->assertSame( array( count( $ids ), 3, 2 ), array_slice( $output, 0, 3 ) );
+		if ( true !== self::$have_gs ) {
+			$this->assertSame( array( count( $ids ), count( $ids ) - 4, 4 ), array_slice( $output, 0, 3 ) );
+		} else {
+			$this->assertSame( array( count( $ids ), count( $ids ) - 2, 2 ), array_slice( $output, 0, 3 ) );
+		}
 		$this->assertEmpty( get_transient( 'gopp_plugin_poll_rpp' ) );
 
 		// 2 bad mime check
 		$output = GS_Only_PDF_Preview::do_regen_pdf_previews( $ids, true /*check_mime_type*/, true /*do_transient*/ );
 		$this->assertSame( 4, count( $output ) );
-		$this->assertSame( array( count( $ids ), 2, 1 ), array_slice( $output, 0, 3 ) );
+		if ( true !== self::$have_gs ) {
+			$this->assertSame( array( count( $ids ), 0, 3 ), array_slice( $output, 0, 3 ) );
+		} else {
+			$this->assertSame( array( count( $ids ), 2, 1 ), array_slice( $output, 0, 3 ) );
+		}
 		$this->assertEmpty( get_transient( 'gopp_plugin_poll_rpp' ) );
 
 		// metadata fail.
@@ -580,6 +646,9 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$attachment_id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $attachment_id );
 
+		$old_request_uri = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : null;
+		$_SERVER['REQUEST_URI'] = 'http://example.org/wp-admin/tools.php?page=' . GOPP_REGEN_PDF_PREVIEWS_SLUG;
+
 		ob_start();
 		GS_Only_PDF_Preview::regen_pdf_previews();
 		$out = ob_get_clean();
@@ -602,6 +671,10 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertSame( force_balance_tags( $out ), $out );
 
 		$out = wp_set_current_user( 0 );
+
+		if ( null !== $old_request_uri ) {
+			$_SERVER['REQUEST_URI'] = $old_request_uri;
+		}
 	}
 
 	/**
@@ -737,7 +810,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$dummy_screen = new stdClass;
 		$dummy_screen->id = 'admin_page_gopp-regen-pdf-previews';
 
-		$old_request_uri = $_SERVER['REQUEST_URI'];
+		$old_request_uri = isset( $_SERVER['REQUEST_URI'] ) ? $_SERVER['REQUEST_URI'] : null;
 
 		$_SERVER['REQUEST_URI'] = 'http://example.org/wp-admin/tools.php?page=' . GOPP_REGEN_PDF_PREVIEWS_SLUG . '&gopp_rpp=1_1_0_0.2';
 		GS_Only_PDF_Preview::current_screen( $dummy_screen );
@@ -749,7 +822,9 @@ class Tests_GOPP extends WP_UnitTestCase {
 		GS_Only_PDF_Preview::current_screen( $dummy_screen );
 		$this->assertTrue( false !== stripos( $_SERVER['REQUEST_URI'], 'gopp_rpp' ) );
 
-		$_SERVER['REQUEST_URI'] = $old_request_uri;
+		if ( null !== $old_request_uri ) {
+			$_SERVER['REQUEST_URI'] = $old_request_uri;
+		}
 	}
 
 	/**
@@ -770,9 +845,13 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$post->post_mime_type = 'application/pdf';
 
 		$out = GS_Only_PDF_Preview::media_row_actions( $actions, $post, $detached );
-		$this->assertNotEmpty( $out );
-		$this->assertTrue( isset( $out['gopp_regen_pdf_preview'] ) );
-		$this->assertTrue( false !== stripos( $out['gopp_regen_pdf_preview'], '1234' ) );
+		if ( true !== self::$have_gs ) {
+			$this->assertEmpty( $out );
+		} else {
+			$this->assertNotEmpty( $out );
+			$this->assertTrue( isset( $out['gopp_regen_pdf_preview'] ) );
+			$this->assertTrue( false !== stripos( $out['gopp_regen_pdf_preview'], '1234' ) );
+		}
 
 		$out = wp_set_current_user( 0 );
 	}
@@ -824,7 +903,11 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$_REQUEST = $_POST;
 		$this->assertTrue( 1 === wp_verify_nonce( $_POST['nonce'], 'gopp_media_row_action_' . $id ) );
 		$out = GS_Only_PDF_Preview::gopp_media_row_action();
-		$this->assertTrue( false !== stripos( $out, 'success' ) );
+		if ( true !== self::$have_gs ) {
+			$this->assertTrue( false !== stripos( $out, 'error' ) );
+		} else {
+			$this->assertTrue( false !== stripos( $out, 'success' ) );
+		}
 
 		// Fail.
 		$file = get_attached_file( $id );
@@ -919,8 +1002,13 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$output = GS_Only_PDF_Preview::media_send_to_editor( $html, $id, $attachment );
 		$this->assertTrue( false !== strpos( $output, '<a href="' . $attachment['url'] . '"' ) );
 		$meta = get_metadata( 'post', $id, '_wp_attachment_metadata' );
-		$this->assertNotEmpty( $meta[0]['sizes']['thumbnail']['file'] );
-		$this->assertTrue( 1 === preg_match( '/<img srcset="" src="[^"]+' . preg_quote( $meta[0]['sizes']['thumbnail']['file'] ) . '"/', $output ) );
+		if ( true !== self::$have_gs ) {
+			$this->assertEmpty( $meta );
+		} else {
+			$this->assertNotEmpty( $meta );
+			$this->assertNotEmpty( $meta[0]['sizes']['thumbnail']['file'] );
+			$this->assertTrue( 1 === preg_match( '/<img srcset="" src="[^"]+' . preg_quote( $meta[0]['sizes']['thumbnail']['file'] ) . '"/', $output ) );
+		}
 	}
 }
 

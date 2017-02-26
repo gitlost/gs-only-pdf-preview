@@ -241,58 +241,62 @@ msgstr ""
 msgid "%d%% (%d)"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:161
+#: includes/class-gopp-image-editor-gs.php:164
 msgid "Unsupported MIME type."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:165
+#: includes/class-gopp-image-editor-gs.php:168
 msgid "Unsupported destination."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:172
+#: includes/class-gopp-image-editor-gs.php:175
 msgid "No Ghostscript."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:178
+#: includes/class-gopp-image-editor-gs.php:181
 msgid "Image Editor Save Failed"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:183
+#: includes/class-gopp-image-editor-gs.php:186
 msgid "Could not read image size."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:221
+#: includes/class-gopp-image-editor-gs.php:224
 msgid "Loading from URL not supported."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:226
-#: includes/class-gopp-image-editor-gs.php:232
+#: includes/class-gopp-image-editor-gs.php:229
+#: includes/class-gopp-image-editor-gs.php:235
 msgid "Unsupported file name."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:242
+#: includes/class-gopp-image-editor-gs.php:245
 msgid "File doesn&#8217;t exist?"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:249
+#: includes/class-gopp-image-editor-gs.php:252
 msgid "File is not a PDF."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:634
+#: includes/class-gopp-image-editor-gs.php:637
 msgid "Attempted to set PDF preview resolution to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:689
+#: includes/class-gopp-image-editor-gs.php:692
 msgid "Attempted to set PDF preview page to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:708
-#: includes/class-gopp-image-editor-gs.php:729
-#: includes/class-gopp-image-editor-gs.php:748
-#: includes/class-gopp-image-editor-gs.php:761
-#: includes/class-gopp-image-editor-gs.php:775
-#: includes/class-gopp-image-editor-gs.php:788
+#: includes/class-gopp-image-editor-gs.php:711
+#: includes/class-gopp-image-editor-gs.php:732
+#: includes/class-gopp-image-editor-gs.php:751
+#: includes/class-gopp-image-editor-gs.php:764
+#: includes/class-gopp-image-editor-gs.php:778
+#: includes/class-gopp-image-editor-gs.php:791
 msgid "Unsupported operation."
+msgstr ""
+
+#: includes/debug-gopp-image-editor-gs.php:15
+msgid "Ghostscript command not found!"
 msgstr ""
 
 #. Plugin Name of the plugin/theme
