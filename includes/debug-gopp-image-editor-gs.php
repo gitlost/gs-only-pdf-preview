@@ -24,6 +24,7 @@ class DEBUG_GOPP_Image_Editor_GS extends GOPP_Image_Editor_GS {
 	static function apply_filters_gopp_image_gs_cmd_path() { return apply_filters( 'gopp_image_gs_cmd_path', self::$gs_cmd_path, self::is_win() ); }
 
 	static function dump() {
+		$args = array( 'mime_type' => 'application/pdf' );
 		list( $return_var, $output ) = self::get_test_output();
 		?>
 			<hr />
@@ -32,7 +33,7 @@ class DEBUG_GOPP_Image_Editor_GS extends GOPP_Image_Editor_GS {
 				<tr><td valign="top">Return var</td><td><strong><?php echo $return_var; ?></strong></td></tr>
 				<tr><td valign="top">Output</td><td><strong><?php echo implode( '<br />', $output ); ?></strong></td></tr>
 				<tr><td>gs_cmd_path</td><td><strong><?php echo self::gs_cmd_path(); ?></strong> </td></tr>
-				<tr><td>test</td><td><strong><?php echo self::test() ? 'true' : 'false'; ?></strong> </td></tr>
+				<tr><td>test</td><td><strong><?php echo self::test( $args ) ? 'true' : 'false'; ?></strong> </td></tr>
 				<tr><td>is_win</td><td><strong><?php echo self::is_win() ? 'true' : 'false'; ?></strong> </td></tr>
 				<tr><td>Transient <em>gopp_image_gs_cmd_path</em></td><td><strong><?php echo self::transient_gopp_image_gs_cmd_path(); ?></strong> </td></tr>
 				<tr><td>Has filter <em>gopp_image_gs_cmd_path</em></td><td><strong><?php echo self::filter_gopp_image_gs_cmd_path() ? 'true' : 'false'; ?></strong> </td></tr>

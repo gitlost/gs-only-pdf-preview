@@ -87,7 +87,8 @@ class GS_Only_PDF_Preview {
 		// Must have exec() available (ie hasn't been disabled by the PHP_INI_SYSTEM directive "disable_functions").
 		if ( ! function_exists( 'exec' ) ) {
 			deactivate_plugins( $plugin_basename );
-			if ( in_array( 'exec', array_map( 'trim', explode( ',', strtolower( ini_get( 'disable_functions' ) ) ) ), true ) ) {
+			$ini_get = ini_get( 'disable_functions' );
+			if ( $ini_get && in_array( 'exec', array_map( 'trim', explode( ',', strtolower( $ini_get ) ) ), true ) ) {
 				$msg = sprintf(
 					/* translators: %s: url to admin plugins page. */
 					__( 'The plugin "GS Only PDF Preview" cannot be activated as it relies on the PHP function <code>exec</code>, which has been disabled on your system via the <code>php.ini</code> directive <code>disable_functions</code>. <a href="%s">Return to Plugins page.</a>', 'gs-only-pdf-preview' ),
@@ -123,7 +124,7 @@ class GS_Only_PDF_Preview {
 		}
 
 		global $wp_version;
-		$stripped_wp_version = substr( $wp_version, 0, strspn( $wp_version, '0123456789.' ) ); // Remove any trailing date stuff.
+		$stripped_wp_version = substr( $wp_version, 0, strspn( $wp_version, '0123456789.' ) ); // Remove any trailing stuff.
 		if ( preg_match( '/^[0-9]+\.[0-9]+$/', $stripped_wp_version ) ) {
 			$stripped_wp_version .= '.0'; // Make WP version x.y.z compat.
 		}
@@ -157,7 +158,7 @@ class GS_Only_PDF_Preview {
 		GOPP_Image_Editor_GS::clear();
 
 		// Check if Ghostscript available.
-		if ( ! GOPP_Image_Editor_GS::test( array() ) ) {
+		if ( ! GOPP_Image_Editor_GS::test( array( 'mime_type' => 'application/pdf' ) ) ) {
 			$admin_notices[] = array( 'warning', __( '<strong>Warning: no Ghostscript!</strong> The plugin "GS Only PDF Preview" cannot determine the server location of your Ghostscript executable.', 'gs-only-pdf-preview' ) );
 		}
 
@@ -187,7 +188,8 @@ class GS_Only_PDF_Preview {
 				return $msg;
 			}
 			$directive = 'suhosin.executor.func.blacklist';
-			if ( in_array( 'exec', array_map( 'trim', explode( ',', strtolower( ini_get( $directive ) ) ) ), true ) ) {
+			$ini_get = ini_get( $directive );
+			if ( $ini_get && in_array( 'exec', array_map( 'trim', explode( ',', strtolower( $ini_get ) ) ), true ) ) {
 				$msg = sprintf(
 					/* translators: %1$s: name of suhosin extension directive; %2$s: url to admin plugins page. */
 					__( 'The plugin "GS Only PDF Preview" cannot be activated as it relies on the PHP function <code>exec</code>, which has been disabled on your system via the suhosin extension directive <code>%1$s</code>. <a href="%2$s">Return to Plugins page.</a>', 'gs-only-pdf-preview' ),
@@ -616,7 +618,7 @@ class GS_Only_PDF_Preview {
 	static function media_row_actions( $actions, $post, $detached ) {
 		if ( 'application/pdf' === $post->post_mime_type && current_user_can( self::$cap ) ) {
 			self::load_gopp_image_editor_gs();
-			if ( GOPP_Image_Editor_GS::test( array( 'path' => get_attached_file( $post->ID ) ) ) ) {
+			if ( GOPP_Image_Editor_GS::test( array( 'mime_type' => 'application/pdf', 'path' => get_attached_file( $post->ID ) ) ) ) {
 				$actions['gopp_regen_pdf_preview'] = sprintf(
 					'<a href="#the-list" onclick="return gopp_plugin.media_row_action( event, %d, %s );" class="hide-if-no-js aria-button-if-js" aria-label="%s">%s</a>' . self::spinner( -3 ),
 					$post->ID,

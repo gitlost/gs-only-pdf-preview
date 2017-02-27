@@ -52,18 +52,25 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 	 * Test test().
 	 */
 	public function test_test() {
+		$args = array( 'mime_type' => 'application/pdf' );
+
 		GOPP_Image_Editor_GS::clear();
-		$output = GOPP_Image_Editor_GS::test();
+		$output = GOPP_Image_Editor_GS::test( $args );
 		if ( true !== self::$have_gs ) {
 			$this->assertFalse( $output );
 		} else {
 			$this->assertTrue( $output );
 		}
 
+		// No mime type given.
+		GOPP_Image_Editor_GS::clear();
+		$output = GOPP_Image_Editor_GS::test();
+		$this->assertFalse( $output );
+
 		// Non-existent short circuit ignored.
 		add_filter( 'gopp_image_gs_cmd_path', array( $this, 'filter_gopp_image_gs_cmd_path_nonexistent' ) );
 		GOPP_Image_Editor_GS::clear();
-		$output = GOPP_Image_Editor_GS::test();
+		$output = GOPP_Image_Editor_GS::test( $args );
 		if ( true !== self::$have_gs ) {
 			$this->assertFalse( $output );
 		} else {
@@ -74,7 +81,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		// Bad gs short circuit ignored.
 		add_filter( 'gopp_image_gs_cmd_path', array( $this, 'filter_gopp_image_gs_cmd_path_not_gs' ) );
 		GOPP_Image_Editor_GS::clear();
-		$output = GOPP_Image_Editor_GS::test();
+		$output = GOPP_Image_Editor_GS::test( $args );
 		if ( true !== self::$have_gs ) {
 			$this->assertFalse( $output );
 		} else {
@@ -85,17 +92,17 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		// gs_cmd_path() fail.
 		Test_GOPP_Image_Editor_GS::clear();
 		Test_GOPP_Image_Editor_GS::public_set_gs_cmd_path( false );
-		$output = GOPP_Image_Editor_GS::test();
+		$output = GOPP_Image_Editor_GS::test( $args );
 		$this->assertFalse( $output );
 
 		// Unsupported methods.
 		GOPP_Image_Editor_GS::clear();
-		$output = GOPP_Image_Editor_GS::test( array( 'methods' => array( 'resize' ) ) );
+		$output = GOPP_Image_Editor_GS::test( array_merge( $args, array( 'methods' => array( 'resize' ) ) ) );
 		$this->assertFalse( $output );
 
 		// Bad path.
 		GOPP_Image_Editor_GS::clear();
-		$output = GOPP_Image_Editor_GS::test( array( 'path' => '@file' ) );
+		$output = GOPP_Image_Editor_GS::test( array_merge( $args, array( 'path' => '@file' ) ) );
 		$this->assertFalse( $output );
 	}
 
@@ -353,8 +360,10 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 			$this->markTestSkipped( 'Unix only test.' );
 		}
 
+		$args = array( 'mime_type' => 'application/pdf' );
+
 		GOPP_Image_Editor_GS::clear();
-		$output = GOPP_Image_Editor_GS::test();
+		$output = GOPP_Image_Editor_GS::test( $args );
 		if ( true !== self::$have_gs ) {
 			$this->assertFalse( $output );
 		} else {

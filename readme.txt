@@ -134,6 +134,7 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 * Set real size not dummy for preview.
 * Fix test to be preview name agnostic.
 * Remove unnecessary upload_dir calc re old preview thumbnails.
+* Insist on mime_type arg in test() to avoid bogus supported implementation.
 * WP 4.7.3 compatible
 
 = 1.0.4 (13 Feb 2017) =
