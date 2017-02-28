@@ -1,7 +1,7 @@
 <?php
 
 global $wp_version;
-error_log( "### WordPress $wp_version ####" );
+error_log( "\n### WordPress $wp_version ####\n" );
 
 /**
  * Test the WP_Image_Editor_GS class
