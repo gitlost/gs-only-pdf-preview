@@ -78,7 +78,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 */
 	public static function test( $args = array() ) {
 		// Ensure given 'mime_type' arg, as if not _wp_image_editor_choose() won't call supports_mime_type() subsequently
-		// and will return this as a supporting implementation, which is probably not what callees expect.
+		// and will return this as a supporting implementation, which is probably not what callers expect.
 		if ( ! isset( $args['mime_type'] ) ) {
 			return false;
 		}

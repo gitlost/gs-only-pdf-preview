@@ -1,8 +1,5 @@
 <?php
 
-global $wp_version;
-error_log( "wp_version=$wp_version" );
-
 /**
  * Test the WP_Image_Editor_GS class
  * @group image
