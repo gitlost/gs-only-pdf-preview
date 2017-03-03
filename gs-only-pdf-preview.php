@@ -43,22 +43,26 @@ class GS_Only_PDF_Preview {
 		add_filter( 'wp_image_editors', array( __CLASS__, 'wp_image_editors' ) );
 
 		if ( is_admin() ) {
-			if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
+			if ( ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
 				add_action( 'admin_init', array( __CLASS__, 'admin_init' ) );
-				add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
 				add_action( 'admin_enqueue_scripts', array( __CLASS__, 'admin_enqueue_scripts' ) );
 
-				add_filter( 'bulk_actions-upload', array( __CLASS__, 'bulk_actions_upload' ) );
-				add_filter( 'handle_bulk_actions-upload', array( __CLASS__, 'handle_bulk_actions_upload' ), 10, 3 );
-				add_filter( 'removable_query_args', array( __CLASS__, 'removable_query_args' ) );
-
-				add_action( 'current_screen', array( __CLASS__, 'current_screen' ) );
-				add_action( 'media_row_actions', array( __CLASS__, 'media_row_actions' ), 100, 3 ); // Add after (most) others due to spinner.
+				if ( current_user_can( self::$cap ) ) {
+					add_action( 'admin_menu', array( __CLASS__, 'admin_menu' ) );
+					add_filter( 'bulk_actions-upload', array( __CLASS__, 'bulk_actions_upload' ) );
+					add_filter( 'handle_bulk_actions-upload', array( __CLASS__, 'handle_bulk_actions_upload' ), 10, 3 );
+					add_filter( 'removable_query_args', array( __CLASS__, 'removable_query_args' ) );
+					add_action( 'current_screen', array( __CLASS__, 'current_screen' ) );
+					add_action( 'media_row_actions', array( __CLASS__, 'media_row_actions' ), 100, 3 ); // Add after (most) others due to spinner.
+				}
 			} else {
 				add_filter( 'media_send_to_editor', array( __CLASS__, 'media_send_to_editor' ), 10, 3 );
+
+				if ( current_user_can( self::$cap ) ) {
+					add_action( 'wp_ajax_gopp_media_row_action', array( __CLASS__, 'gopp_media_row_action' ) );
+					add_action( 'wp_ajax_gopp_poll_regen_pdf_previews', array( __CLASS__,  'gopp_poll_regen_pdf_previews' ) );
+				}
 			}
-			add_action( 'wp_ajax_gopp_media_row_action', array( __CLASS__, 'gopp_media_row_action' ) );
-			add_action( 'wp_ajax_gopp_poll_regen_pdf_previews', array( __CLASS__,  'gopp_poll_regen_pdf_previews' ) );
 		}
 	}
 
@@ -157,14 +161,8 @@ class GS_Only_PDF_Preview {
 		self::load_gopp_image_editor_gs();
 		GOPP_Image_Editor_GS::clear();
 
-		// Check if Ghostscript available.
-		if ( ! GOPP_Image_Editor_GS::test( array( 'mime_type' => 'application/pdf' ) ) ) {
-			$admin_notices[] = array( 'warning', __( '<strong>Warning: no Ghostscript!</strong> The plugin "GS Only PDF Preview" cannot determine the server location of your Ghostscript executable.', 'gs-only-pdf-preview' ) );
-		}
-
-		if ( $admin_notices ) {
-			set_transient( 'gopp_plugin_admin_notices', $admin_notices, 5 * MINUTE_IN_SECONDS );
-		}
+		// Warn if Ghostscript not available.
+		self::warn_if_no_gs( $admin_notices );
 	}
 
 	/**
@@ -210,6 +208,30 @@ class GS_Only_PDF_Preview {
 				require ABSPATH . WPINC . '/class-wp-image-editor.php';
 			}
 			require dirname( __FILE__ ) . '/includes/class-gopp-image-editor-gs.php';
+		}
+	}
+
+	/**
+	 * Helper to check if Ghostscript available.
+	 */
+	static function check_have_gs( $path = null ) {
+		$args = array( 'mime_type' => 'application/pdf' );
+		if ( null !== $path ) {
+			$args['path'] = $path;
+		}
+		self::load_gopp_image_editor_gs();
+		return GOPP_Image_Editor_GS::test( $args );
+	}
+
+	/**
+	 * Helper to add warning admin notice if Ghostscript not available.
+	 */
+	static function warn_if_no_gs( $admin_notices = array() ) {
+		if ( ! self::check_have_gs() ) {
+			$admin_notices[] = array( 'warning', __( '<strong>Warning: no Ghostscript!</strong> The plugin "GS Only PDF Preview" cannot determine the server location of your Ghostscript executable.', 'gs-only-pdf-preview' ) );
+		}
+		if ( $admin_notices ) {
+			set_transient( 'gopp_plugin_admin_notices', $admin_notices, 5 * MINUTE_IN_SECONDS );
 		}
 	}
 
@@ -319,13 +341,10 @@ class GS_Only_PDF_Preview {
 	}
 
 	/**
-	 * Called on 'admin_menu' action.
+	 * Called on 'admin_menu' action for users with cap.
 	 * Adds the "Regen. PDF Previews" administration tool.
 	 */
 	static function admin_menu() {
-		if ( ! current_user_can( self::$cap ) ) {
-			return;
-		}
 		self::$hook_suffix = add_management_page(
 			__( 'Regenerate PDF Previews', 'gs-only-pdf-preview' ), __( 'Regen. PDF Previews', 'gs-only-pdf-preview' ),
 			self::$cap, GOPP_REGEN_PDF_PREVIEWS_SLUG, array( __CLASS__, 'regen_pdf_previews' )
@@ -340,11 +359,14 @@ class GS_Only_PDF_Preview {
 	 * Does the work of the "Regen. PDF Previews" administration tool. Just loops through all uploaded PDFs.
 	 */
 	static function load_regen_pdf_previews() {
-		if ( ! current_user_can( self::$cap ) ) {
+		if ( ! current_user_can( self::$cap ) ) { // Double-check cap.
 			wp_die( __( 'Sorry, you are not allowed to access this page.', 'gs-only-pdf-preview' ) );
 		}
 
-		if ( ! empty( $_REQUEST[GOPP_REGEN_PDF_PREVIEWS_SLUG] ) ) {
+		if ( empty( $_REQUEST[GOPP_REGEN_PDF_PREVIEWS_SLUG] ) ) {
+			// Warn if Ghostscript not available.
+			self::warn_if_no_gs();
+		} else {
 
 			check_admin_referer( GOPP_REGEN_PDF_PREVIEWS_SLUG );
 
@@ -439,9 +461,10 @@ class GS_Only_PDF_Preview {
 	 * Outputs the front page of the "Regen. PDF Previews" administration tool. Basically a single button with some guff.
 	 */
 	static function regen_pdf_previews() {
-		if ( ! current_user_can( self::$cap ) ) {
+		if ( ! current_user_can( self::$cap ) ) { // Double-check cap.
 			wp_die( __( 'Sorry, you are not allowed to access this page.', 'gs-only-pdf-preview' ) );
 		}
+
 		global $wpdb;
 		$cnt = $wpdb->get_var( $wpdb->prepare( "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type = %s AND post_mime_type = %s", 'attachment', 'application/pdf' ) );
 		?>
@@ -495,7 +518,7 @@ class GS_Only_PDF_Preview {
 						echo sprintf( __( 'Note that you can also regenerate PDF previews in batches or individually using the bulk action "Regenerate PDF Previews" (or the row action "Regenerate Preview") available in the <a href="%s">list mode of the Media Library</a>.', 'gs-only-pdf-preview' ), admin_url( 'upload.php?mode=list' ) );
 					?>
 				</p>
-				<?php if ( defined( 'GOPP_PLUGIN_DEBUG' ) && GOPP_PLUGIN_DEBUG ) : ?>
+				<?php if ( ( defined( 'GOPP_PLUGIN_DEBUG' ) && GOPP_PLUGIN_DEBUG ) || ! self::check_have_gs() ) : ?>
 					<?php require_once dirname( __FILE__ ) . '/includes/debug-gopp-image-editor-gs.php'; ?>
 					<?php DEBUG_GOPP_Image_Editor_GS::dump(); ?>
 				<?php endif; ?>
@@ -528,6 +551,7 @@ class GS_Only_PDF_Preview {
 					'is_regen_pdf_preview' => $is_regen_pdf_preview,
 					'is_upload' => $is_upload,
 					'is_post' => $is_post,
+					'current_user_can_cap' => current_user_can( self::$cap ),
 				),
 			);
 			if ( $is_regen_pdf_preview ) {
@@ -564,23 +588,23 @@ class GS_Only_PDF_Preview {
 	}
 
 	/**
-	 * Called on 'bulk_actions-upload' filter.
+	 * Called on 'bulk_actions-upload' filter for users with cap.
 	 * Adds "Regenerate PDF Previews" to the bulk action dropdown in the list mode of the Media Library.
 	 */
 	static function bulk_actions_upload( $actions ) {
-		if ( current_user_can( self::$cap ) ) {
+		if ( self::check_have_gs() ) {
 			$actions['gopp_regen_pdf_previews'] = __( 'Regenerate PDF Previews', 'gs-only-pdf-preview' );
 		}
 		return $actions;
 	}
 
 	/**
-	 * Called on 'handle_bulk_actions-upload' filter.
+	 * Called on 'handle_bulk_actions-upload' filter for users with cap.
 	 * Does the work of the "Regenerate PDF Previews" bulk action.
 	 */
 	static function handle_bulk_actions_upload( $location, $doaction, $post_ids ) {
 
-		if ( 'gopp_regen_pdf_previews' === $doaction && current_user_can( self::$cap ) ) {
+		if ( 'gopp_regen_pdf_previews' === $doaction && current_user_can( self::$cap ) ) { // Double-check cap.
 			// Note nonce has already been checked in "wp-admin/upload.php".
 			// But $post_ids hasn't (and triggers a PHP Warning if nothing selected in "wp-admin/upload.php:168" as of WP 4.7.2).
 			$ids = $post_ids && is_array( $post_ids ) ? array_map( 'intval', $post_ids ) : array();
@@ -593,7 +617,7 @@ class GS_Only_PDF_Preview {
 	}
 
 	/**
-	 * Called on 'removable_query_args' filter.
+	 * Called on 'removable_query_args' filter for users with cap.
 	 * Signals that our query arg should be removed from the URL.
 	 */
 	static function removable_query_args( $removable_query_args ) {
@@ -602,7 +626,7 @@ class GS_Only_PDF_Preview {
 	}
 
 	/**
-	 * Called on 'current_screen' action.
+	 * Called on 'current_screen' action for users with cap.
 	 * Removes our query arg from the URL.
 	 */
 	static function current_screen( $current_screen ) {
@@ -612,22 +636,19 @@ class GS_Only_PDF_Preview {
 	}
 
 	/**
-	 * Called on 'media_row_actions' filter.
+	 * Called on 'media_row_actions' filter for users with cap.
 	 * Adds the "Regenerate Preview" link to PDF rows in the list mode of the Media Library.
 	 */
 	static function media_row_actions( $actions, $post, $detached ) {
-		if ( 'application/pdf' === $post->post_mime_type && current_user_can( self::$cap ) ) {
-			self::load_gopp_image_editor_gs();
-			if ( GOPP_Image_Editor_GS::test( array( 'mime_type' => 'application/pdf', 'path' => get_attached_file( $post->ID ) ) ) ) {
-				$actions['gopp_regen_pdf_preview'] = sprintf(
-					'<a href="#the-list" onclick="return gopp_plugin.media_row_action( event, %d, %s );" class="hide-if-no-js aria-button-if-js" aria-label="%s">%s</a>' . self::spinner( -3 ),
-					$post->ID,
-					esc_attr( json_encode( wp_create_nonce( 'gopp_media_row_action_' . $post->ID ) ) ),
-					/* translators: %s: attachment title */
-					esc_attr( sprintf( __( 'Regenerate the PDF preview for &#8220;%s&#8221;', 'gs-only-pdf-preview' ), _draft_or_post_title() ) ),
-					esc_attr( __( 'Regenerate&nbsp;Preview', 'gs-only-pdf-preview' ) )
-				);
-			}
+		if ( 'application/pdf' === $post->post_mime_type && self::check_have_gs( get_attached_file( $post->ID ) ) ) {
+			$actions['gopp_regen_pdf_preview'] = sprintf(
+				'<a href="#the-list" onclick="return gopp_plugin.media_row_action( event, %d, %s );" class="hide-if-no-js aria-button-if-js" aria-label="%s">%s</a>' . self::spinner( -3 ),
+				$post->ID,
+				esc_attr( json_encode( wp_create_nonce( 'gopp_media_row_action_' . $post->ID ) ) ),
+				/* translators: %s: attachment title */
+				esc_attr( sprintf( __( 'Regenerate the PDF preview for &#8220;%s&#8221;', 'gs-only-pdf-preview' ), _draft_or_post_title() ) ),
+				esc_attr( __( 'Regenerate&nbsp;Preview', 'gs-only-pdf-preview' ) )
+			);
 		}
 		return $actions;
 	}
@@ -639,7 +660,7 @@ class GS_Only_PDF_Preview {
 	static function gopp_media_row_action() {
 		$ret = array( 'msg' => '', 'error' => false, 'img' => '' );
 
-		if ( ! current_user_can( self::$cap ) ) {
+		if ( ! current_user_can( self::$cap ) ) { // Double-check cap.
 			$ret['error'] = __( 'Sorry, you are not allowed to access this page.', 'gs-only-pdf-preview' );
 		} else {
 			$id = isset( $_POST['id'] ) && is_string( $_POST['id'] ) ? intval( $_POST['id'] ) : '';
@@ -680,7 +701,7 @@ class GS_Only_PDF_Preview {
 	static function gopp_poll_regen_pdf_previews() {
 		$ret = array( 'msg' => '' );
 
-		if ( current_user_can( self::$cap ) ) {
+		if ( current_user_can( self::$cap ) ) { // Double-check cap.
 			$cnt = isset( $_REQUEST['cnt'] ) && is_string( $_REQUEST['cnt'] ) ? intval( $_REQUEST['cnt'] ) : 0;
 
 			check_ajax_referer( 'gopp_poll_regen_pdf_previews_' . $cnt, 'poll_nonce' );
@@ -703,6 +724,7 @@ class GS_Only_PDF_Preview {
 
 	/**
 	 * Called on 'media_send_to_editor' filter.
+	 * Patch to allow PDF thumbnail insertion (see #39618).
 	 */
 	static function media_send_to_editor( $html, $id, $attachment ) {
 		// Using the fact that 'post_title' is only set for non-image/audio/video links. See wp.media.editor.send.attachment in "wp-includes/js/media-editor.js" (line 1018).

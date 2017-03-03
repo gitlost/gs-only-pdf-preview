@@ -174,7 +174,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			return new WP_Error( 'image_save_error', __( 'Unsupported destination.', 'gs-only-pdf-preview' ), $filename );
 		}
 
-		// Make sure not to overwrite existing JPEG with same name.
+		// Make sure not to overwrite existing JPEG with same name. Redundant now for WP 4.7.3+ after #39875, but keep for BC.
 		$filename = $dirname . '/' . wp_unique_filename( $dirname, wp_basename( $filename ) );
 
 		if ( ! ( $cmd = self::gs_cmd( $this->get_gs_args( $filename ) ) ) ) {
@@ -403,9 +403,8 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 
 		if ( ! $win_path ) {
 			// Try GSC environment variable. TODO: Is this still used?
-			$gsc = getenv( 'GSC' );
-			if ( $gsc && is_string( $gsc ) && self::test_gs_cmd( $gsc ) ) {
-				$win_path = $gsc;
+			if ( ! empty( $_SERVER['GSC'] ) && is_string( $_SERVER['GSC'] ) && self::test_gs_cmd( $_SERVER['GSC'] ) ) {
+				$win_path = $_SERVER['GSC'];
 			}
 		}
 

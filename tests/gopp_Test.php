@@ -11,6 +11,8 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 	static $is_win;
 	static $have_gs;
+	static $dirname;
+	static $dirdirname;
 
 	static function wpSetUpBeforeClass() {
 		self::$is_win = 0 === strncasecmp( 'WIN', PHP_OS, 3 );
@@ -18,6 +20,8 @@ class Tests_GOPP extends WP_UnitTestCase {
 			exec( 'which gs', $output, $return_var );
 			self::$have_gs = 0 === $return_var;
 		}
+		self::$dirname = dirname( __FILE__ );
+		self::$dirdirname = dirname( self::$dirname );
 	}
 
 	static function wpTearDownAfterClass() {
@@ -36,8 +40,8 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 	function tearDown() {
 		parent::tearDown();
-		remove_filter( 'wp_redirect', array( __CLASS__, 'wp_redirect' ), 10, 2 );
 		remove_filter( 'wp_die_ajax_handler', array( $this, 'get_wp_die_handler' ) );
+		remove_filter( 'wp_redirect', array( __CLASS__, 'wp_redirect' ), 10, 2 );
 	}
 
 	function get_wp_die_handler( $handler ) {
@@ -70,7 +74,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		GS_Only_PDF_Preview::init();
 		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
 		$this->assertFalse( has_action( 'admin_init', array( 'GS_Only_PDF_Preview', 'admin_init' ) ) );
-		$this->assertFalse( has_action( 'wp_ajax_gopp_media_row_action', array( 'GS_Only_PDF_Preview', 'gopp_media_row_action' ) ) );
+		$this->assertFalse( has_action( 'media_send_to_editor', array( 'GS_Only_PDF_Preview', 'media_send_to_editor' ) ) );
 
 		remove_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) );
 
@@ -78,52 +82,101 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$old_pagenow = $pagenow;
 		$pagenow = 'tools.php';
 		set_current_screen( $pagenow );
-
 		$this->assertTrue( is_admin() );
+
+		global $current_user;
+		$old_current_user = $current_user;
+
 		if ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) {
+			$this->assertFalse( current_user_can( GS_Only_PDF_Preview::$cap ) );
 			GS_Only_PDF_Preview::init();
+
 			$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
+
 			$this->assertSame( 10, has_action( 'admin_init', array( 'GS_Only_PDF_Preview', 'admin_init' ) ) );
-			$this->assertSame( 10, has_action( 'admin_menu', array( 'GS_Only_PDF_Preview', 'admin_menu' ) ) );
 			$this->assertSame( 10, has_action( 'admin_enqueue_scripts', array( 'GS_Only_PDF_Preview', 'admin_enqueue_scripts' ) ) );
 
+			$this->assertFalse( has_action( 'admin_menu', array( 'GS_Only_PDF_Preview', 'admin_menu' ) ) );
+			$this->assertFalse( has_filter( 'bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'bulk_actions_upload' ) ) );
+			$this->assertFalse( has_filter( 'handle_bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'handle_bulk_actions_upload' ) ) );
+			$this->assertFalse( has_filter( 'removable_query_args', array( 'GS_Only_PDF_Preview', 'removable_query_args' ) ) );
+			$this->assertFalse( has_action( 'current_screen', array( 'GS_Only_PDF_Preview', 'current_screen' ) ) );
+			$this->assertFalse( has_action( 'media_row_actions', array( 'GS_Only_PDF_Preview', 'media_row_actions' ) ) );
+
+			$this->assertFalse( has_action( 'media_send_to_editor', array( 'GS_Only_PDF_Preview', 'media_send_to_editor' ) ) );
+
+			$this->assertFalse( has_action( 'wp_ajax_gopp_media_row_action', array( 'GS_Only_PDF_Preview', 'gopp_media_row_action' ) ) );
+			$this->assertFalse( has_action( 'wp_ajax_gopp_poll_regen_pdf_previews', array( 'GS_Only_PDF_Preview', 'gopp_poll_regen_pdf_previews' ) ) );
+
+			remove_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) );
+
+			remove_action( 'admin_init', array( 'GS_Only_PDF_Preview', 'admin_init' ) );
+			remove_action( 'admin_enqueue_scripts', array( 'GS_Only_PDF_Preview', 'admin_enqueue_scripts' ) );
+
+			wp_set_current_user( 1 );
+			$this->assertTrue( current_user_can( GS_Only_PDF_Preview::$cap ) );
+			GS_Only_PDF_Preview::init();
+
+			$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
+
+			$this->assertSame( 10, has_action( 'admin_init', array( 'GS_Only_PDF_Preview', 'admin_init' ) ) );
+			$this->assertSame( 10, has_action( 'admin_enqueue_scripts', array( 'GS_Only_PDF_Preview', 'admin_enqueue_scripts' ) ) );
+
+			$this->assertSame( 10, has_action( 'admin_menu', array( 'GS_Only_PDF_Preview', 'admin_menu' ) ) );
 			$this->assertSame( 10, has_filter( 'bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'bulk_actions_upload' ) ) );
 			$this->assertSame( 10, has_filter( 'handle_bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'handle_bulk_actions_upload' ) ) );
 			$this->assertSame( 10, has_filter( 'removable_query_args', array( 'GS_Only_PDF_Preview', 'removable_query_args' ) ) );
-
 			$this->assertSame( 10, has_action( 'current_screen', array( 'GS_Only_PDF_Preview', 'current_screen' ) ) );
 			$this->assertSame( 100, has_action( 'media_row_actions', array( 'GS_Only_PDF_Preview', 'media_row_actions' ) ) );
-			$this->assertSame( 10, has_action( 'wp_ajax_gopp_media_row_action', array( 'GS_Only_PDF_Preview', 'gopp_media_row_action' ) ) );
-			$this->assertSame( 10, has_action( 'wp_ajax_gopp_poll_regen_pdf_previews', array( 'GS_Only_PDF_Preview', 'gopp_poll_regen_pdf_previews' ) ) );
+
+			$this->assertFalse( has_action( 'media_send_to_editor', array( 'GS_Only_PDF_Preview', 'media_send_to_editor' ) ) );
+
+			$this->assertFalse( has_action( 'wp_ajax_gopp_media_row_action', array( 'GS_Only_PDF_Preview', 'gopp_media_row_action' ) ) );
+			$this->assertFalse( has_action( 'wp_ajax_gopp_poll_regen_pdf_previews', array( 'GS_Only_PDF_Preview', 'gopp_poll_regen_pdf_previews' ) ) );
 
 			remove_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) );
+
 			remove_action( 'admin_init', array( 'GS_Only_PDF_Preview', 'admin_init' ) );
-			remove_action( 'admin_menu', array( 'GS_Only_PDF_Preview', 'admin_menu' ) );
 			remove_action( 'admin_enqueue_scripts', array( 'GS_Only_PDF_Preview', 'admin_enqueue_scripts' ) );
 
+			remove_action( 'admin_menu', array( 'GS_Only_PDF_Preview', 'admin_menu' ) );
 			remove_filter( 'bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'bulk_actions_upload' ) );
 			remove_filter( 'handle_bulk_actions-upload', array( 'GS_Only_PDF_Preview', 'handle_bulk_actions_upload' ) );
 			remove_filter( 'removable_query_args', array( 'GS_Only_PDF_Preview', 'removable_query_args' ) );
-
 			remove_action( 'current_screen', array( 'GS_Only_PDF_Preview', 'current_screen' ) );
-			remove_action( 'media_row_actions', array( 'GS_Only_PDF_Preview', 'media_row_actions' ) );
-			remove_action( 'wp_ajax_gopp_media_row_action', array( 'GS_Only_PDF_Preview', 'gopp_media_row_action' ) );
-			remove_action( 'wp_ajax_gopp_poll_regen_pdf_previews', array( 'GS_Only_PDF_Preview', 'gopp_poll_regen_pdf_previews' ) );
+			remove_action( 'media_row_actions', array( 'GS_Only_PDF_Preview', 'media_row_actions' ), 100 );
 
 			define( 'DOING_AJAX', true );
 		}
 
 		$this->assertTrue( DOING_AJAX );
+		wp_set_current_user( 0 );
+		$this->assertFalse( current_user_can( GS_Only_PDF_Preview::$cap ) );
 		GS_Only_PDF_Preview::init();
+
 		$this->assertSame( 10, has_action( 'media_send_to_editor', array( 'GS_Only_PDF_Preview', 'media_send_to_editor' ) ) );
+
+		$this->assertFalse( has_action( 'wp_ajax_gopp_media_row_action', array( 'GS_Only_PDF_Preview', 'gopp_media_row_action' ) ) );
+		$this->assertFalse( has_action( 'wp_ajax_gopp_poll_regen_pdf_previews', array( 'GS_Only_PDF_Preview', 'gopp_poll_regen_pdf_previews' ) ) );
+
+		remove_action( 'media_send_to_editor', array( 'GS_Only_PDF_Preview', 'media_send_to_editor' ) );
+
+		wp_set_current_user( 1 );
+		$this->assertTrue( current_user_can( GS_Only_PDF_Preview::$cap ) );
+		GS_Only_PDF_Preview::init();
+
+		$this->assertSame( 10, has_action( 'media_send_to_editor', array( 'GS_Only_PDF_Preview', 'media_send_to_editor' ) ) );
+
 		$this->assertSame( 10, has_action( 'wp_ajax_gopp_media_row_action', array( 'GS_Only_PDF_Preview', 'gopp_media_row_action' ) ) );
 		$this->assertSame( 10, has_action( 'wp_ajax_gopp_poll_regen_pdf_previews', array( 'GS_Only_PDF_Preview', 'gopp_poll_regen_pdf_previews' ) ) );
 
 		remove_action( 'media_send_to_editor', array( 'GS_Only_PDF_Preview', 'media_send_to_editor' ) );
+
 		remove_action( 'wp_ajax_gopp_media_row_action', array( 'GS_Only_PDF_Preview', 'gopp_media_row_action' ) );
 		remove_action( 'wp_ajax_gopp_poll_regen_pdf_previews', array( 'GS_Only_PDF_Preview', 'gopp_poll_regen_pdf_previews' ) );
 
 		$pagenow = $old_pagenow;
+		$current_user = $old_current_user;
 	}
 
 	/**
@@ -187,7 +240,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		GS_Only_PDF_Preview::activation_hook();
 		$this->assertNotEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
 		$this->assertFalse( defined( 'WP_UNINSTALL_PLUGIN' ) );
-		define( 'WP_UNINSTALL_PLUGIN', dirname( dirname( __FILE__ ) ) . '/uninstall.php' );
+		define( 'WP_UNINSTALL_PLUGIN', self::$dirdirname . '/uninstall.php' );
 		require_once WP_UNINSTALL_PLUGIN;
 		$this->assertEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
 
@@ -225,14 +278,92 @@ class Tests_GOPP extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Try to test suhosin.
+	 */
+	function test_suhosin_disabled_msg() {
+		if ( ! ( extension_loaded( 'suhosin' ) || extension_loaded( 'suhosin7' ) ) ) {
+			if ( version_compare( PHP_VERSION, '5.3', '>=' ) || ! ini_get( 'enable_dl' ) || ! @ dl( 'suhosin' ) ) {
+				$this->markTestSkipped( 'no suhosin.' );
+			}
+		}
+		$whitelist = ini_get( 'suhosin.executor.func.whitelist' );
+		$blacklist = ini_get( 'suhosin.executor.func.blacklist' );
+
+		$msg = GS_Only_PDF_Preview::suhosin_disabled_msg();
+
+		if ( $whitelist ) {
+			if ( in_array( 'exec', array_map( 'trim', explode( ',', strtolower( $whitelist ) ) ), true ) ) {
+				$this->assertFalse( $msg );
+			} else {
+				$this->assertNotEmpty( $msg );
+			}
+		} elseif ( in_array( 'exec', array_map( 'trim', explode( ',', strtolower( $blacklist ) ) ), true ) ) {
+			$this->assertNotEmpty( $msg );
+		} else {
+			$this->assertFalse( $msg );
+		}
+	}
+
+	/**
+	 * Test check have Ghostscript.
+	 */
+	function test_check_have_gs() {
+		if ( false === self::$have_gs ) {
+			$this->assertFalse( GS_Only_PDF_Preview::check_have_gs() );
+		} else {
+			$this->assertTrue( GS_Only_PDF_Preview::check_have_gs() );
+
+			$this->assertTrue( GS_Only_PDF_Preview::check_have_gs( self::$dirname . '/images/test_alpha.pdf' ) );
+			$this->assertFalse( GS_Only_PDF_Preview::check_have_gs( self::$dirname . '/images/test-%alpha.pdf' ) );
+		}
+	}
+
+	/**
+	 * Test warn if no Ghostscript.
+	 */
+	function test_warn_if_no_gs() {
+		$admin_notices = array( array( 'error' => 'Error' ) );
+
+		GS_Only_PDF_Preview::admin_init();
+		$this->assertEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
+
+		GS_Only_PDF_Preview::warn_if_no_gs();
+
+		if ( false === self::$have_gs ) {
+			$this->assertNotEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
+
+			GS_Only_PDF_Preview::admin_init();
+			$this->assertEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
+
+			GS_Only_PDF_Preview::warn_if_no_gs( $admin_notices );
+
+			$transient = get_transient( 'gopp_plugin_admin_notices' );
+			$this->assertNotEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
+			$this->assertSame( 2, count( $transient ) );
+		} else {
+			$this->assertEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
+
+			GS_Only_PDF_Preview::admin_init();
+			$this->assertEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
+
+			GS_Only_PDF_Preview::warn_if_no_gs( $admin_notices );
+
+			$transient = get_transient( 'gopp_plugin_admin_notices' );
+			$this->assertNotEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
+			$this->assertSame( 1, count( $transient ) );
+		}
+	}
+
+	/**
 	 * Test admin init.
 	 */
 	function test_admin_init() {
 		$admin_notices_action = is_network_admin() ? 'network_admin_notices' : ( is_user_admin() ? 'user_admin_notices' : 'admin_notices' );
 
 		GS_Only_PDF_Preview::admin_init();
-		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
 		$this->assertSame( 10, has_action( $admin_notices_action, array( 'GS_Only_PDF_Preview', 'admin_notices' ) ) );
+
+		remove_action( $admin_notices_action, array( 'GS_Only_PDF_Preview', 'admin_notices' ) );
 	}
 
 	/**
@@ -375,6 +506,9 @@ class Tests_GOPP extends WP_UnitTestCase {
 	function test_admin_menu() {
 		$this->assertTrue( null === GS_Only_PDF_Preview::$hook_suffix );
 
+		global $current_user;
+		$old_current_user = $current_user;
+
 		GS_Only_PDF_Preview::admin_menu();
 		$this->assertFalse( is_string( GS_Only_PDF_Preview::$hook_suffix ) );
 
@@ -384,7 +518,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertTrue( is_string( GS_Only_PDF_Preview::$hook_suffix ) );
 		$this->assertSame( 10, has_action( 'load-' . GS_Only_PDF_Preview::$hook_suffix, array( 'GS_Only_PDF_Preview', 'load_regen_pdf_previews' ) ) );
 
-		$out = wp_set_current_user( 0 );
+		$current_user = $old_current_user;
 	}
 
 	/**
@@ -392,6 +526,9 @@ class Tests_GOPP extends WP_UnitTestCase {
 	 */
 	function test_load_regen_pdf_previews() {
 		if ( ! defined( 'GOPP_TESTING' ) ) define( 'GOPP_TESTING', true );
+
+		global $current_user;
+		$old_current_user = $current_user;
 
 		// No cap.
 		self::clear_func_args();
@@ -441,7 +578,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertNotEmpty( self::$func_args['wp_redirect'][0] );
 
 		// Do with one pdf.
-		$test_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
+		$test_file = self::$dirname . '/images/test_alpha.pdf';
 		$attachment_id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $attachment_id );
 
@@ -469,7 +606,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertNotEmpty( self::$func_args['wp_redirect'][0] );
 
 		// With two pdfs.
-		$test_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
+		$test_file = self::$dirname . '/images/test_alpha.pdf';
 		$attachment_id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $attachment_id );
 
@@ -521,7 +658,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 			$this->assertSame( 1, $args['args'][2] );
 		}
 
-		$out = wp_set_current_user( 0 );
+		$current_user = $old_current_user;
 	}
 
 	/**
@@ -547,23 +684,23 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		// Add some PDFs and images.
 		$ids = array();
-		$test_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
+		$test_file = self::$dirname . '/images/test_alpha.pdf';
 		$attachment_id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $attachment_id );
 		$ids[] = $attachment_id;
-		$test_file = dirname( __FILE__ ) . '/images/test-image.jpg';
+		$test_file = self::$dirname . '/images/test-image.jpg';
 		$attachment_id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $attachment_id );
 		$ids[] = $attachment_id;
-		$test_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
+		$test_file = self::$dirname . '/images/test_alpha.pdf';
 		$attachment_id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $attachment_id );
 		$ids[] = $attachment_id;
-		$test_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
+		$test_file = self::$dirname . '/images/test_alpha.pdf';
 		$attachment_id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $attachment_id );
 		$ids[] = $attachment_id;
-		$test_file = dirname( __FILE__ ) . '/images/test-image.jpg';
+		$test_file = self::$dirname . '/images/test-image.jpg';
 		$attachment_id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $attachment_id );
 		$ids[] = $attachment_id;
@@ -611,13 +748,65 @@ class Tests_GOPP extends WP_UnitTestCase {
 		}
 		$this->assertEmpty( get_transient( 'gopp_plugin_poll_rpp' ) );
 
+		// Bad old metadata.
+		$meta_id = add_metadata( 'post', $ids[0], '_wp_attachment_metadata', 'blah' );
+
+		$output = GS_Only_PDF_Preview::do_regen_pdf_previews( $ids, false /*check_mime_type*/, false /*do_transient*/ );
+		$this->assertSame( 4, count( $output ) );
+		if ( true !== self::$have_gs ) {
+			$this->assertSame( array( count( $ids ), count( $ids ) - 4, 4 ), array_slice( $output, 0, 3 ) );
+		} else {
+			$this->assertSame( array( count( $ids ), count( $ids ) - 2, 2 ), array_slice( $output, 0, 3 ) );
+		}
+		$this->assertEmpty( get_transient( 'gopp_plugin_poll_rpp' ) );
+
 		// metadata fail.
+		self::$update_post_metadata_fail_post_id = $ids[0];
+		add_filter( 'update_post_metadata', array( __CLASS__, 'update_post_metadata_fail_filter' ), 10, 5 );
+
+		$output = GS_Only_PDF_Preview::do_regen_pdf_previews( $ids, false /*check_mime_type*/, false /*do_transient*/ );
+		$this->assertSame( 4, count( $output ) );
+		if ( true !== self::$have_gs ) {
+			$this->assertSame( array( count( $ids ), count( $ids ) - 4, 4 ), array_slice( $output, 0, 3 ) );
+		} else {
+			$this->assertSame( array( count( $ids ), count( $ids ) - 3, 3 ), array_slice( $output, 0, 3 ) );
+		}
+
+		delete_metadata_by_mid( 'post', $meta_id );
+
+		remove_filter( 'update_post_metadata', array( __CLASS__, 'update_post_metadata_fail_filter' ) );
+	}
+
+	static $update_post_metadata_fail_post_id;
+
+	static function update_post_metadata_fail_filter( $check, $post_id, $meta_key, $meta_value, $prev_value ) {
+		return $post_id === self::$update_post_metadata_fail_post_id && '_wp_attachment_metadata' === $meta_key ? false : $check;
+	}
+
+	/**
+	 * Test set time limit.
+	 */
+	function test_set_time_limit() {
+		$old_max_execution_time = ini_get( 'max_execution_time' );
+
+		$out = GS_Only_PDF_Preview::set_time_limit( 600000 );
+		$this->assertNull( $out );
+
+		set_time_limit( 60 );
+		$out = GS_Only_PDF_Preview::set_time_limit( 61 );
+		$this->assertTrue( $out );
+		$this->assertEquals( 61, ini_get( 'max_execution_time' ) );
+
+		set_time_limit( $old_max_execution_time );
 	}
 
 	/**
 	 * Test regen PDF previews.
 	 */
 	function test_regen_pdf_previews() {
+		global $current_user;
+		$old_current_user = $current_user;
+
 		// No cap.
 		self::clear_func_args();
 		try {
@@ -642,7 +831,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertSame( force_balance_tags( $out ), $out );
 
 		// Do with one pdf.
-		$test_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
+		$test_file = self::$dirname . '/images/test_alpha.pdf';
 		$attachment_id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $attachment_id );
 
@@ -670,7 +859,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertTrue( false !== stripos( $out, 'can take a long time' ) );
 		$this->assertSame( force_balance_tags( $out ), $out );
 
-		$out = wp_set_current_user( 0 );
+		$current_user = $old_current_user;
 
 		if ( null !== $old_request_uri ) {
 			$_SERVER['REQUEST_URI'] = $old_request_uri;
@@ -760,22 +949,18 @@ class Tests_GOPP extends WP_UnitTestCase {
 	 */
 	function test_bulk_actions_upload() {
 
-		// Succeed.
-		$out = wp_set_current_user( 1 ); // Need manage_options cap.
 		$actions = array( 'trash' => 'Trash' );
 		$output = GS_Only_PDF_Preview::bulk_actions_upload( $actions );
 		$this->assertArrayHasKey( 'gopp_regen_pdf_previews', $output );
-
-		// Fail.
-		$out = wp_set_current_user( 0 ); // Need manage_options cap.
-		$output = GS_Only_PDF_Preview::bulk_actions_upload( $actions );
-		$this->assertArrayNotHasKey( 'gopp_regen_pdf_previews', $output );
 	}
 
 	/**
 	 * Test media bulk actions upload filter.
 	 */
 	function test_handle_bulk_actions_upload() {
+
+		global $current_user;
+		$old_current_user = $current_user;
 
 		$out = wp_set_current_user( 1 ); // Need manage_options cap.
 		$location = 'blah';
@@ -790,6 +975,8 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertSame( $location, $output );
 		$output = GS_Only_PDF_Preview::handle_bulk_actions_upload( $location, 'something', $post_ids );
 		$this->assertSame( $location, $output );
+
+		$current_user = $old_current_user;
 	}
 
 	/**
@@ -831,6 +1018,9 @@ class Tests_GOPP extends WP_UnitTestCase {
 	 * Test media row actions.
 	 */
 	function test_media_row_actions() {
+		global $current_user;
+		$old_current_user = $current_user;
+
 		$out = wp_set_current_user( 1 ); // Need manage_options cap.
 
 		$actions = array();
@@ -853,7 +1043,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 			$this->assertTrue( false !== stripos( $out['gopp_regen_pdf_preview'], '1234' ) );
 		}
 
-		$out = wp_set_current_user( 0 );
+		$current_user = $old_current_user;
 	}
 
 	/**
@@ -861,6 +1051,9 @@ class Tests_GOPP extends WP_UnitTestCase {
 	 */
 	function test_gopp_media_row_action() {
 		if ( ! defined( 'GOPP_TESTING' ) ) define( 'GOPP_TESTING', true );
+
+		global $current_user;
+		$old_current_user = $current_user;
 
 		$out = GS_Only_PDF_Preview::gopp_media_row_action();
 		$this->assertTrue( false !== stripos( $out, 'allowed' ) );
@@ -894,7 +1087,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertTrue( false !== stripos( $out, 'invalid id' ) );
 
 		// Success.
-		$test_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
+		$test_file = self::$dirname . '/images/test_alpha.pdf';
 		$id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $id );
 
@@ -907,6 +1100,16 @@ class Tests_GOPP extends WP_UnitTestCase {
 			$this->assertTrue( false !== stripos( $out, 'error' ) );
 		} else {
 			$this->assertTrue( false !== stripos( $out, 'success' ) );
+			$this->assertTrue( false !== stripos( $out, 'best' ) );
+
+			// No <img>.
+			add_filter( 'wp_get_attachment_image_src', array( __CLASS__, 'wp_get_attachment_image_src_none_filter' ), 10, 4 );
+
+			$out = GS_Only_PDF_Preview::gopp_media_row_action();
+			$this->assertTrue( false !== stripos( $out, 'success' ) );
+			$this->assertTrue( false !== stripos( $out, 'need' ) );
+
+			remove_filter( 'wp_get_attachment_image_src', array( __CLASS__, 'wp_get_attachment_image_src_none_filter' ) );
 		}
 
 		// Fail.
@@ -916,7 +1119,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertTrue( false !== stripos( $out, 'failed' ) );
 
 		// Non-PDF.
-		$test_file = dirname( __FILE__ ) . '/images/test-image.jpg';
+		$test_file = self::$dirname . '/images/test-image.jpg';
 		$id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $id );
 
@@ -927,7 +1130,11 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$out = GS_Only_PDF_Preview::gopp_media_row_action();
 		$this->assertTrue( false !== stripos( $out, 'invalid id' ) );
 
-		$out = wp_set_current_user( 0 );
+		$current_user = $old_current_user;
+	}
+
+	static function wp_get_attachment_image_src_none_filter( $image, $attachment_id, $size, $icon ) {
+		return '';
 	}
 
 	/**
@@ -935,6 +1142,9 @@ class Tests_GOPP extends WP_UnitTestCase {
 	 */
 	function test_gopp_poll_regen_pdf_previews() {
 		if ( ! defined( 'GOPP_TESTING' ) ) define( 'GOPP_TESTING', true );
+
+		global $current_user;
+		$old_current_user = $current_user;
 
 		$out = GS_Only_PDF_Preview::gopp_poll_regen_pdf_previews();
 		$this->assertSame( '{"msg":""}', $out );
@@ -971,6 +1181,8 @@ class Tests_GOPP extends WP_UnitTestCase {
 		set_transient( 'gopp_plugin_poll_rpp', array( 1, 0 ) );
 		$out = GS_Only_PDF_Preview::gopp_poll_regen_pdf_previews();
 		$this->assertSame( '{"msg":"100% (1)"}', $out );
+
+		$current_user = $old_current_user;
 	}
 
 	/**
@@ -994,7 +1206,7 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$this->assertSame( $html, $output );
 
 		$html = 'blah';
-		$test_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
+		$test_file = self::$dirname . '/images/test_alpha.pdf';
 		$id = $this->factory->attachment->create_upload_object( $test_file );
 		$attachment['url'] = wp_get_attachment_url( $id );
 

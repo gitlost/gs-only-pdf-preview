@@ -310,12 +310,18 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 	$( function () {
 		if ( gopp_plugin_params && gopp_plugin_params.val ) {
 			if ( gopp_plugin_params.val.is_regen_pdf_preview ) {
-				gopp_plugin.regen_pdf_preview();
+				if ( gopp_plugin_params.val.current_user_can_cap ) {
+					gopp_plugin.regen_pdf_preview();
+				}
 			} else if ( gopp_plugin_params.val.is_upload ) {
-				gopp_plugin.upload();
+				if ( gopp_plugin_params.val.current_user_can_cap ) {
+					gopp_plugin.upload();
+				}
+				// Always try the patches.
 				gopp_plugin.upload_patch();
 				gopp_plugin.patch_39630();
 			} else if ( gopp_plugin_params.val.is_post ) {
+				// Always try the patches.
 				gopp_plugin.post_patch();
 				gopp_plugin.patch_39630();
 			}

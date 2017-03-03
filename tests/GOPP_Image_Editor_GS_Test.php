@@ -18,6 +18,8 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 
 	static $is_win;
 	static $have_gs;
+	static $dirname;
+	static $dirdirname;
 
 	static function wpSetUpBeforeClass() {
 		//require_once( ABSPATH . WPINC . '/class-wp-image-editor-gs.php' );
@@ -29,6 +31,8 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 			exec( 'which gs', $output, $return_var );
 			self::$have_gs = 0 === $return_var;
 		}
+		self::$dirname = dirname( __FILE__ );
+		self::$dirdirname = dirname( self::$dirname );
 	}
 
 	static function wpTearDownAfterClass() {
@@ -131,33 +135,33 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 	 */
 	public function test_load() {
 		// Success.
-		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/minimal-us-letter.pdf' );
+		$image_editor = new GOPP_Image_Editor_GS( self::$dirname . '/images/minimal-us-letter.pdf' );
 		$output = $image_editor->load();
 		$this->assertTrue( $output );
 		unset( $image_editor );
 
 		// Not PDF.
-		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/test-image.jpg' );
+		$image_editor = new GOPP_Image_Editor_GS( self::$dirname . '/images/test-image.jpg' );
 		$output = $image_editor->load();
 		$this->assertInstanceOf( 'WP_Error', $output );
 		unset( $image_editor );
 
 		// Bad default resolution.
-		$image_editor = new Test_GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/minimal-us-letter.pdf' );
+		$image_editor = new Test_GOPP_Image_Editor_GS( self::$dirname . '/images/minimal-us-letter.pdf' );
 		$image_editor->public_set_default_resolution( -1 );
 		$output = $image_editor->load();
 		$this->assertInstanceOf( 'WP_Error', $output );
 		unset( $image_editor );
 
 		// Bad default page.
-		$image_editor = new Test_GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/minimal-us-letter.pdf' );
+		$image_editor = new Test_GOPP_Image_Editor_GS( self::$dirname . '/images/minimal-us-letter.pdf' );
 		$image_editor->public_set_default_page( -1 );
 		$output = $image_editor->load();
 		$this->assertInstanceOf( 'WP_Error', $output );
 		unset( $image_editor );
 
 		// Bad default quality.
-		$image_editor = new Test_GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/minimal-us-letter.pdf' );
+		$image_editor = new Test_GOPP_Image_Editor_GS( self::$dirname . '/images/minimal-us-letter.pdf' );
 		$image_editor->public_set_default_quality( -1 );
 		$output = $image_editor->load();
 		$this->assertInstanceOf( 'WP_Error', $output );
@@ -169,14 +173,14 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 	 */
 	public function test_save() {
 		// Fail destination file.
-		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/minimal-us-letter.pdf' );
+		$image_editor = new GOPP_Image_Editor_GS( self::$dirname . '/images/minimal-us-letter.pdf' );
 		$output = $image_editor->load();
 		$this->assertTrue( $output );
 		$output = $image_editor->save( 'non_existing_dir/donk.jpg' );
 		$this->assertInstanceOf( 'WP_Error', $output );
 
 		// Fail mime_type.
-		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/minimal-us-letter.pdf' );
+		$image_editor = new GOPP_Image_Editor_GS( self::$dirname . '/images/minimal-us-letter.pdf' );
 		$output = $image_editor->load();
 		$this->assertTrue( $output );
 		$output = $image_editor->save( '/tmp/test_save-gs-fail.jpg', 'application/pdf' );
@@ -184,7 +188,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 
 		// Fail cmd path.
 		$test_filename = '/tmp/test_save-gs.jpg';
-		$image_editor = new Test_GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/minimal-us-letter.pdf' );
+		$image_editor = new Test_GOPP_Image_Editor_GS( self::$dirname . '/images/minimal-us-letter.pdf' );
 		$output = $image_editor->load();
 		$this->assertTrue( $output );
 		$gs_cmd_path = Test_GOPP_Image_Editor_GS::public_gs_cmd_path();
@@ -195,7 +199,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 
 		// Success filename given.
 		$test_filename = '/tmp/test_save-gs.jpg';
-		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/minimal-us-letter.pdf' );
+		$image_editor = new GOPP_Image_Editor_GS( self::$dirname . '/images/minimal-us-letter.pdf' );
 		$output = $image_editor->load();
 		$this->assertTrue( $output );
 		$output = $image_editor->save( $test_filename, 'image/jpeg' );
@@ -216,7 +220,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 
 		// Success existing jpeg.
 		$test_filename = '/tmp/test_save-gs.jpg';
-		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/minimal-us-letter.pdf' );
+		$image_editor = new GOPP_Image_Editor_GS( self::$dirname . '/images/minimal-us-letter.pdf' );
 		$output = $image_editor->load();
 		$this->assertTrue( $output );
 		file_put_contents( $test_filename, 'asdf' );
@@ -240,7 +244,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 
 		// Fail no filename given.
 		$test_filename = null;
-		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/minimal-us-letter.pdf' );
+		$image_editor = new GOPP_Image_Editor_GS( self::$dirname . '/images/minimal-us-letter.pdf' );
 		$output = $image_editor->load();
 		$this->assertTrue( $output );
 		$output = $image_editor->save( $test_filename, 'image/jpeg' );
@@ -249,7 +253,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 
 		// Success filename with no directory given.
 		$test_filename = 'blah';
-		$image_editor = new GOPP_Image_Editor_GS( dirname( __FILE__ ) . '/images/minimal-us-letter.pdf' );
+		$image_editor = new GOPP_Image_Editor_GS( self::$dirname . '/images/minimal-us-letter.pdf' );
 		$output = $image_editor->load();
 		$this->assertTrue( $output );
 		$output = $image_editor->save( $test_filename, 'image/jpeg' );
@@ -276,6 +280,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 	}
 
 	public function data_gs_valid() {
+		$dirname = dirname( __FILE__ );
 		return array(
 			array( 'non_existent', false, 'File doesn&#8217;t exist?' ), // Non-existent.
 			array( 'non_existent', true, true ), // Non-existent.
@@ -287,10 +292,10 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 			array( 'percent_file%name', true, 'Unsupported file name.' ), // File name containing percent.
 			array( 'plus+file+name', true, true ), // Success: allow filnames with pluses for BC with common older uploads.
 			array( 'bang_!filename', true, 'Unsupported file name.' ), // File name containing exclaimation mark.
-			array( dirname( __FILE__ ) . '/images/test-image.jpg', false, 'File is not a PDF.' ), // Not a PDF.
-			array( dirname( __FILE__ ) . '/images/test-image.jpg', true, true ), // Not a PDF.
-			array( dirname( __FILE__ ) . '/images/test-bad.pdf', false, 'File is not a PDF.' ), // Bad PDF.
-			array( dirname( __FILE__ ) . '/images/minimal-us-letter.pdf', false, true ), // Success.
+			array( $dirname . '/images/test-image.jpg', false, 'File is not a PDF.' ), // Not a PDF.
+			array( $dirname . '/images/test-image.jpg', true, true ), // Not a PDF.
+			array( $dirname . '/images/test-bad.pdf', false, 'File is not a PDF.' ), // Bad PDF.
+			array( $dirname . '/images/minimal-us-letter.pdf', false, true ), // Success.
 		);
 	}
 
@@ -339,7 +344,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 	}
 
 	public function filter_gopp_image_gs_cmd_path( $gs_cmd_path ) {
-		return dirname( __FILE__ ) . '/fake/gs_sh';
+		return self::$dirname . '/fake/gs_sh';
 	}
 
 	public function filter_gopp_image_gs_cmd_path_bad( $gs_cmd_path ) {
@@ -393,11 +398,9 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		$output = Test_GOPP_Image_Editor_GS::public_gs_cmd( $args );
 		$this->assertFalse( $output );
 
-		$dirname = dirname( __FILE__ );
-
 		// Uses REG bash shell fake in tests directory.
 		$old_path = getenv( 'PATH' );
-		putenv( 'PATH=' . $dirname . '/fake:' . $old_path );
+		putenv( 'PATH=' . self::$dirname . '/fake:' . $old_path );
 		$expected = '\\gs\\gs9.20\\bin\\gswin64c.exe"';
 		Test_GOPP_Image_Editor_GS::clear();
 		Test_GOPP_Image_Editor_GS::public_set_is_win( true );
@@ -406,23 +409,27 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		$this->assertTrue( false !== strpos( $output, $expected ) );
 
 		// GSC
-		$gsc = getenv( 'GSC' );
+		$old_gsc = isset( $_SERVER['GSC'] ) ? $_SERVER['GSC'] : null;
 		$expected = 'gs';
-		putenv( 'GSC=' . $expected );
+		$_SERVER['GSC'] = $expected;
 		Test_GOPP_Image_Editor_GS::clear();
 		Test_GOPP_Image_Editor_GS::public_set_is_win( true );
 		$output = Test_GOPP_Image_Editor_GS::public_gs_cmd( $args );
-		putenv( 'GSC=' . $gsc );
 		if ( true !== self::$have_gs ) {
 			$this->assertEmpty( $output );
 		} else {
 			$this->assertTrue( false !== strpos( $output, $expected ) );
 		}
+		if ( null !== $old_gsc ) {
+			$_SERVER['GSC'] = $old_gsc;
+		} else {
+			unset( $_SERVER['GSC'] );
+		}
 
 		// Uses fake entries in tests directory.
-		$_SERVER['ProgramW6432'] = $dirname . '/fake/Program Files';
-		$_SERVER['ProgramFiles'] = $dirname . '/fake/Program Files';
-		$_SERVER['ProgramFiles(x86)'] = $dirname . '/fake/Program Files (x86)';
+		$_SERVER['ProgramW6432'] = self::$dirname . '/fake/Program Files';
+		$_SERVER['ProgramFiles'] = self::$dirname . '/fake/Program Files';
+		$_SERVER['ProgramFiles(x86)'] = self::$dirname . '/fake/Program Files (x86)';
 		$expected = $_SERVER['ProgramW6432'] . '\\gs\\gs9.20\\bin\\gswin64c.exe';
 		Test_GOPP_Image_Editor_GS::clear();
 		Test_GOPP_Image_Editor_GS::public_set_is_win( true );
@@ -432,13 +439,13 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 
 		// Default PATH.
 		$old_path = getenv( 'PATH' );
-		putenv( 'PATH=' . $dirname . '/fake/win64_path:' . $old_path );
+		putenv( 'PATH=' . self::$dirname . '/fake/win64_path:' . $old_path );
 		Test_GOPP_Image_Editor_GS::clear();
 		Test_GOPP_Image_Editor_GS::public_set_is_win( true );
 		$output = Test_GOPP_Image_Editor_GS::public_gs_cmd( $args );
 		$this->assertTrue( false !== strpos( $output, 'gswin64c.exe' ) );
 		putenv( 'PATH=' . $old_path );
-		putenv( 'PATH=' . $dirname . '/fake/win32_path:' . $old_path );
+		putenv( 'PATH=' . self::$dirname . '/fake/win32_path:' . $old_path );
 		Test_GOPP_Image_Editor_GS::clear();
 		Test_GOPP_Image_Editor_GS::public_set_is_win( true );
 		$output = Test_GOPP_Image_Editor_GS::public_gs_cmd( $args );
@@ -451,7 +458,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 	}
 
 	public function filter_gopp_image_gs_cmd_path_win( $gs_cmd_path ) {
-		return dirname( __FILE__ ) . '/fake/\\spaced dir\\prog.exe';
+		return self::$dirname . '/fake/\\spaced dir\\prog.exe';
 	}
 
 	/**
@@ -658,7 +665,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 	}
 
 	public function test_debug() {
-		require_once dirname( dirname( __FILE__ ) ) . '/includes/debug-gopp-image-editor-gs.php';
+		require_once self::$dirdirname . '/includes/debug-gopp-image-editor-gs.php';
 
 		DEBUG_GOPP_Image_Editor_GS::clear();
 
@@ -691,7 +698,7 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		do_action( 'admin_init' );
 		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
 
-		$test_file = dirname( __FILE__ ) . '/images/test_alpha.pdf';
+		$test_file = self::$dirname . '/images/test_alpha.pdf';
 		$attachment_id = $this->factory->attachment->create_upload_object( $test_file );
 		$this->assertNotEmpty( $attachment_id );
 

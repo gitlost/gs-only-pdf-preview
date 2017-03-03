@@ -120,6 +120,10 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 	}
 	add_filter( 'init', 'mytheme_gopp_init' );
 
+or for [WP-CLI](https://wp-cli.org/) users:
+
+	wp transient delete gopp_image_gs_cmd_path
+
 ## Screenshots ##
 
 ### 1. Before: upload of various PDFs with alpha channels and/or CMYK color spaces resulting in broken previews. ###
@@ -151,7 +155,8 @@ Note that the value of `gs_cmd_path` is cached as a transient by the plugin for 
 * Set real size not dummy for preview.
 * Fix test to be preview name agnostic.
 * Remove unnecessary upload_dir calc re old preview thumbnails.
-* Insist on mime_type arg in test() to avoid bogus supported implementation.
+* Insist on mime_type arg in test() to avoid reporting bogus supported implementation.
+* Only add actions/filters if have cap.
 * WP 4.7.3 compatible
 
 ### 1.0.4 (13 Feb 2017) ###
