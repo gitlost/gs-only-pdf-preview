@@ -1,4 +1,5 @@
 .*.swp
+*.min.js
 node_modules
 *.mo
 log

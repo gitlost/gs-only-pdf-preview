@@ -133,7 +133,7 @@ or for [WP-CLI](https://wp-cli.org/) users:
 
 == Changelog ==
 
-= 1.0.5 (X Mar 2017) =
+= 1.0.5 (8 Mar 2017) =
 * Fix Windows cmd path highest version/best match.
 * Set real size not dummy for preview.
 * Fix test to be preview name agnostic.
