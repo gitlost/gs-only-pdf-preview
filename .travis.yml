@@ -34,6 +34,4 @@ script:
 - WP_TESTS_DIR=/tmp/wordpress-tests-lib phpunit --verbose
 
 after_success:
-- if [[ $TRAVIS_PHP_VERSION = '7.1' && $WP_VERSION = 'latest' ]]; then
-- WP_TESTS_DIR=/tmp/wordpress-tests-lib phpunit --coverage-clover clover.xml && bash <(curl -s https://codecov.io/bash)
-- fi
+- if [[ $TRAVIS_PHP_VERSION = '7.1' && $WP_VERSION = 'latest' ]]; then WP_TESTS_DIR=/tmp/wordpress-tests-lib phpunit --coverage-clover clover.xml && bash <(curl -s https://codecov.io/bash); fi
