@@ -13,4 +13,13 @@ tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 if ( ! file_exists( $_tests_dir . '/data' ) ) {
 	mkdir( $_tests_dir . '/data' );
 }
+
+/**
+ * Migration fixer for PHPUnit 6
+ * From https://core.trac.wordpress.org/attachment/ticket/39822/39822-2.patch
+ */
+if ( class_exists( 'PHPUnit\Runner\Version' ) ) {
+	require dirname( __FILE__ ) . '/phpunit6-compat.php';
+}
+
 require $_tests_dir . '/includes/bootstrap.php';
