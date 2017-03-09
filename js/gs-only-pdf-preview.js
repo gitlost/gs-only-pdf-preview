@@ -130,7 +130,7 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 		var $tmpl_attachment_details_two_column, html_before,
 			html_attachment_details_two_column,
 			attachment_details_two_column_re = /(<# if \( 'image' === data.type)( \) { #>\s+<label class="setting" data-setting="alt">)/,
-			attachment_details_two_column_with = '$1 || data.sizes )$2';
+			attachment_details_two_column_with = '$1 || data.sizes$2';
 
 		$tmpl_attachment_details_two_column = $( '#tmpl-attachment-details-two-column' );
 		if ( $tmpl_attachment_details_two_column.length ) {

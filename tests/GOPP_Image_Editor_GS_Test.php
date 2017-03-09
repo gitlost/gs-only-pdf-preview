@@ -1,13 +1,13 @@
 <?php
 
 global $wp_version;
-error_log( "\n### WordPress $wp_version ####\n" );
+error_log( "\nWordPress $wp_version\n" );
 
 /**
  * Test the WP_Image_Editor_GS class
  * @group image
  * @group media
- * @group wp-image-editor-gs
+ * @group gopp-image-editor-gs
  */
 //require_once( dirname( __FILE__ ) . '/base.php' );
 
