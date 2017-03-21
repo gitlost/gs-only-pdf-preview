@@ -110,7 +110,7 @@ module.exports = function( grunt ) { //The wrapper function
 			all: [ 'tests/qunit/index.html' ]
 		},
 
-		shell: {
+		exec: {
 			generate_fixtures: {
 				command: 'php tools/gen_js_fixtures.php'
 			}
@@ -128,5 +128,5 @@ module.exports = function( grunt ) { //The wrapper function
 	// Creating a custom task
 	grunt.registerTask( 'test', [ 'jshint', 'phpunit', 'qunit' ] );
 
-	grunt.registerTask( 'test_qunit', [ 'shell:generate_fixtures', 'jshint', 'qunit' ] );
+	grunt.registerTask( 'test_qunit', [ 'exec:generate_fixtures', 'jshint', 'qunit' ] );
 };
