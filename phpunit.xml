@@ -16,6 +16,7 @@
 				<directory>node_modules</directory>
 				<directory>perf</directory>
 				<directory>tests</directory>
+				<directory>tools</directory>
 			</exclude>
 		</whitelist>
 	</filter>
