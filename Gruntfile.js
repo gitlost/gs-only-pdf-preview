@@ -2,6 +2,7 @@ module.exports = function( grunt ) { //The wrapper function
 
 	require( 'load-grunt-tasks' )( grunt );
 	var shell = require( 'shelljs' );
+	var wp_tests_dir = '/var/www/wordpress-develop/tests/phpunit';
 
 	// Project configuration & task configuration
 	grunt.initConfig( {
@@ -102,7 +103,7 @@ module.exports = function( grunt ) { //The wrapper function
 				dir: 'tests/'
 			},
 			options: {
-				bin: 'WP_TESTS_DIR=/var/www/wordpress-develop/tests/phpunit phpunit',
+				bin: 'WP_TESTS_DIR=' + ( process.env.WP_TESTS_DIR || wp_tests_dir ) + ' phpunit',
 				configuration: 'phpunit.xml'
 			}
 		},
@@ -121,11 +122,11 @@ module.exports = function( grunt ) { //The wrapper function
 	grunt.registerTask( 'default', [ 'uglify', 'wp_readme_to_markdown', 'makepot', 'compress' ] );
 
 	// Creating a custom task
-	grunt.registerTask( 'test', [ 'jshint', 'phpunit', 'qunit' ] );
-
 	grunt.registerTask( 'generate_fixtures', function () {
-		shell.exec( 'php tools/gen_js_fixtures.php' );
+		shell.exec( 'WP_TESTS_DIR=' + ( process.env.WP_TESTS_DIR || wp_tests_dir ) + ' php tools/gen_js_fixtures.php' );
 	} );
 
-	grunt.registerTask( 'test_qunit', [ 'jshint', 'qunit' ] );
+	grunt.registerTask( 'test', [ 'jshint', 'phpunit', 'qunit' ] );
+
+	grunt.registerTask( 'test_qunit', [ 'generate_fixtures', 'jshint', 'qunit' ] );
 };

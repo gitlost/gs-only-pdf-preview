@@ -5,8 +5,10 @@ $dirname = dirname( __FILE__ );
 $dirdirname = dirname( $dirname );
 
 $develop_dirname = '/var/www/wordpress-develop';
-$src_dirname = $develop_dirname . '/src';
-$tests_dirname = $develop_dirname . '/tests';
+
+$wp_dirname = file_exists( 'src/wp-config.php' ) && file_exists( 'src/wp-load.php' ) ? 'src' : ( $develop_dirname . '/src' );
+$wp_tests_dir = getenv( 'WP_TESTS_DIR' );
+$tests_dirname = $wp_tests_dir ? $wp_tests_dir : ( $develop_dirname . '/tests/phpunit' );
 
 error_log( "(===begin " . $basename );
 
@@ -14,9 +16,9 @@ error_log( "(===begin " . $basename );
 $_SERVER['HTTP_HOST'] = '192.168.1.64'; // Needs to match DOMAIN_CURRENT_SITE in wp-config.php
 $_SERVER['REQUEST_URI'] = preg_replace( '/^\/var\/www(\/[^\/]+\/).+$/', '$1', $dirdirname ); // Needs to match PATH_CURRENT_SITE in wp-config.php
 
-require $src_dirname . '/wp-load.php';
+require $wp_dirname . '/wp-load.php';
 require ABSPATH . 'wp-admin/includes/image.php';
-require $tests_dirname . '/phpunit/includes/factory.php';
+require $tests_dirname . '/includes/factory.php';
 
 function gjf_replace_urls( $str ) {
 	static $url_replaces = null;
