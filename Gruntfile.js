@@ -127,5 +127,5 @@ module.exports = function( grunt ) { //The wrapper function
 		shell.exec( 'php tools/gen_js_fixtures.php' );
 	} );
 
-	grunt.registerTask( 'test_qunit', [ 'generate_fixtures', 'jshint', 'qunit' ] );
+	grunt.registerTask( 'test_qunit', [ 'jshint', 'qunit' ] );
 };
