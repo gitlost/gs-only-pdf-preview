@@ -794,7 +794,11 @@ class Tests_GOPP extends WP_UnitTestCase {
 
 		set_time_limit( 60 );
 		$out = GS_Only_PDF_Preview::set_time_limit( 61 );
-		$this->assertTrue( $out );
+		if ( defined( 'HHVM_VERSION' ) ) {
+			$this->assertNull( $out );
+		} else {
+			$this->assertTrue( $out );
+		}
 		$this->assertEquals( 61, ini_get( 'max_execution_time' ) );
 
 		set_time_limit( $old_max_execution_time );

@@ -1,0 +1,109 @@
+<div class="wp-filter">
+	<div class="filter-items">
+				<input type="hidden" name="mode" value="list" />
+		<div class="view-switch">
+<a href='/wpfm-test/?mode=list' class='view-list current' id='view-switch-list'><span class='screen-reader-text'>List View</span></a>
+<a href='/wpfm-test/?mode=grid' class='view-grid' id='view-switch-grid'><span class='screen-reader-text'>Grid View</span></a>
+		</div>
+
+		<label for="attachment-filter" class="screen-reader-text">Filter by type</label>
+		<select class="attachment-filters" name="attachment-filter" id="attachment-filter">
+				<option value="">All media items</option>
+	<option value="post_mime_type:image">Images</option>
+	<option value="detached">Unattached</option>
+		</select>
+
+		<div class="actions">
+		<label for="filter-by-date" class="screen-reader-text">Filter by date</label>
+		<select name="m" id="filter-by-date">
+			<option selected='selected' value="0">All dates</option>
+<option  value='201703'>March 2017</option>
+		</select>
+<input type="submit" name="filter_action" id="post-query-submit" class="button" value="Filter"  />		</div>
+	</div>
+
+	<div class="search-form">
+		<label for="media-search-input" class="screen-reader-text">Search Media</label>
+		<input type="search" placeholder="Search media items..." id="media-search-input" class="search" name="s" value=""></div>
+	</div>
+	<input type="hidden" id="_wpnonce" name="_wpnonce" value="5972788a8a" /><input type="hidden" name="_wp_http_referer" value="/wpfm-test/" />	<div class="tablenav top">
+
+				<div class="alignleft actions bulkactions">
+			<label for="bulk-action-selector-top" class="screen-reader-text">Select bulk action</label><select name="action" id="bulk-action-selector-top">
+<option value="-1">Bulk Actions</option>
+	<option value="delete">Delete Permanently</option>
+	<option value="gopp_regen_pdf_previews">Regenerate PDF Previews</option>
+</select>
+<input type="submit" id="doaction" class="button action" value="Apply"  />
+		</div>
+		<div class='tablenav-pages one-page'><span class="displaying-num">3 items</span>
+<span class='pagination-links'><span class="tablenav-pages-navspan" aria-hidden="true">&laquo;</span>
+<span class="tablenav-pages-navspan" aria-hidden="true">&lsaquo;</span>
+<span class="paging-input"><label for="current-page-selector" class="screen-reader-text">Current Page</label><input class='current-page' id='current-page-selector' type='text' name='paged' value='1' size='1' aria-describedby='table-paging' /><span class='tablenav-paging-text'> of <span class='total-pages'>1</span></span></span>
+<span class="tablenav-pages-navspan" aria-hidden="true">&rsaquo;</span>
+<span class="tablenav-pages-navspan" aria-hidden="true">&raquo;</span></span></div>
+		<br class="clear" />
+	</div>
+<table class="wp-list-table widefat fixed striped media">
+	<thead>
+	<tr>
+		<td  id='cb' class='manage-column column-cb check-column'><label class="screen-reader-text" for="cb-select-all-1">Select All</label><input id="cb-select-all-1" type="checkbox" /></td><th scope="col" id='title' class='manage-column column-title column-primary sortable desc'><a href="http://example.com/?orderby=title&#038;order=asc"><span>File</span><span class="sorting-indicator"></span></a></th><th scope="col" id='author' class='manage-column column-author sortable desc'><a href="http://example.com/?orderby=author&#038;order=asc"><span>Author</span><span class="sorting-indicator"></span></a></th><th scope="col" id='parent' class='manage-column column-parent sortable desc'><a href="http://example.com/?orderby=parent&#038;order=asc"><span>Uploaded to</span><span class="sorting-indicator"></span></a></th><th scope="col" id='comments' class='manage-column column-comments num sortable desc'><a href="http://example.com/?orderby=comment_count&#038;order=asc"><span><span class="vers comment-grey-bubble" title="Comments"><span class="screen-reader-text">Comments</span></span></span><span class="sorting-indicator"></span></a></th><th scope="col" id='date' class='manage-column column-date sortable asc'><a href="http://example.com/?orderby=date&#038;order=desc"><span>Date</span><span class="sorting-indicator"></span></a></th>	</tr>
+	</thead>
+
+	<tbody id="the-list">
+					<tr id="post-1" class="author-other status-inherit">
+				<th scope="row" class="check-column">			<label class="screen-reader-text" for="cb-select-1">Select minimal-us-letter.pdf</label>
+			<input type="checkbox" name="media[]" id="cb-select-1" value="1" />
+		</th><td class='title column-title has-row-actions column-primary' data-colname="File">		<strong class="has-media-icon">
+			<a href="http://example.com/wp-admin/post.php?post=1&amp;action=edit" aria-label="&#8220;minimal-us-letter.pdf&#8221; (Edit)">				<span class="media-icon application-icon"><img width="48" height="64" src="http://example.com/wp-includes/images/media/default.png" class="attachment-60x60 size-60x60" alt="" /></span>
+			minimal-us-letter.pdf</a>		</strong>
+		<p class="filename">
+			<span class="screen-reader-text">File name: </span>
+					</p>
+		<div class="row-actions"><span class='edit'><a href="http://example.com/wp-admin/post.php?post=1&amp;action=edit" aria-label="Edit &#8220;minimal-us-letter.pdf&#8221;">Edit</a> | </span><span class='delete'><a href="post.php?action=delete&amp;post=1&amp;_wpnonce=5dd7ced2bf" class="submitdelete aria-button-if-js" onclick='return showNotice.warn();' aria-label="Delete &#8220;minimal-us-letter.pdf&#8221; permanently">Delete Permanently</a> | </span><span class='view'><a href="http://example.com/minimal-us-letter-pdf/" aria-label="View &#8220;minimal-us-letter.pdf&#8221;" rel="permalink">View</a> | </span><span class='gopp_regen_pdf_preview'><a href="#the-list" onclick="return gopp_plugin.media_row_action( event, 1, &quot;6df422fc65&quot; );" class="hide-if-no-js aria-button-if-js" aria-label="Regenerate the PDF preview for &#8220;minimal-us-letter.pdf&#8221;">Regenerate&nbsp;Preview</a><span class="spinner" style="float:none;margin-top:-3px;"></span></span></div><button type="button" class="toggle-row"><span class="screen-reader-text">Show more details</span></button></td><td class='author column-author' data-colname="Author"><a href="upload.php?author"></a></td><td class='parent column-parent' data-colname="Uploaded to">(Unattached)			<br /><a href="#the-list" onclick="findPosts.open( 'media[]', '1' ); return false;" class="hide-if-no-js aria-button-if-js" aria-label="Attach &#8220;minimal-us-letter.pdf&#8221; to existing content">Attach</a></td><td class='comments column-comments' data-colname="Comments"><div class="post-com-count-wrapper"><span aria-hidden="true">—</span><span class="screen-reader-text">No comments</span><span class="post-com-count post-com-count-pending post-com-count-no-pending"><span class="comment-count comment-count-no-pending" aria-hidden="true">0</span><span class="screen-reader-text">No comments</span></span></div></td><td class='date column-date' data-colname="Date">1 min ago</td>			</tr>
+					<tr id="post-2" class="author-other status-inherit">
+				<th scope="row" class="check-column">			<label class="screen-reader-text" for="cb-select-2">Select test-image.jpg</label>
+			<input type="checkbox" name="media[]" id="cb-select-2" value="2" />
+		</th><td class='title column-title has-row-actions column-primary' data-colname="File">		<strong class="has-media-icon">
+			<a href="http://example.com/wp-admin/post.php?post=2&amp;action=edit" aria-label="&#8220;test-image.jpg&#8221; (Edit)">				<span class="media-icon image-icon"><img width="48" height="64" src="http://example.com/wp-includes/images/media/default.png" class="attachment-60x60 size-60x60" alt="" /></span>
+			test-image.jpg</a>		</strong>
+		<p class="filename">
+			<span class="screen-reader-text">File name: </span>
+					</p>
+		<div class="row-actions"><span class='edit'><a href="http://example.com/wp-admin/post.php?post=2&amp;action=edit" aria-label="Edit &#8220;test-image.jpg&#8221;">Edit</a> | </span><span class='delete'><a href="post.php?action=delete&amp;post=2&amp;_wpnonce=3c3ce4e49c" class="submitdelete aria-button-if-js" onclick='return showNotice.warn();' aria-label="Delete &#8220;test-image.jpg&#8221; permanently">Delete Permanently</a> | </span><span class='view'><a href="http://example.com/test-image-jpg/" aria-label="View &#8220;test-image.jpg&#8221;" rel="permalink">View</a></span></div><button type="button" class="toggle-row"><span class="screen-reader-text">Show more details</span></button></td><td class='author column-author' data-colname="Author"><a href="upload.php?author"></a></td><td class='parent column-parent' data-colname="Uploaded to">(Unattached)			<br /><a href="#the-list" onclick="findPosts.open( 'media[]', '2' ); return false;" class="hide-if-no-js aria-button-if-js" aria-label="Attach &#8220;test-image.jpg&#8221; to existing content">Attach</a></td><td class='comments column-comments' data-colname="Comments"><div class="post-com-count-wrapper"><span aria-hidden="true">—</span><span class="screen-reader-text">No comments</span><span class="post-com-count post-com-count-pending post-com-count-no-pending"><span class="comment-count comment-count-no-pending" aria-hidden="true">0</span><span class="screen-reader-text">No comments</span></span></div></td><td class='date column-date' data-colname="Date">1 min ago</td>			</tr>
+					<tr id="post-3" class="author-other status-inherit">
+				<th scope="row" class="check-column">			<label class="screen-reader-text" for="cb-select-3">Select test_alpha.pdf</label>
+			<input type="checkbox" name="media[]" id="cb-select-3" value="3" />
+		</th><td class='title column-title has-row-actions column-primary' data-colname="File">		<strong class="has-media-icon">
+			<a href="http://example.com/wp-admin/post.php?post=3&amp;action=edit" aria-label="&#8220;test_alpha.pdf&#8221; (Edit)">				<span class="media-icon application-icon"><img width="48" height="64" src="http://example.com/wp-includes/images/media/default.png" class="attachment-60x60 size-60x60" alt="" /></span>
+			test_alpha.pdf</a>		</strong>
+		<p class="filename">
+			<span class="screen-reader-text">File name: </span>
+					</p>
+		<div class="row-actions"><span class='edit'><a href="http://example.com/wp-admin/post.php?post=3&amp;action=edit" aria-label="Edit &#8220;test_alpha.pdf&#8221;">Edit</a> | </span><span class='delete'><a href="post.php?action=delete&amp;post=3&amp;_wpnonce=2c0bd10cac" class="submitdelete aria-button-if-js" onclick='return showNotice.warn();' aria-label="Delete &#8220;test_alpha.pdf&#8221; permanently">Delete Permanently</a> | </span><span class='view'><a href="http://example.com/test_alpha-pdf/" aria-label="View &#8220;test_alpha.pdf&#8221;" rel="permalink">View</a> | </span><span class='gopp_regen_pdf_preview'><a href="#the-list" onclick="return gopp_plugin.media_row_action( event, 3, &quot;632f23b5ca&quot; );" class="hide-if-no-js aria-button-if-js" aria-label="Regenerate the PDF preview for &#8220;test_alpha.pdf&#8221;">Regenerate&nbsp;Preview</a><span class="spinner" style="float:none;margin-top:-3px;"></span></span></div><button type="button" class="toggle-row"><span class="screen-reader-text">Show more details</span></button></td><td class='author column-author' data-colname="Author"><a href="upload.php?author"></a></td><td class='parent column-parent' data-colname="Uploaded to">(Unattached)			<br /><a href="#the-list" onclick="findPosts.open( 'media[]', '3' ); return false;" class="hide-if-no-js aria-button-if-js" aria-label="Attach &#8220;test_alpha.pdf&#8221; to existing content">Attach</a></td><td class='comments column-comments' data-colname="Comments"><div class="post-com-count-wrapper"><span aria-hidden="true">—</span><span class="screen-reader-text">No comments</span><span class="post-com-count post-com-count-pending post-com-count-no-pending"><span class="comment-count comment-count-no-pending" aria-hidden="true">0</span><span class="screen-reader-text">No comments</span></span></div></td><td class='date column-date' data-colname="Date">1 min ago</td>			</tr>
+			</tbody>
+
+	<tfoot>
+	<tr>
+		<td   class='manage-column column-cb check-column'><label class="screen-reader-text" for="cb-select-all-2">Select All</label><input id="cb-select-all-2" type="checkbox" /></td><th scope="col"  class='manage-column column-title column-primary sortable desc'><a href="http://example.com/?orderby=title&#038;order=asc"><span>File</span><span class="sorting-indicator"></span></a></th><th scope="col"  class='manage-column column-author sortable desc'><a href="http://example.com/?orderby=author&#038;order=asc"><span>Author</span><span class="sorting-indicator"></span></a></th><th scope="col"  class='manage-column column-parent sortable desc'><a href="http://example.com/?orderby=parent&#038;order=asc"><span>Uploaded to</span><span class="sorting-indicator"></span></a></th><th scope="col"  class='manage-column column-comments num sortable desc'><a href="http://example.com/?orderby=comment_count&#038;order=asc"><span><span class="vers comment-grey-bubble" title="Comments"><span class="screen-reader-text">Comments</span></span></span><span class="sorting-indicator"></span></a></th><th scope="col"  class='manage-column column-date sortable asc'><a href="http://example.com/?orderby=date&#038;order=desc"><span>Date</span><span class="sorting-indicator"></span></a></th>	</tr>
+	</tfoot>
+
+</table>
+	<div class="tablenav bottom">
+
+				<div class="alignleft actions bulkactions">
+			<label for="bulk-action-selector-bottom" class="screen-reader-text">Select bulk action</label><select name="action2" id="bulk-action-selector-bottom">
+<option value="-1">Bulk Actions</option>
+	<option value="delete">Delete Permanently</option>
+	<option value="gopp_regen_pdf_previews">Regenerate PDF Previews</option>
+</select>
+<input type="submit" id="doaction2" class="button action" value="Apply"  />
+		</div>
+		<div class='tablenav-pages one-page'><span class="displaying-num">3 items</span>
+<span class='pagination-links'><span class="tablenav-pages-navspan" aria-hidden="true">&laquo;</span>
+<span class="tablenav-pages-navspan" aria-hidden="true">&lsaquo;</span>
+<span class="screen-reader-text">Current Page</span><span id="table-paging" class="paging-input"><span class="tablenav-paging-text">1 of <span class='total-pages'>1</span></span></span>
+<span class="tablenav-pages-navspan" aria-hidden="true">&rsaquo;</span>
+<span class="tablenav-pages-navspan" aria-hidden="true">&raquo;</span></span></div>
+		<br class="clear" />
+	</div>

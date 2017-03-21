@@ -106,6 +106,16 @@ module.exports = function( grunt ) { //The wrapper function
 			}
 		},
 
+		qunit: {
+			all: [ 'tests/qunit/index.html' ]
+		},
+
+		shell: {
+			generate_fixtures: {
+				command: 'php tools/gen_js_fixtures.php'
+			}
+		},
+
 		clean: {
 			js: [ 'js/*.min.js' ]
 		}
@@ -116,7 +126,7 @@ module.exports = function( grunt ) { //The wrapper function
 	grunt.registerTask( 'default', [ 'uglify', 'wp_readme_to_markdown', 'makepot', 'compress' ] );
 
 	// Creating a custom task
-	grunt.registerTask( 'test', [ 'jshint', 'phpunit' ] );
+	grunt.registerTask( 'test', [ 'jshint', 'phpunit', 'qunit' ] );
 
-	grunt.registerTask( 'test_build', [ 'clean', 'uglify' ] );
+	grunt.registerTask( 'test_qunit', [ 'shell:generate_fixtures', 'jshint', 'qunit' ] );
 };

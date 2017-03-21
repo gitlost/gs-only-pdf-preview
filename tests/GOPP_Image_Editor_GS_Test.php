@@ -383,6 +383,9 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		if ( self::$is_win ) {
 			$this->markTestSkipped( 'Unix only test.' );
 		}
+		if ( defined( 'HHVM_VERSION' ) ) {
+			$this->markTestSkipped( 'Not HHVM compatible.' );
+		}
 
 		$old_server = $_SERVER;
 		$_SERVER = array();
@@ -465,6 +468,8 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 	 * Test gs_cmd().
 	 */
 	public function test_gs_cmd() {
+		Test_GOPP_Image_Editor_GS::clear();
+
 		$args = '';
 
 		$output = Test_GOPP_Image_Editor_GS::public_gs_cmd( $args );

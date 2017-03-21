@@ -53,7 +53,7 @@ class GS_Only_PDF_Preview {
 					add_filter( 'handle_bulk_actions-upload', array( __CLASS__, 'handle_bulk_actions_upload' ), 10, 3 );
 					add_filter( 'removable_query_args', array( __CLASS__, 'removable_query_args' ) );
 					add_action( 'current_screen', array( __CLASS__, 'current_screen' ) );
-					add_action( 'media_row_actions', array( __CLASS__, 'media_row_actions' ), 100, 3 ); // Add after (most) others due to spinner.
+					add_filter( 'media_row_actions', array( __CLASS__, 'media_row_actions' ), 100, 3 ); // Add after (most) others due to spinner.
 				}
 			} else {
 				add_filter( 'media_send_to_editor', array( __CLASS__, 'media_send_to_editor' ), 10, 3 );

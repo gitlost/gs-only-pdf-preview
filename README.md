@@ -40,7 +40,7 @@ I believe these concerns are addressed here through screening of the file and it
 
 Unsurprisingly it's faster. Crude benchmarking (see the script [`perf_vs_imagick.php`](https://github.com/gitlost/gs-only-pdf-preview/blob/master/perf/perf_vs_imagick.php)) suggests it's around 35-40% faster. However the production of the preview is only a part of the overhead of uploading a PDF (and doesn't include producing the intermediate thumbnail sizes for instance) so any speed-up may not be that noticeable.
 
-On jpeg thumbnail size it appears to be comparable, maybe a bit larger on average. To mitigate this the default jpeg quality for the PDF preview has been lowered to 70 (from 82), which results in some extra "ringing" (speckles around letters) but the previews tested remain very readable. Note that this only affects the "full" PDF thumbnail - the intermediate-sized thumbnails as produced by `Imagick` or `GD` and any other non-PDF images remain at the standard jpeg quality of 82. Use the WP filter [`wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) to override this, for instance to restore the quality to 82 you could add to your theme's "functions.php":
+On jpeg thumbnail size it appears to be comparable, maybe a bit larger on average. To mitigate this the default jpeg quality for the PDF preview has been lowered to 70 (from 82), which results in some extra "ringing" (speckles around letters) but the previews tested remain very readable. Note that this only affects the "full" PDF thumbnail - the intermediate-sized thumbnails as produced by `Imagick` or `GD` and any other non-PDF images remain at the standard jpeg quality of 82. You can use the WP filter [`wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) to override this, for instance to restore the quality to 82 add to your theme's "functions.php":
 
 	function mytheme_wp_editor_set_quality( $quality, $mime_type ) {
 		if ( 'application/pdf' === $mime_type ) {
@@ -157,6 +157,7 @@ or for [WP-CLI](https://wp-cli.org/) users:
 * Remove unnecessary upload_dir calc re old preview thumbnails.
 * Insist on mime_type arg in test() to avoid reporting bogus supported implementation.
 * Only add actions/filters if have cap.
+* Add qunit tests.
 * WP 4.7.3 compatible
 
 ### 1.0.4 (13 Feb 2017) ###

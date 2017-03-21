@@ -1,0 +1,8 @@
+.media-modal
+, #media-list-table-container
+, #regen_pdf_preview-container
+{
+	left:-10000px;
+	position:absolute;
+	top:-10000px;
+}

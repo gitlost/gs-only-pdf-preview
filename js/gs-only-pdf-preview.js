@@ -57,11 +57,11 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 	/**
 	 * Regenerate Preview row action.
 	 */
-	gopp_plugin.media_row_action = function ( e, id, nonce ) {
-		var $target = $( e.target ), $row_action_div = $target.parents( '.row-actions' ).first(), $spinner = $target.next();
-		$( '.gopp_response', $row_action_div.parent() ).remove();
+	gopp_plugin.media_row_action = function ( e, id, nonce, test ) {
+		var $target = $( e.target ), $row_action_div = $target.parents( '.row-actions' ).first(), $row_action_parent = $row_action_div.parent(), $spinner = $target.next(), post_ret;
+		$( '.gopp_response', $row_action_parent ).remove();
 		$spinner.addClass( 'is-active' );
-		$.post( {
+		post_ret = $.post( {
 			url: ajaxurl,
 			data: {
 				action: 'gopp_media_row_action',
@@ -77,7 +77,7 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 			},
 			success: function( data ) {
 				$spinner.removeClass( 'is-active' );
-				$( '.gopp_response', $row_action_div.parent() ).remove();
+				$( '.gopp_response', $row_action_parent ).remove();
 				if ( data ) {
 					if ( data.error ) {
 						$row_action_div.after( $( '<div class="notice error gopp_response"><p>' + data.error + '</p></div>' ) );
@@ -85,7 +85,7 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 						$row_action_div.after( $( '<div class="notice updated gopp_response"><p>' + data.msg + '</p></div>' ) );
 					}
 					if ( data.img ) {
-						$( '.has-media-icon .media-icon', $row_action_div.parent() ).html( data.img );
+						$( '.has-media-icon .media-icon', $row_action_parent ).html( data.img );
 					}
 				} else {
 					$row_action_div.after( $( '<div class="notice error gopp_response"><p>' + gopp_plugin_params.action_not_available + '</p></div>' ) );
@@ -94,6 +94,13 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 			timeout: gopp_plugin_params.val.min_time_limit * 1000
 		} );
 
+		post_ret.fail( function () {
+			$spinner.removeClass( 'is-active' );
+		} );
+
+		if ( test ) {
+			test.post_ret = post_ret;
+		}
 		return false;
 	};
 
@@ -103,19 +110,20 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 	gopp_plugin.upload = function () {
 		$( '#doaction, #doaction2' ).click( function ( e ) {
 			$( 'select[name^="action"]' ).each( function () {
-				var $target, checkeds;
+				var $target, $parent, checkeds;
 				if ( 'gopp_regen_pdf_previews' === $( this ).val() ) {
 					$target = $( e.target );
+					$parent = $target.parent();
+					$( '.gopp_none', $parent ).remove();
+					$( '.spinner', $parent ).remove();
 					// See if anything selected.
 					checkeds = $.makeArray( $( '#the-list input[name="media[]"]:checked' ).map( function () {
 						return this.value;
 					} ) );
 					if ( ! checkeds.length ) {
 						e.preventDefault();
-						$( '.gopp_none', $target.parent() ).remove();
 						$( gopp_plugin_params.no_items_selected_msg ).insertAfter( $target ).fadeOut( 1000, function() { $( this ).remove(); } );
 					} else {
-						$( '.spinner', $target.parent() ).remove();
 						$( gopp_plugin_params.spinner ).insertAfter( $target ); // Like above, as in submit, doesn't work for Safari.
 					}
 				}
