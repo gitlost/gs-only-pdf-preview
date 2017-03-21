@@ -1,6 +1,7 @@
 module.exports = function( grunt ) { //The wrapper function
 
 	require( 'load-grunt-tasks' )( grunt );
+	var shell = require( 'shelljs' );
 
 	// Project configuration & task configuration
 	grunt.initConfig( {
@@ -110,12 +111,6 @@ module.exports = function( grunt ) { //The wrapper function
 			all: [ 'tests/qunit/index.html' ]
 		},
 
-		exec: {
-			generate_fixtures: {
-				command: 'php tools/gen_js_fixtures.php'
-			}
-		},
-
 		clean: {
 			js: [ 'js/*.min.js' ]
 		}
@@ -128,5 +123,9 @@ module.exports = function( grunt ) { //The wrapper function
 	// Creating a custom task
 	grunt.registerTask( 'test', [ 'jshint', 'phpunit', 'qunit' ] );
 
-	grunt.registerTask( 'test_qunit', [ 'exec:generate_fixtures', 'jshint', 'qunit' ] );
+	grunt.registerTask( 'generate_fixtures', function () {
+		shell.exec( 'php tools/gen_js_fixtures.php' );
+	} );
+
+	grunt.registerTask( 'test_qunit', [ 'generate_fixtures', 'jshint', 'qunit' ] );
 };
