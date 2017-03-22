@@ -22,12 +22,15 @@ matrix:
   allow_failures:
     - env: WP_VERSION=nightly
 
+before_install:
+- if [[ $TRAVIS_PHP_VERSION = '7.1' && $WP_VERSION = 'latest' ]]; then composer global require "phpunit/phpunit=5.7.*"; fi
+
 install:
 - npm install grunt-cli
 - npm install
   
 before_script:
-- if [[ $TRAVIS_PHP_VERSION = '7.1' && $WP_VERSION = 'latest' ]]; then composer global require "phpunit/phpunit=5.7.*"; else phpenv config-rm xdebug.ini || true; fi
+- if [[ ! ( $TRAVIS_PHP_VERSION = '7.1' && $WP_VERSION = 'latest' ) ]]; then else phpenv config-rm xdebug.ini || true; fi
 - bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
 
 script: 
