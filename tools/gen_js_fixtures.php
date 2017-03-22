@@ -16,6 +16,13 @@ error_log( "(===begin " . $basename );
 $_SERVER['HTTP_HOST'] = '192.168.1.64'; // Needs to match DOMAIN_CURRENT_SITE in wp-config.php
 $_SERVER['REQUEST_URI'] = preg_replace( '/^\/var\/www(\/[^\/]+\/).+$/', '$1', $dirdirname ); // Needs to match PATH_CURRENT_SITE in wp-config.php
 
+// Override to keep nonces constant.
+function wp_nonce_tick() {
+	$time = strtotime( '2017-03-22 00:00:00' );
+	$nonce_life = DAY_IN_SECONDS;
+
+	return ceil( $time / ( $nonce_life / 2 ) );
+}
 require $wp_dirname . '/wp-load.php';
 require ABSPATH . 'wp-admin/includes/image.php';
 require $tests_dirname . '/includes/factory.php';
@@ -27,7 +34,7 @@ function gjf_replace_urls( $str ) {
 		$url_replaces = array(
 			home_url( '/' ) => 'http://example.com/',
 			set_url_scheme( 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ) => 'http://example.com/',
-			'/wordpress-develop/src/' => '/',
+			admin_url( '/', 'relative' ) => '/wp-admin/',
 		);
 	}
 

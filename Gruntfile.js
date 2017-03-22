@@ -49,7 +49,7 @@ module.exports = function( grunt ) { //The wrapper function
 				options: {
 					cwd: '',                          // Directory of files to internationalize.
 					domainPath: '/languages',         // Where to save the POT file.
-					exclude: [ 'tests/' ],            // List of files or directories to ignore.
+					exclude: [ 'tests/', 'src/' ],    // List of files or directories to ignore.
 					include: [],                      // List of files or directories to include.
 					mainFile: 'gs-only-pdf-preview.php',   // Main project file.
 					potComments: '',                  // The copyright at the beginning of the POT file.
@@ -98,16 +98,6 @@ module.exports = function( grunt ) { //The wrapper function
 			}
 		},
 
-		phpunit: {
-			classes: {
-				dir: 'tests/'
-			},
-			options: {
-				bin: 'WP_TESTS_DIR=' + ( process.env.WP_TESTS_DIR || wp_tests_dir ) + ' phpunit',
-				configuration: 'phpunit.xml'
-			}
-		},
-
 		qunit: {
 			all: [ 'tests/qunit/index.html' ]
 		},
@@ -124,6 +114,10 @@ module.exports = function( grunt ) { //The wrapper function
 	// Creating a custom task
 	grunt.registerTask( 'generate_fixtures', function () {
 		shell.exec( 'WP_TESTS_DIR=' + ( process.env.WP_TESTS_DIR || wp_tests_dir ) + ' php tools/gen_js_fixtures.php' );
+	} );
+
+	grunt.registerTask( 'phpunit', function () {
+		shell.exec( 'WP_TESTS_DIR=' + ( process.env.WP_TESTS_DIR || wp_tests_dir ) + ' phpunit' );
 	} );
 
 	grunt.registerTask( 'test', [ 'jshint', 'phpunit', 'qunit' ] );

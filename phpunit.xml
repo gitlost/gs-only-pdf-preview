@@ -3,6 +3,7 @@
 	backupGlobals="false"
 	colors="true"
 	stderr="true"
+	verbose="true"
 	>
 	<testsuites>
 		<testsuite>
