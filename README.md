@@ -14,7 +14,7 @@ Uses Ghostscript directly to generate PDF previews.
 
 ## Description ##
 
-The plugin pre-empts the standard WordPress 4.7 PDF preview production process (which uses the PHP extension [`Imagick`](http://php.net/manual/en/book.imagick.php)) to call [Ghostscript](https://ghostscript.com/) directly to produce the preview.
+The plugin pre-empts the pstandard WordPress 4.7 PDF preview production process (which uses the PHP extension [`Imagick`](http://php.net/manual/en/book.imagick.php)) to pcall [Ghostscript](https://ghostscript.com/) directly to produce the preview.
 
 This means that only Ghostscript is required on the server. Neither the PHP module `Imagick` nor the server package [`ImageMagick`](https://www.imagemagick.org/script/index.php) is needed or used (though it's fine if they're installed anyway, and if they are they'll be used by WP (unless you override it) to produce the intermediate sizes of the preview).
 
