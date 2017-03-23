@@ -360,7 +360,7 @@ class GS_Only_PDF_Preview {
 	 */
 	static function load_regen_pdf_previews() {
 		if ( ! current_user_can( self::$cap ) ) { // Double-check cap.
-			wp_die( __( 'Sorry, you are not allowed to access this page.', 'gs-only-pdf-preview' ) );
+			wp_die( __( 'Sorry, you are not allowed to access this page.', 'gs-only-pdf-preview' ), '', array( 'response' => 403 ) );
 		}
 
 		if ( empty( $_REQUEST[GOPP_REGEN_PDF_PREVIEWS_SLUG] ) ) {
@@ -462,7 +462,7 @@ class GS_Only_PDF_Preview {
 	 */
 	static function regen_pdf_previews() {
 		if ( ! current_user_can( self::$cap ) ) { // Double-check cap.
-			wp_die( __( 'Sorry, you are not allowed to access this page.', 'gs-only-pdf-preview' ) );
+			wp_die( __( 'Sorry, you are not allowed to access this page.', 'gs-only-pdf-preview' ), '', array( 'response' => 403 ) );
 		}
 
 		global $wpdb;

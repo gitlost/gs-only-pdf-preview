@@ -1,5 +1,6 @@
 language: php
 
+dist: trusty
 sudo: false
 
 php:
@@ -21,6 +22,8 @@ env:
 matrix:
   allow_failures:
     - env: WP_VERSION=nightly
+
+node_js: 6
 
 install:
 - npm install grunt-cli

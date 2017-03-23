@@ -538,6 +538,8 @@ class Tests_GOPP extends WP_UnitTestCase {
 			unset( $e );
 		}
 		$this->assertSame( 1, count( self::$func_args['wp_die'] ) );
+		$this->assertTrue( isset( self::$func_args['wp_die'][0]['args'] ) );
+		$this->assertSame( array( 'response' => 403 ), self::$func_args['wp_die'][0]['args'] );
 
 		$out = wp_set_current_user( 1 ); // Need manage_options cap to add load-XXX
 
@@ -819,6 +821,8 @@ class Tests_GOPP extends WP_UnitTestCase {
 			unset( $e );
 		}
 		$this->assertSame( 1, count( self::$func_args['wp_die'] ) );
+		$this->assertTrue( isset( self::$func_args['wp_die'][0]['args'] ) );
+		$this->assertSame( array( 'response' => 403 ), self::$func_args['wp_die'][0]['args'] );
 
 		$out = wp_set_current_user( 1 ); // Need manage_options cap.
 
