@@ -669,6 +669,15 @@ class Tests_GOPP_Image_Editor_GS extends WP_UnitTestCase {
 		$this->assertInstanceOf( 'WP_Error', $gs->stream() );
 	}
 
+	public function test_get_size() {
+		$gs = new GOPP_Image_Editor_GS( self::$dirname . '/images/minimal-us-letter.pdf' );
+		$this->assertNull( $gs->get_size() );
+
+		$output = $gs->load();
+		$this->assertTrue( $output );
+		$this->assertSame( array( 'width' => 1088, 'height' => 1408 ), $gs->get_size() );
+	}
+
 	public function test_debug() {
 		require_once self::$dirdirname . '/includes/debug-gopp-image-editor-gs.php';
 
