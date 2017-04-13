@@ -298,7 +298,7 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 	gopp_plugin.patch_39630 = function () {
 		var $tmpl_attachment = $( '#tmpl-attachment' ), html_before, html_attachment,
 			attachment_re = /(<# } else if \( data\.sizes && )data\.sizes\.medium( \) { #>\s+<img src="{{ )data\.sizes\.medium(\.url }}" class="thumbnail" draggable="false" alt="" \/>\s+<# } else { #>)/,
-			attachment_with = '$1( data.sizes.thumbnail || data.sizes.medium )$2( data.sizes.thumbnail || data.sizes.medium )$3';
+			attachment_with = '$1( data.sizes.thumbnail || data.sizes.medium || data.sizes.full )$2( data.sizes.thumbnail || data.sizes.medium || data.sizes.full )$3';
 
 		if ( $tmpl_attachment.length ) {
 

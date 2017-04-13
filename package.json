@@ -18,8 +18,10 @@
     "grunt-po2mo": "^0.1.2",
     "grunt-wp-i18n": "^0.5.4",
     "grunt-wp-readme-to-markdown": "~2.0.0",
+    "gulp": "^3.9.1",
     "load-grunt-tasks": "^3.5.0",
     "selenium-webdriver": "^3.3.0",
-    "shelljs": "^0.7.7"
+    "shelljs": "^0.7.7",
+    "webdriverio": "^4.6.2"
   }
 }

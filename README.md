@@ -150,7 +150,7 @@ or for [WP-CLI](https://wp-cli.org/) users:
 
 ## Changelog ##
 
-### 1.0.5 (X Mar 2017) ###
+### 1.0.5 (X Apr 2017) ###
 * Fix Windows cmd path highest version/best match.
 * Set real size not dummy for preview.
 * Fix test to be preview name agnostic.
@@ -158,6 +158,7 @@ or for [WP-CLI](https://wp-cli.org/) users:
 * Insist on mime_type arg in test() to avoid reporting bogus supported implementation.
 * Only add actions/filters if have cap.
 * Add qunit tests.
+* Override get_size() to work if loaded.
 * WP 4.7.3 compatible
 
 ### 1.0.4 (13 Feb 2017) ###

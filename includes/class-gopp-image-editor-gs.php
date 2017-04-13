@@ -795,4 +795,30 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	public function stream( $mime_type = null ) {
 		return new WP_Error( 'image_stream_error', __( 'Unsupported operation.', 'gs-only-pdf-preview' ) );
 	}
+
+	/**
+	 * Gets dimensions of image.
+	 *
+	 * @since 3.5.0
+	 * @access public
+	 *
+	 * @return array {'width'=>int, 'height'=>int}
+	 */
+	public function get_size() {
+		// If size hasn't been set yet and have loaded.
+		if ( null === $this->size && $this->mime_type ) {
+			$this->update_size( 0, 0 );
+			// Do a temporary full preview to get size of image.
+			$dirname = untrailingslashit( get_temp_dir() );
+			$filename = $dirname . '/' . wp_unique_filename( $dirname, 'gopp_size.jpg' );
+			if ( $cmd = self::gs_cmd( $this->get_gs_args( $filename ) ) ) {
+				exec( $cmd, $output, $return_var );
+				if ( 0 === $return_var && ( $size = @ getimagesize( $filename ) ) ) {
+					$this->update_size( $size[0], $size[1] );
+				}
+				@ unlink( $filename );
+			}
+		}
+		return $this->size;
+	}
 }
