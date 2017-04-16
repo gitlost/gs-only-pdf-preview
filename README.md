@@ -6,7 +6,7 @@
 **Tags:** Ghostscript, PDF, PDF Preview, Ghostscript Only  
 **Requires at least:** 4.7.0  
 **Tested up to:** 4.7.3  
-**Stable tag:** 1.0.5  
+**Stable tag:** 1.0.6  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
 
@@ -156,6 +156,9 @@ or for [WP-CLI](https://wp-cli.org/) users:
 
 ## Changelog ##
 
+### 1.0.6 (16 Apr 2017) ###
+* For BC so as not to break linked thumbnails, check for PDF marker before deleting on regeneration.
+
 ### 1.0.5 (16 Apr 2017) ###
 * Fix Windows cmd path highest version/best match.
 * Set real size not dummy for preview.
@@ -194,6 +197,9 @@ or for [WP-CLI](https://wp-cli.org/) users:
 * Initial github version.
 
 ## Upgrade Notice ##
+
+### 1.0.6 ###
+Keeps backward-compatibility for linked thumbnails.
 
 ### 1.0.5 ###
 Determines Windows command path better.
