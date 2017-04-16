@@ -153,7 +153,7 @@ jQuery( function( $ ) {
 
 	test( 'post_patch send_attachment', function() {
 		var prev_media_editor_send_attachment = wp.media.editor.send.attachment;
-		var options, frame, $previews, $preview, $attachment_display_settings, $align, $link_to, $size, $insert_button;
+		var options, frame, $previews, $preview, $attachment_details, $attachment_display_settings, $alt_text, $align, $link_to, $size, $insert_button;
 
 		ok( gopp_plugin.post_patch(), 'post patch success' );
 
@@ -174,6 +174,14 @@ jQuery( function( $ ) {
 		$preview = $previews.eq( 0 );
 
 		$preview.click(); // Select.
+
+		$attachment_details = $( '.attachment-details', frame.$el );
+		strictEqual( $attachment_details.length, 1, 'Attachment Details found' );
+
+		$alt_text = $( 'label[data-setting="alt"]', $attachment_details );
+		strictEqual( $alt_text.length, 1, 'alt found' );
+		$alt_text.val( 'alt text' );
+		$alt_text.change();
 
 		$attachment_display_settings = $( '.attachment-display-settings', frame.$el );
 		strictEqual( $attachment_display_settings.length, 1, 'Attachment Display Settings found' );
@@ -199,6 +207,7 @@ jQuery( function( $ ) {
 		$insert_button.click();
 		notEqual( gopp_fixtures.last_post_data, null, 'attachment sent data' );
 		strictEqual( gopp_fixtures.last_post_data.action, 'send-attachment-to-editor', 'attachment sent action' );
+		strictEqual( gopp_fixtures.last_post_data.attachment.alt, 'alt text', 'attachment sent alt text' );
 		strictEqual( gopp_fixtures.last_post_data.attachment.align, 'left', 'attachment sent align left' );
 		strictEqual( gopp_fixtures.last_post_data.attachment.link_to, 'file', 'attachment sent link to file' );
 		strictEqual( gopp_fixtures.last_post_data.attachment['image-size'], 'thumbnail', 'attachment sent image size thumbnail' );

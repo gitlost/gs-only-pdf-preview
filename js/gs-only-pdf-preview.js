@@ -281,6 +281,10 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 			options.post_title = props.title;
 			// gitlost begin.
 			if ( attachment.sizes ) {
+				// Not picked into props for non-images in wp.media.string.props().
+				if ( attachment.alt ) {
+					options.alt = attachment.alt;
+				}
 				_.each({
 					align: 'align',
 					size:  'image-size',

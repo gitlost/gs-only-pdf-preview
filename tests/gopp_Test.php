@@ -1219,8 +1219,10 @@ class Tests_GOPP extends WP_UnitTestCase {
 		$attachment['url'] = wp_get_attachment_url( $id );
 
 		$attachment['image-size'] = 'thumbnail';
+		$attachment['alt'] = 'alt text';
 		$output = GS_Only_PDF_Preview::media_send_to_editor( $html, $id, $attachment );
 		$this->assertTrue( false !== strpos( $output, '<a href="' . $attachment['url'] . '"' ) );
+		$this->assertTrue( false !== strpos( $output, 'alt="' . $attachment['alt'] . '"' ) );
 		$meta = get_metadata( 'post', $id, '_wp_attachment_metadata' );
 		if ( true !== self::$have_gs ) {
 			$this->assertEmpty( $meta );

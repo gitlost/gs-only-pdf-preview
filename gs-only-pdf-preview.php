@@ -736,7 +736,8 @@ class GS_Only_PDF_Preview {
 			// Based on wp_ajax_send_attachment_to_editor() in "wp-admin/includes/ajax-actions.php".
 			$align = isset( $attachment['align'] ) ? $attachment['align'] : 'none';
 			$size = $attachment['image-size'];
-			$alt = isset( $attachment['image_alt'] ) ? $attachment['image_alt'] : '';
+			// Not sure what sets 'image_alt' - may be legacy stuff.
+			$alt = isset( $attachment['image_alt'] ) ? $attachment['image_alt'] : ( isset( $attachment['alt'] ) ? $attachment['alt'] : '' );
 
 			// No whitespace-only captions.
 			$caption = isset( $attachment['post_excerpt'] ) ? $attachment['post_excerpt'] : '';
