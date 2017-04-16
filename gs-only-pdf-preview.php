@@ -416,7 +416,10 @@ class GS_Only_PDF_Preview {
 					if ( $old_value && ! empty( $old_value[0]['sizes'] ) && is_array( $old_value[0]['sizes'] ) ) {
 						$dirname = dirname( $file ) . '/';
 						foreach ( $old_value[0]['sizes'] as $sizeinfo ) {
-							@ unlink( $dirname . $sizeinfo['file'] );
+							// Check whether pre WP 4.7.3 lacking PDF marker and if so don't delete so as not to break links to thumbnails in content.
+							if ( false !== strpos( $sizeinfo['file'], '-pdf' ) ) {
+								@ unlink( $dirname . $sizeinfo['file'] );
+							}
 						}
 					}
 					// Generate new intermediate thumbnails.
