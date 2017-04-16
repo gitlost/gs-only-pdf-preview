@@ -41,7 +41,7 @@ jQuery( function( $ ) {
 	} );
 
 	test( 'no post_patch select', function() {
-		var options, frame, $previews, $preview, $attachment_details, $thumbnail;
+		var options, frame, $previews, $preview, $attachment_details, $thumbnail, $alt_text;
 
 		options = {
 			frame: 'post',
@@ -68,6 +68,9 @@ jQuery( function( $ ) {
 		strictEqual( $thumbnail.length, 1, 'thumbnail found' );
 		ok( $thumbnail.hasClass( 'icon' ), 'icon thumbnail' );
 
+		$alt_text = $( 'label[data-setting="alt"]', $attachment_details );
+		strictEqual( $alt_text.length, 0, 'no alt' );
+
 		// Reset.
 		$preview.click(); // Unselect.
 		frame.close();
@@ -76,7 +79,7 @@ jQuery( function( $ ) {
 
 	test( 'post_patch select', function() {
 		var prev_media_editor_send_attachment = wp.media.editor.send.attachment;
-		var options, frame, $previews, $preview, $attachment_details, $attachment_display_settings, $thumbnail, $align, $size_options, $document_link_only;
+		var options, frame, $previews, $preview, $attachment_details, $attachment_display_settings, $thumbnail, $alt_text, $align, $size_options, $document_link_only;
 
 		ok( gopp_plugin.post_patch(), 'post patch success' );
 
@@ -107,6 +110,9 @@ jQuery( function( $ ) {
 		strictEqual( $thumbnail.length, 1, 'thumbnail found' );
 		notOk( $thumbnail.hasClass( 'icon' ), 'not icon thumbnail' );
 		strictEqual( $thumbnail.prop( 'src' ), media_responses[0].sizes.thumbnail.url, 'pdf thumbnail' );
+
+		$alt_text = $( 'label[data-setting="alt"]', $attachment_details );
+		strictEqual( $alt_text.length, 1, 'alt found' );
 
 		$attachment_display_settings = $( '.attachment-display-settings', frame.$el );
 		strictEqual( $attachment_display_settings.length, 1, 'Attachment Display Settings found' );

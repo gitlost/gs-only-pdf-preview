@@ -14,7 +14,7 @@ Uses Ghostscript directly to generate PDF previews.
 
 ## Description ##
 
-The plugin pre-empts the pstandard WordPress 4.7 PDF preview production process (which uses the PHP extension [`Imagick`](http://php.net/manual/en/book.imagick.php)) to pcall [Ghostscript](https://ghostscript.com/) directly to produce the preview.
+The plugin pre-empts the standard WordPress 4.7 PDF preview production process (which uses the PHP extension [`Imagick`](http://php.net/manual/en/book.imagick.php)) to call [Ghostscript](https://ghostscript.com/) directly to produce the preview.
 
 This means that only Ghostscript is required on the server. Neither the PHP module `Imagick` nor the server package [`ImageMagick`](https://www.imagemagick.org/script/index.php) is needed or used (though it's fine if they're installed anyway, and if they are they'll be used by WP (unless you override it) to produce the intermediate sizes of the preview).
 
@@ -40,7 +40,9 @@ I believe these concerns are addressed here through screening of the file and it
 
 Unsurprisingly it's faster. Crude benchmarking (see the script [`perf_vs_imagick.php`](https://github.com/gitlost/gs-only-pdf-preview/blob/master/perf/perf_vs_imagick.php)) suggests it's around 35-40% faster. However the production of the preview is only a part of the overhead of uploading a PDF (and doesn't include producing the intermediate thumbnail sizes for instance) so any speed-up may not be that noticeable.
 
-On jpeg thumbnail size it appears to be comparable, maybe a bit larger on average. To mitigate this the default jpeg quality for the PDF preview has been lowered to 70 (from 82), which results in some extra "ringing" (speckles around letters) but the previews tested remain very readable. Note that this only affects the "full" PDF thumbnail - the intermediate-sized thumbnails as produced by `Imagick` or `GD` and any other non-PDF images remain at the standard jpeg quality of 82. You can use the WP filter [`wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) to override this, for instance to restore the quality to 82 add to your theme's "functions.php":
+### Size ###
+
+On jpeg thumbnail size it appears to be comparable (though it depends on the PDF), maybe a bit larger on average. To mitigate this the default jpeg quality for the PDF preview has been lowered to 70 (from 82), which results in some extra "ringing" (speckles around letters) but the previews tested remain very readable. Note that this only affects the "full" PDF thumbnail - the intermediate-sized thumbnails as produced by `Imagick` or `GD` and any other non-PDF images remain at the standard jpeg quality of 82. You can use the WP filter [`wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) to override this, for instance to restore the quality to 82 add to your theme's "functions.php":
 
 	function mytheme_wp_editor_set_quality( $quality, $mime_type ) {
 		if ( 'application/pdf' === $mime_type ) {
@@ -49,6 +51,10 @@ On jpeg thumbnail size it appears to be comparable, maybe a bit larger on averag
 		return $quality;
 	}
 	add_filter( 'wp_editor_set_quality', 'mytheme_wp_editor_set_quality', 10, 2 );
+
+### Quality ###
+
+Eyeballing based on very limited data, ie anecdotally, the previews seem to be of superior definition with less artifacts (even with the jpeg quality reduced to 70), and more faithful to the original colours.
 
 ### Tool ###
 
@@ -150,7 +156,7 @@ or for [WP-CLI](https://wp-cli.org/) users:
 
 ## Changelog ##
 
-### 1.0.5 (X Apr 2017) ###
+### 1.0.5 (16 Apr 2017) ###
 * Fix Windows cmd path highest version/best match.
 * Set real size not dummy for preview.
 * Fix test to be preview name agnostic.

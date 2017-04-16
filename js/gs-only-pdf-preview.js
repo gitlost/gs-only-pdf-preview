@@ -164,7 +164,9 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 		var $tmpl_attachment_details, $tmpl_attachment_display_settings, $tmpl_image_details, html_before,
 			html_attachment_details,
 			attachment_details_re = /(<# } else if \( 'image' === data\.type && data\.sizes \) { #>\s+<img src="{{ data\.size\.url }}" draggable="false" alt="" \/>)(\s+<# } else { #>)/,
-			attachment_details_with = '$1\n<# } else if ( data.sizes && data.sizes.thumbnail ) { #>\n<img src="{{ data.sizes.thumbnail.url }}" draggable="false" alt="" />\n$2',
+			attachment_details_with = '$1\n<# } else if ( data.sizes && ( data.sizes.thumbnail || data.sizes.full ) ) { #>\n<img src="{{ ( data.sizes.thumbnail || data.sizes.full ).url }}" draggable="false" alt="" />\n$2',
+			attachment_details2_re = /(<# if \( 'image' === data.type)( \) { #>\s+<label class="setting" data-setting="alt")/,
+			attachment_details2_with = '$1 || ( \'application\' === data.type && data.sizes )$2',
 			html_attachment_display_settings,
 			attachment_display_settings_re = /(<# if \( 'image' === data.type)( \) { #>\s+<label class="setting">)/,
 			attachment_display_settings_with = '$1 || ( \'application\' === data.type && data.sizes )$2',
@@ -185,6 +187,13 @@ var gopp_plugin = gopp_plugin || {}; // Our namespace.
 				// Uses PDF thumbnail in Attachment Details (instead of icon).
 				html_before = $tmpl_attachment_details.html();
 				html_attachment_details = html_before.replace( attachment_details_re, attachment_details_with );
+				if ( html_before === html_attachment_details ) {
+					return false;
+				}
+
+				// Enables "Alt Text" input in Attachment Details.
+				html_before = html_attachment_details;
+				html_attachment_details = html_before.replace( attachment_details2_re, attachment_details2_with );
 				if ( html_before === html_attachment_details ) {
 					return false;
 				}
