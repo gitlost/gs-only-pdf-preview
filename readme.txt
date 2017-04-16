@@ -148,6 +148,7 @@ or for [WP-CLI](https://wp-cli.org/) users:
 * Only add actions/filters if have cap.
 * Add qunit tests.
 * Override get_size() to work if loaded.
+* Enable "Alt Text" on Attachment Details.
 * WP 4.7.3 compatible
 
 = 1.0.4 (13 Feb 2017) =
