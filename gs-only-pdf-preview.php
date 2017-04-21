@@ -3,7 +3,7 @@
  * Plugin Name: GS Only PDF Preview
  * Plugin URI: https://github.com/gitlost/gs-only-pdf-preview
  * Description: Uses Ghostscript directly to generate PDF previews.
- * Version: 1.0.6
+ * Version: 1.0.7
  * Author: gitlost
  * Author URI: https://profiles.wordpress.org/gitlost
  * License: GPLv2
@@ -16,9 +16,9 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // These need to be synced with "readme.txt".
-define( 'GOPP_PLUGIN_VERSION', '1.0.6' ); // Sync also "package.json" and "language/gs-only-pdf-preview.pot".
+define( 'GOPP_PLUGIN_VERSION', '1.0.7' ); // Sync also "package.json" and "language/gs-only-pdf-preview.pot".
 define( 'GOPP_PLUGIN_WP_AT_LEAST_VERSION', '4.7.0' );
-define( 'GOPP_PLUGIN_WP_UP_TO_VERSION', '4.7.3' );
+define( 'GOPP_PLUGIN_WP_UP_TO_VERSION', '4.7.4' );
 
 define( 'GOPP_REGEN_PDF_PREVIEWS_SLUG', 'gopp-regen-pdf-previews' );
 
