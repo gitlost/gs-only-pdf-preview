@@ -2,7 +2,7 @@
 Contributors: gitlost
 Tags: Ghostscript, PDF, PDF Preview, Ghostscript Only
 Requires at least: 4.7.0
-Tested up to: 4.7.3
+Tested up to: 4.7.4
 Stable tag: 1.0.7
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -19,7 +19,7 @@ This means that only Ghostscript is required on the server. Neither the PHP modu
 
 The plugin was prompted by the `WP_Image_Editor_Imagick_External` demonstration class uploaded to the WP Trac ticket [#39262 Fall back to ImageMagick command line when the pecl imagic is not available on the server](https://core.trac.wordpress.org/ticket/39262) by [Hristo Pandjarov](https://profiles.wordpress.org/hristo-sg), and by the wish to solve the WP Trac ticket [#39216 PDFs with non-opaque alpha channels can result in previews with black backgrounds.](https://core.trac.wordpress.org/ticket/39216), which particularly affects PDFs with CMYK color spaces (common in the print world).
 
-The plugin by-passes (as far as PDF previews are concerned) #39216, and also by-passes the related issue [#39331 unsharpMaskImage in Imagick's thumbnail_image is not compatible with CMYK jpegs.](https://core.trac.wordpress.org/ticket/39331), as the preview jpegs produced directly by Ghostscript use sRGB color spaces.
+The plugin by-passes (as far as PDF previews are concerned) #39216, and also by-passes the related issue [#39331 unsharpMaskImage in Imagick's thumbnail_image is not compatible with CMYK JPEGs.](https://core.trac.wordpress.org/ticket/39331), as the preview JPEGs produced directly by Ghostscript use sRGB color spaces.
 
 = Limitations =
 
@@ -39,7 +39,7 @@ Unsurprisingly it's faster. Crude benchmarking (see the script [`perf_vs_imagick
 
 = Size =
 
-On jpeg thumbnail size it appears to be comparable (though it depends on the PDF), maybe a bit larger on average. To mitigate this the default jpeg quality for the PDF preview has been lowered to 70 (from 82), which results in some extra "ringing" (speckles around letters) but the previews tested remain very readable. Note that this only affects the "full" PDF thumbnail - the intermediate-sized thumbnails as produced by `Imagick` or `GD` and any other non-PDF images remain at the standard jpeg quality of 82. You can use the WP filter [`wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) to override this, for instance to restore the quality to 82 add to your theme's "functions.php":
+On JPEG thumbnail size it appears to be comparable (though it depends on the PDF), maybe a bit larger on average. To mitigate this the default JPEG quality for the PDF preview has been lowered to 70 (from 82), which results in some extra "ringing" (speckles around letters) but the previews tested remain very readable. Note that this only affects the "full" PDF thumbnail - the intermediate-sized thumbnails as produced by `Imagick` or `GD` and any other non-PDF images remain at the standard JPEG quality of 82. You can use the WP filter [`wp_editor_set_quality`](https://developer.wordpress.org/reference/hooks/wp_editor_set_quality/) to override this, for instance to restore the quality to 82 add to your theme's "functions.php":
 
 	function mytheme_wp_editor_set_quality( $quality, $mime_type ) {
 		if ( 'application/pdf' === $mime_type ) {
@@ -51,7 +51,7 @@ On jpeg thumbnail size it appears to be comparable (though it depends on the PDF
 
 = Quality =
 
-Eyeballing based on very limited data, ie anecdotally, the previews seem to be of superior definition with less artifacts (even with the jpeg quality reduced to 70), and more faithful to the original colours.
+Eyeballing based on very limited data, ie anecdotally, the previews seem to be of superior definition with less artifacts (even with the JPEG quality reduced to 70), and more faithful to the original colours.
 
 = Tool =
 
@@ -185,7 +185,7 @@ or for [WP-CLI](https://wp-cli.org/) users:
 == Upgrade Notice ==
 
 = 1.0.7 =
-Tested with WordPress 1.0.7.
+Tested with WordPress 4.7.4.
 
 = 1.0.6 =
 Keeps backward-compatibility for linked thumbnails.

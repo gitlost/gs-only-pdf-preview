@@ -16,8 +16,10 @@
 			<exclude>
 				<directory>node_modules</directory>
 				<directory>perf</directory>
+				<directory>src</directory>
 				<directory>tests</directory>
 				<directory>tools</directory>
+				<directory>vendor</directory>
 			</exclude>
 		</whitelist>
 	</filter>

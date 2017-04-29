@@ -8,6 +8,9 @@ require_once dirname( __FILE__ ) . '/class-gopp-image-editor-gs.php';
 
 class DEBUG_GOPP_Image_Editor_GS extends GOPP_Image_Editor_GS {
 	static function get_test_output() {
+		if ( self::is_exec_disabled() ) {
+			return array( -1, array( __( 'Exec disabled!', 'gs-only-pdf-preview' ) ) );
+		}
 		if ( $cmd = self::gs_cmd( '-dBATCH -dNOPAUSE -dNOPROMPT -dSAFER -v' ) ) {
 			exec( $cmd, $output, $return_var );
 			return array( $return_var, $output );
@@ -22,6 +25,24 @@ class DEBUG_GOPP_Image_Editor_GS extends GOPP_Image_Editor_GS {
 
 	static function filter_gopp_image_gs_cmd_path() { return has_filter( 'gopp_image_gs_cmd_path' ); }
 	static function apply_filters_gopp_image_gs_cmd_path() { return apply_filters( 'gopp_image_gs_cmd_path', self::$gs_cmd_path, self::is_win() ); }
+
+	static function is_exec_disabled() {
+		$ini_get = ini_get( 'disable_functions' );
+		if ( $ini_get && in_array( 'exec', array_map( 'trim', explode( ',', strtolower( $ini_get ) ) ), true ) ) {
+			return true;
+		}
+		if ( extension_loaded( 'suhosin' ) || extension_loaded( 'suhosin7' ) || ( version_compare( PHP_VERSION, '5.3', '>=' ) && ini_get( 'enable_dl' ) && @ dl( 'suhosin' ) ) ) {
+			$ini_get = ini_get( 'suhosin.executor.func.whitelist' );
+			if ( $ini_get && in_array( 'exec', array_map( 'trim', explode( ',', strtolower( $ini_get ) ) ), true ) ) {
+				return false;
+			}
+			$ini_get = ini_get( 'suhosin.executor.func.blacklist' );
+			if ( $ini_get && in_array( 'exec', array_map( 'trim', explode( ',', strtolower( $ini_get ) ) ), true ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	static function dump() {
 		$args = array( 'mime_type' => 'application/pdf' );

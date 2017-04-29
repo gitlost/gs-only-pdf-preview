@@ -180,6 +180,8 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		if ( ! ( $cmd = self::gs_cmd( $this->get_gs_args( $filename ) ) ) ) {
 			return new WP_Error( 'image_save_error', __( 'No Ghostscript.', 'gs-only-pdf-preview' ) );
 		}
+		$return_var = -1;
+		$output = array();
 		exec( $cmd, $output, $return_var );
 
 		if ( 0 !== $return_var ) {
@@ -320,7 +322,9 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 	 * @return bool
 	 */
 	protected static function test_gs_cmd( $cmd ) {
-		// Note if exec() has been disabled by means not reflected in function_exists() it may barf here and throw warnings but we don't care that much.
+		// Note if exec() has been disabled by means not reflected in function_exists() it may barf here and throw warnings so initial vars.
+		$return_var = -1;
+		$output = array();
 		exec( self::escapeshellarg( $cmd ) . ' -dBATCH -dNOPAUSE -dNOPROMPT -dSAFER -v 2>&1', $output, $return_var );
 
 		return 0 === $return_var && is_array( $output ) && ! empty( $output[0] ) && is_string( $output[0] ) && false !== stripos( $output[0], 'ghostscript' );
@@ -362,6 +366,7 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		// Try using REG QUERY to access the registry.
 		// Do one test query first to see if it works.
 		$cmd = 'REG QUERY HKEY_LOCAL_MACHINE\\SOFTWARE 2>&1';
+		$return_var = -1;
 		$output = array();
 		exec( $cmd, $output, $return_var );
 		if ( 0 === $return_var && is_array( $output ) ) {
@@ -812,6 +817,8 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 			$dirname = untrailingslashit( get_temp_dir() );
 			$filename = $dirname . '/' . wp_unique_filename( $dirname, 'gopp_size.jpg' );
 			if ( $cmd = self::gs_cmd( $this->get_gs_args( $filename ) ) ) {
+				$return_var = -1;
+				$output = array();
 				exec( $cmd, $output, $return_var );
 				if ( 0 === $return_var && ( $size = @ getimagesize( $filename ) ) ) {
 					$this->update_size( $size[0], $size[1] );
