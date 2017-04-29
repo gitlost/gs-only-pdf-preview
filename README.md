@@ -202,7 +202,7 @@ or for [WP-CLI](https://wp-cli.org/) users:
 ## Upgrade Notice ##
 
 ### 1.0.7 ###
-Tested with WordPress 1.0.7.
+Tested with WordPress 4.7.4.
 
 ### 1.0.6 ###
 Keeps backward-compatibility for linked thumbnails.

@@ -253,49 +253,53 @@ msgstr ""
 msgid "No Ghostscript."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:187
+#: includes/class-gopp-image-editor-gs.php:189
 msgid "Image Editor Save Failed"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:192
+#: includes/class-gopp-image-editor-gs.php:194
 msgid "Could not read image size."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:230
+#: includes/class-gopp-image-editor-gs.php:232
 msgid "Loading from URL not supported."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:235
-#: includes/class-gopp-image-editor-gs.php:241
+#: includes/class-gopp-image-editor-gs.php:237
+#: includes/class-gopp-image-editor-gs.php:243
 msgid "Unsupported file name."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:251
+#: includes/class-gopp-image-editor-gs.php:253
 msgid "File doesn&#8217;t exist?"
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:258
+#: includes/class-gopp-image-editor-gs.php:260
 msgid "File is not a PDF."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:642
+#: includes/class-gopp-image-editor-gs.php:647
 msgid "Attempted to set PDF preview resolution to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:697
+#: includes/class-gopp-image-editor-gs.php:702
 msgid "Attempted to set PDF preview page to an invalid value."
 msgstr ""
 
-#: includes/class-gopp-image-editor-gs.php:716
-#: includes/class-gopp-image-editor-gs.php:737
-#: includes/class-gopp-image-editor-gs.php:756
-#: includes/class-gopp-image-editor-gs.php:769
-#: includes/class-gopp-image-editor-gs.php:783
-#: includes/class-gopp-image-editor-gs.php:796
+#: includes/class-gopp-image-editor-gs.php:721
+#: includes/class-gopp-image-editor-gs.php:742
+#: includes/class-gopp-image-editor-gs.php:761
+#: includes/class-gopp-image-editor-gs.php:774
+#: includes/class-gopp-image-editor-gs.php:788
+#: includes/class-gopp-image-editor-gs.php:801
 msgid "Unsupported operation."
 msgstr ""
 
-#: includes/debug-gopp-image-editor-gs.php:15
+#: includes/debug-gopp-image-editor-gs.php:12
+msgid "Exec disabled!"
+msgstr ""
+
+#: includes/debug-gopp-image-editor-gs.php:18
 msgid "Ghostscript command not found!"
 msgstr ""
 

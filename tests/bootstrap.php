@@ -14,14 +14,14 @@ if ( ! file_exists( $_tests_dir . '/data' ) ) {
 	mkdir( $_tests_dir . '/data' );
 }
 
-require $_tests_dir . '/includes/bootstrap.php';
-
 /**
  * Migration fixer for PHPUnit 6
  * From https://core.trac.wordpress.org/attachment/ticket/39822/39822-2.patch
  */
-if ( ! class_exists( 'PHPUnit_Util_Test' ) && class_exists( 'PHPUnit\Runner\Version' ) ) {
+if ( class_exists( 'PHPUnit\Runner\Version' ) && ! file_exists( $_tests_dir . '/includes/phpunit6-compat.php' ) ) {
 	require dirname( __FILE__ ) . '/phpunit6-compat.php';
 }
+
+require $_tests_dir . '/includes/bootstrap.php';
 
 require dirname( __FILE__ ) . '/gopp_testcase.php';
