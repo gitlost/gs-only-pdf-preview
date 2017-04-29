@@ -3,7 +3,12 @@ language: php
 sudo: false
 
 php:
+- 7.0
+- 7.1
 - 5.6
+- 5.2
+- 5.3
+- 5.4
 - 5.5
 
 env:
@@ -20,7 +25,7 @@ install:
 - npm install
   
 before_script:
-- if [[ ! ( $TRAVIS_PHP_VERSION = '5.6' && $WP_VERSION = 'latest' ) ]]; then phpenv config-rm xdebug.ini || true; fi
+- if [[ ! ( $TRAVIS_PHP_VERSION = '7.0' && $WP_VERSION = 'latest' ) ]]; then phpenv config-rm xdebug.ini || true; fi
 - bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
 
 script: 
@@ -28,4 +33,4 @@ script:
 - ln -s /tmp/wordpress src && WP_TESTS_DIR=/tmp/wordpress-tests-lib grunt --verbose test_qunit
 
 after_success:
-- if [[ $TRAVIS_PHP_VERSION = '5.6' && $WP_VERSION = 'latest' ]]; then bash bin/coverage.sh; fi
+- if [[ $TRAVIS_PHP_VERSION = '7.0' && $WP_VERSION = 'latest' ]]; then bash bin/coverage.sh; fi
