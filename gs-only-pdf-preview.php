@@ -521,10 +521,11 @@ class GS_Only_PDF_Preview {
 						echo sprintf( __( 'Note that you can also regenerate PDF previews in batches or individually using the bulk action "Regenerate PDF Previews" (or the row action "Regenerate Preview") available in the <a href="%s">list mode of the Media Library</a>.', 'gs-only-pdf-preview' ), admin_url( 'upload.php?mode=list' ) );
 					?>
 				</p>
-				<?php if ( ( defined( 'GOPP_PLUGIN_DEBUG' ) && GOPP_PLUGIN_DEBUG ) || ! self::check_have_gs() ) : ?>
-					<?php require_once dirname( __FILE__ ) . '/includes/debug-gopp-image-editor-gs.php'; ?>
-					<?php DEBUG_GOPP_Image_Editor_GS::dump(); ?>
-				<?php endif; ?>
+				<?php if ( ( defined( 'GOPP_PLUGIN_DEBUG' ) && GOPP_PLUGIN_DEBUG ) || ! self::check_have_gs() ) :
+					self::load_gopp_image_editor_gs();
+					require_once dirname( __FILE__ ) . '/includes/debug-gopp-image-editor-gs.php';
+					DEBUG_GOPP_Image_Editor_GS::dump();
+				endif; ?>
 			</form>
 			<?php
 		}

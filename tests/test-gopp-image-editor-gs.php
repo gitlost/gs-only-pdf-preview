@@ -1,8 +1,6 @@
 <?php
 
 // Expose protected vars/methods.
-require_once ABSPATH . WPINC . '/class-wp-image-editor.php';
-require_once dirname( dirname( __FILE__ ) ) . '/includes/class-gopp-image-editor-gs.php';
 class Test_GOPP_Image_Editor_GS extends GOPP_Image_Editor_GS {
 
 	public static function public_is_win() { return parent::is_win(); }

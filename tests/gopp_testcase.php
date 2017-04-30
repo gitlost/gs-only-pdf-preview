@@ -30,6 +30,9 @@ class GOPP_UnitTestCase extends WP_UnitTestCase {
 		self::$dirdirname = dirname( self::$dirname );
 	}
 
+	static function wpTearDownAfterClass() {
+	}
+
 	function setUp() {
 		parent::setUp();
 
@@ -80,6 +83,13 @@ class GOPP_UnitTestCase extends WP_UnitTestCase {
 	static function wp_redirect( $location, $status = 302 ) {
 		self::$func_args['wp_redirect'][] = compact( 'location', 'status' );
 		return false;
+	}
+
+	static function wp_image_editors_filter( $image_editors ) {
+		if ( ! in_array( 'GOPP_Image_Editor_GS', $image_editors, true ) ) {
+			array_unshift( $image_editors, 'GOPP_Image_Editor_GS' );
+		}
+		return $image_editors;
 	}
 
 	static function remove_image_editor_imagick_filter( $image_editors ) {

@@ -17,6 +17,7 @@ class Tests_GOPP_Image_Editor_GS extends GOPP_UnitTestCase {
 		//require_once( ABSPATH . WPINC . '/class-wp-image-editor-gs.php' );
 		require_once ABSPATH . WPINC . '/class-wp-image-editor.php';
 		require_once dirname( dirname( __FILE__ ) ) . '/includes/class-gopp-image-editor-gs.php';
+		require_once dirname( __FILE__ ) . '/test-gopp-image-editor-gs.php';
 
 		parent::wpSetUpBeforeClass();
 	}
@@ -724,11 +725,10 @@ class Tests_GOPP_Image_Editor_GS extends GOPP_UnitTestCase {
 	 */
 	public function test_alpha_pdf_preview() {
 
-		do_action( 'admin_init' );
-		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
+		add_filter( 'wp_image_editors', array( __CLASS__, 'wp_image_editors_filter' ) );
 
 		// Remove WP_Image_Editor_Imagick if no Ghostscript so as to test failure.
-		if ( ! self::$have_exec ) {
+		if ( ! self::$have_gs ) {
 			add_filter( 'wp_image_editors', array( __CLASS__, 'remove_image_editor_imagick_filter' ) );
 		}
 
@@ -757,10 +757,10 @@ class Tests_GOPP_Image_Editor_GS extends GOPP_UnitTestCase {
 			$this->assertEmpty( $metadata );
 		}
 
-		if ( ! self::$have_exec ) {
+		if ( ! self::$have_gs ) {
 			remove_filter( 'wp_image_editors', array( __CLASS__, 'remove_image_editor_imagick_filter' ) );
 		}
+
+		remove_filter( 'wp_image_editors', array( __CLASS__, 'wp_image_editors_filter' ) );
 	}
 }
-
-require_once dirname( __FILE__ ) . '/test-gopp-image-editor-gs.php';

@@ -17,6 +17,7 @@
 				<directory>node_modules</directory>
 				<directory>perf</directory>
 				<directory>src</directory>
+				<directory>suhosin7</directory>
 				<directory>tests</directory>
 				<directory>tools</directory>
 				<directory>vendor</directory>

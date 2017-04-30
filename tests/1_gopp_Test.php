@@ -151,6 +151,8 @@ class Tests_GOPP extends GOPP_UnitTestCase {
 	 */
 	function test_activation_hook() {
 
+		delete_transient( 'gopp_plugin_admin_notices' );
+
 		if ( self::$have_exec ) {
 			global $wp_version;
 			$old_wp_version = $wp_version;
@@ -162,6 +164,9 @@ class Tests_GOPP extends GOPP_UnitTestCase {
 				$this->assertEmpty( $admin_notices );
 			} else {
 				$this->assertNotEmpty( $admin_notices );
+				$this->assertSame( 1, count( $admin_notices ) );
+				$this->assertSame( 'warning', $admin_notices[0][0] );
+				$this->assertTrue( false !== stripos( $admin_notices[0][1], 'no ghostscript' ) );
 			}
 
 			$wp_version = '9999.9999.9999';
@@ -189,13 +194,24 @@ class Tests_GOPP extends GOPP_UnitTestCase {
 			$this->assertTrue( false !== stripos( $output, 'version' ) );
 			$this->assertEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
 
-			GS_Only_PDF_Preview::activation_hook();
-			$this->assertNotEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
-			$this->assertFalse( defined( 'WP_UNINSTALL_PLUGIN' ) );
-			define( 'WP_UNINSTALL_PLUGIN', self::$dirdirname . '/uninstall.php' );
-			require_once WP_UNINSTALL_PLUGIN;
-			$this->assertEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
+			// Test uninstall.
+			if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
+				GS_Only_PDF_Preview::activation_hook();
+				set_transient( 'gopp_plugin_poll_rpp', array( 0, 0 ) );
 
+				$this->assertNotEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
+				$this->assertNotEmpty( get_transient( 'gopp_plugin_poll_rpp' ) );
+				$this->assertNotEmpty( get_transient( 'gopp_image_gs_cmd_path' ) );
+
+				define( 'WP_UNINSTALL_PLUGIN', self::$dirdirname . '/uninstall.php' );
+				require_once WP_UNINSTALL_PLUGIN;
+
+				$this->assertEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
+				$this->assertEmpty( get_transient( 'gopp_plugin_poll_rpp' ) );
+				$this->assertEmpty( get_transient( 'gopp_image_gs_cmd_path' ) );
+			}
+
+			// Check < GOPP_PLUGIN_WP_AT_LEAST_VERSION.
 			$wp_version = '4.6';
 			self::clear_func_args();
 			try {
@@ -226,10 +242,8 @@ class Tests_GOPP extends GOPP_UnitTestCase {
 	 * Try to test suhosin.
 	 */
 	function test_suhosin_disabled_msg() {
-		if ( ! ( extension_loaded( 'suhosin' ) || extension_loaded( 'suhosin7' ) ) ) {
-			if ( version_compare( PHP_VERSION, '5.3', '>=' ) || ! ini_get( 'enable_dl' ) || ! @ dl( 'suhosin' ) ) {
-				$this->markTestSkipped( 'no suhosin.' );
-			}
+		if ( ! ( extension_loaded( 'suhosin' ) || extension_loaded( 'suhosin7' ) || ( version_compare( PHP_VERSION, '5.3', '>=' ) && ini_get( 'enable_dl' ) && @ dl( 'suhosin' ) ) ) ) {
+			$this->markTestSkipped( 'no suhosin.' );
 		}
 		$whitelist = ini_get( 'suhosin.executor.func.whitelist' );
 		$blacklist = ini_get( 'suhosin.executor.func.blacklist' );
@@ -268,6 +282,8 @@ class Tests_GOPP extends GOPP_UnitTestCase {
 	 */
 	function test_warn_if_no_gs() {
 		$admin_notices = array( array( 'error' => 'Error' ) );
+
+		delete_transient( 'gopp_plugin_admin_notices' );
 
 		GS_Only_PDF_Preview::admin_init();
 		$this->assertEmpty( get_transient( 'gopp_plugin_admin_notices' ) );
@@ -488,6 +504,7 @@ class Tests_GOPP extends GOPP_UnitTestCase {
 
 		$out = wp_set_current_user( 1 ); // Need manage_options cap to add load-XXX
 
+		do_action( 'init' );
 		do_action( 'admin_init' );
 		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
 		GOPP_Image_Editor_GS::clear();
@@ -789,6 +806,7 @@ class Tests_GOPP extends GOPP_UnitTestCase {
 
 		$out = wp_set_current_user( 1 ); // Need manage_options cap.
 
+		do_action( 'init' );
 		do_action( 'admin_init' );
 		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
 		GOPP_Image_Editor_GS::clear();
@@ -829,6 +847,15 @@ class Tests_GOPP extends GOPP_UnitTestCase {
 		$this->assertTrue( false !== stripos( $out, 'gopp_regen_pdf_previews_form' ) );
 		$this->assertTrue( false !== stripos( $out, 'can take a long time' ) );
 		$this->assertSame( force_balance_tags( $out ), $out );
+
+		if ( ! ( defined( 'GOPP_PLUGIN_DEBUG' ) && GOPP_PLUGIN_DEBUG ) ) {
+			define( 'GOPP_PLUGIN_DEBUG', true );
+			ob_start();
+			GS_Only_PDF_Preview::regen_pdf_previews();
+			$out = ob_get_clean();
+			$this->assertTrue( false !== stripos( $out, 'Debug Info' ) );
+			$this->assertSame( force_balance_tags( $out ), $out );
+		}
 
 		$current_user = $old_current_user;
 
@@ -1035,6 +1062,7 @@ class Tests_GOPP extends GOPP_UnitTestCase {
 
 		$out = wp_set_current_user( 1 ); // Need manage_options cap.
 
+		do_action( 'init' );
 		do_action( 'admin_init' );
 		$this->assertSame( 10, has_filter( 'wp_image_editors', array( 'GS_Only_PDF_Preview', 'wp_image_editors' ) ) );
 		GOPP_Image_Editor_GS::clear();
@@ -1209,5 +1237,3 @@ class Tests_GOPP extends GOPP_UnitTestCase {
 		}
 	}
 }
-
-require_once dirname( __FILE__ ) . '/test-gopp-image-editor-gs.php';
