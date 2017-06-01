@@ -5,7 +5,7 @@
 **Contributors:** [gitlost](https://profiles.wordpress.org/gitlost)  
 **Tags:** Ghostscript, PDF, PDF Preview, Ghostscript Only  
 **Requires at least:** 4.7.0  
-**Tested up to:** 4.7.4  
+**Tested up to:** 4.8  
 **Stable tag:** 1.0.7  
 **License:** GPLv2 or later  
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html  
@@ -14,7 +14,7 @@ Uses Ghostscript directly to generate PDF previews.
 
 ## Description ##
 
-The plugin pre-empts the standard WordPress 4.7 PDF preview production process (which uses the PHP extension [`Imagick`](http://php.net/manual/en/book.imagick.php)) to call [Ghostscript](https://ghostscript.com/) directly to produce the preview.
+The plugin pre-empts the standard WordPress 4.7/4.8 PDF preview production process (which uses the PHP extension [`Imagick`](http://php.net/manual/en/book.imagick.php)) to call [Ghostscript](https://ghostscript.com/) directly to produce the preview.
 
 This means that only Ghostscript is required on the server. Neither the PHP module `Imagick` nor the server package [`ImageMagick`](https://www.imagemagick.org/script/index.php) is needed or used (though it's fine if they're installed anyway, and if they are they'll be used by WP (unless you override it) to produce the intermediate sizes of the preview).
 
@@ -70,7 +70,7 @@ As a bonus version 1.0.2+ patches WordPress to allow linking to the preview imag
 
 A google-cheating schoolboy French translation is supplied.
 
-The plugin runs on WP 4.7.0 to 4.7.4, and requires Ghostscript to be installed on the server. The plugin should run on PHP 5.2.17 to 7.1, and on both Unix and Windows servers.
+The plugin runs on WP 4.7.0 to 4.8, and requires Ghostscript to be installed on the server. The plugin should run on PHP 5.2.17 to 7.1, and on both Unix and Windows servers.
 
 The project is on [github](https://github.com/gitlost/gs-only-pdf-preview).
 
@@ -156,8 +156,8 @@ or for [WP-CLI](https://wp-cli.org/) users:
 
 ## Changelog ##
 
-### 1.0.7 (X Apr 2017) ###
-* WP 4.7.4 compatible
+### 1.0.7 (X Jun 2017) ###
+* WP 4.8 compatible
 
 ### 1.0.6 (16 Apr 2017) ###
 * For BC so as not to break linked thumbnails, check for PDF marker before deleting on regeneration.
@@ -202,7 +202,7 @@ or for [WP-CLI](https://wp-cli.org/) users:
 ## Upgrade Notice ##
 
 ### 1.0.7 ###
-Tested with WordPress 4.7.4.
+Tested with WordPress 4.8.
 
 ### 1.0.6 ###
 Keeps backward-compatibility for linked thumbnails.

@@ -131,7 +131,7 @@ msgid "You can go again below if you want."
 msgstr ""
 
 #: gs-only-pdf-preview.php:349 gs-only-pdf-preview.php:504
-#: gs-only-pdf-preview.php:599
+#: gs-only-pdf-preview.php:600
 msgid "Regenerate PDF Previews"
 msgstr ""
 
@@ -140,7 +140,7 @@ msgid "Regen. PDF Previews"
 msgstr ""
 
 #: gs-only-pdf-preview.php:363 gs-only-pdf-preview.php:468
-#: gs-only-pdf-preview.php:667
+#: gs-only-pdf-preview.php:668
 msgid "Sorry, you are not allowed to access this page."
 msgstr ""
 
@@ -186,56 +186,56 @@ msgid ""
 "Media Library</a>."
 msgstr ""
 
-#: gs-only-pdf-preview.php:561
+#: gs-only-pdf-preview.php:562
 msgid "Please wait..."
 msgstr ""
 
-#: gs-only-pdf-preview.php:565
+#: gs-only-pdf-preview.php:566
 msgid "No items selected!"
 msgstr ""
 
-#: gs-only-pdf-preview.php:566
+#: gs-only-pdf-preview.php:567
 msgid "Regenerate Preview ajax action not available!"
 msgstr ""
 
-#: gs-only-pdf-preview.php:570
+#: gs-only-pdf-preview.php:571
 msgid "Document Link Only"
 msgstr ""
 
-#: gs-only-pdf-preview.php:652
+#: gs-only-pdf-preview.php:653
 #. translators: %s: attachment title
 msgid "Regenerate the PDF preview for &#8220;%s&#8221;"
 msgstr ""
 
-#: gs-only-pdf-preview.php:653
+#: gs-only-pdf-preview.php:654
 msgid "Regenerate&nbsp;Preview"
 msgstr ""
 
-#: gs-only-pdf-preview.php:672
+#: gs-only-pdf-preview.php:673
 msgid "Invalid nonce."
 msgstr ""
 
-#: gs-only-pdf-preview.php:675
+#: gs-only-pdf-preview.php:676
 msgid "Invalid ID."
 msgstr ""
 
-#: gs-only-pdf-preview.php:681
+#: gs-only-pdf-preview.php:682
 msgid "Failed to generate the PDF preview."
 msgstr ""
 
-#: gs-only-pdf-preview.php:686
+#: gs-only-pdf-preview.php:687
 msgid ""
 "Successfully regenerated the PDF preview. It's best to refresh your browser "
 "to see the updated thumbnail correctly."
 msgstr ""
 
-#: gs-only-pdf-preview.php:688
+#: gs-only-pdf-preview.php:689
 msgid ""
 "Successfully regenerated the PDF preview. You will need to refresh your "
 "browser to see the updated thumbnail."
 msgstr ""
 
-#: gs-only-pdf-preview.php:717
+#: gs-only-pdf-preview.php:718
 #. translators: %1$d: percentage of PDF previews completed; %2$d: completed
 #. count.
 msgid "%d%% (%d)"

@@ -5,8 +5,8 @@ msgstr ""
 "Project-Id-Version: GS Only PDF Preview 1.0.7\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/gs-only-pdf-"
 "preview\n"
-"POT-Creation-Date: 2017-04-29 12:47+0100\n"
-"PO-Revision-Date: 2017-04-29 12:49+0100\n"
+"POT-Creation-Date: 2017-06-01 03:43+0100\n"
+"PO-Revision-Date: 2017-06-01 03:43+0100\n"
 "Last-Translator: gitlost <gitlost@gitlostbonger.com>\n"
 "Language-Team: \n"
 "Language: fr_FR\n"
@@ -154,7 +154,7 @@ msgid "You can go again below if you want."
 msgstr "Vous pouvez aller de nouveau ci-dessous si vous voulez."
 
 #: gs-only-pdf-preview.php:349 gs-only-pdf-preview.php:504
-#: gs-only-pdf-preview.php:599
+#: gs-only-pdf-preview.php:600
 msgid "Regenerate PDF Previews"
 msgstr "Régénérer les aperçus de miniature de PDF"
 
@@ -163,7 +163,7 @@ msgid "Regen. PDF Previews"
 msgstr "Régén. aperçus PDF"
 
 #: gs-only-pdf-preview.php:363 gs-only-pdf-preview.php:468
-#: gs-only-pdf-preview.php:667
+#: gs-only-pdf-preview.php:668
 msgid "Sorry, you are not allowed to access this page."
 msgstr ""
 "Désolé, vous n&rsquo;avez pas l&rsquo;autorisation d&rsquo;accéder à cette "
@@ -225,45 +225,45 @@ msgstr ""
 "ligne &laquo;&nbsp;Régénérer l&rsquo;aperçu&nbsp;&raquo;) disponible dans le "
 "<a href=\"%s\">mode de liste de la bibliothèque des médias</a>."
 
-#: gs-only-pdf-preview.php:561
+#: gs-only-pdf-preview.php:562
 msgid "Please wait..."
 msgstr "S&rsquo;il vous plaît attendre..."
 
-#: gs-only-pdf-preview.php:565
+#: gs-only-pdf-preview.php:566
 msgid "No items selected!"
 msgstr "Aucun élément sélectionné&nbsp;!"
 
-#: gs-only-pdf-preview.php:566
+#: gs-only-pdf-preview.php:567
 msgid "Regenerate Preview ajax action not available!"
 msgstr ""
 "L&rsquo;action de régénérer l&rsquo;aperçu n&rsquo;est pas disponible&nbsp;!"
 
-#: gs-only-pdf-preview.php:570
+#: gs-only-pdf-preview.php:571
 msgid "Document Link Only"
 msgstr "Lien de document seulement"
 
 #. translators: %s: attachment title
-#: gs-only-pdf-preview.php:652
+#: gs-only-pdf-preview.php:653
 msgid "Regenerate the PDF preview for &#8220;%s&#8221;"
 msgstr "Régénérer l&rsquo;aperçu de miniature de PDF pour &#8220;%s&#8221;"
 
-#: gs-only-pdf-preview.php:653
+#: gs-only-pdf-preview.php:654
 msgid "Regenerate&nbsp;Preview"
 msgstr "Régénérer&nbsp;l&rsquo;aperçu"
 
-#: gs-only-pdf-preview.php:672
+#: gs-only-pdf-preview.php:673
 msgid "Invalid nonce."
 msgstr "Nonce invalide."
 
-#: gs-only-pdf-preview.php:675
+#: gs-only-pdf-preview.php:676
 msgid "Invalid ID."
 msgstr "Identifiant invalide."
 
-#: gs-only-pdf-preview.php:681
+#: gs-only-pdf-preview.php:682
 msgid "Failed to generate the PDF preview."
 msgstr "Échec de générer l&rsquo;aperçu de miniature de PDF."
 
-#: gs-only-pdf-preview.php:686
+#: gs-only-pdf-preview.php:687
 msgid ""
 "Successfully regenerated the PDF preview. It's best to refresh your browser "
 "to see the updated thumbnail correctly."
@@ -272,7 +272,7 @@ msgstr ""
 "préférable d&rsquo;actualiser votre navigateur pour voir le miniature mis à "
 "jour correctement."
 
-#: gs-only-pdf-preview.php:688
+#: gs-only-pdf-preview.php:689
 msgid ""
 "Successfully regenerated the PDF preview. You will need to refresh your "
 "browser to see the updated thumbnail."
@@ -282,7 +282,7 @@ msgstr ""
 
 #. translators: %1$d: percentage of PDF previews completed; %2$d: completed
 #. count.
-#: gs-only-pdf-preview.php:717
+#: gs-only-pdf-preview.php:718
 msgid "%d%% (%d)"
 msgstr "%d%% (%d)"
 
