@@ -156,7 +156,7 @@ or for [WP-CLI](https://wp-cli.org/) users:
 
 ## Changelog ##
 
-### 1.0.7 (X Jun 2017) ###
+### 1.0.7 (11 Jun 2017) ###
 * WP 4.8.0 compatible
 
 ### 1.0.6 (16 Apr 2017) ###
