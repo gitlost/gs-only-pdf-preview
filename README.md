@@ -156,8 +156,9 @@ or for [WP-CLI](https://wp-cli.org/) users:
 
 ## Changelog ##
 
-### 1.0.7 (11 Jun 2017) ###
-* WP 4.8.0 compatible
+### 1.0.7 (12 Jun 2017) ###
+* Rejig and improve tests.
+* WP 4.8.0 compatible.
 
 ### 1.0.6 (16 Apr 2017) ###
 * For BC so as not to break linked thumbnails, check for PDF marker before deleting on regeneration.
@@ -172,7 +173,7 @@ or for [WP-CLI](https://wp-cli.org/) users:
 * Add qunit tests.
 * Override get_size() to work if loaded.
 * Enable "Alt Text" on Attachment Details.
-* WP 4.7.3 compatible
+* WP 4.7.3 compatible.
 
 ### 1.0.4 (13 Feb 2017) ###
 * Remove "+" from banned characters in file name, for BC with older uploads.
@@ -188,7 +189,7 @@ or for [WP-CLI](https://wp-cli.org/) users:
 * Remove existing preview intermediates when regenerating.
 * Patch WP to allow preview image linking in Add Media (#39618).
 * Patch WP to use thumbnail or medium sized thumbnails in Media Library (#39630).
-* WP 4.7.2 compatible
+* WP 4.7.2 compatible.
 
 ### 1.0.1 (20 Jan 2017) ###
 * Move exec and safe_mode check from wp_image_editors action to GOPP_Image_Editor_GS::test().
