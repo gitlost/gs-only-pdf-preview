@@ -68,7 +68,7 @@ function gjf_put_contents( $output_file, $new_contents ) {
 	$old_contents = file_exists( $output_file ) ? file_get_contents( $output_file ) : '';
 	if ( $new_contents !== $old_contents ) {
 		if ( false === file_put_contents( $output_file, $new_contents ) ) {
-			exit 1;
+			exit( 1 );
 		}
 	}
 }
