@@ -156,8 +156,9 @@ or for [WP-CLI](https://wp-cli.org/) users:
 
 ## Changelog ##
 
-### 1.0.7 (12 Jun 2017) ###
-* Rejig and improve tests.
+### 1.0.7 (13 Jun 2017) ###
+* Fix regex for patching "Align" select of Attachment Display Settings after core changeset [40640].
+* Rejig tests.
 * WP 4.8.0 compatible.
 
 ### 1.0.6 (16 Apr 2017) ###
@@ -203,7 +204,7 @@ or for [WP-CLI](https://wp-cli.org/) users:
 ## Upgrade Notice ##
 
 ### 1.0.7 ###
-Tested with WordPress 4.8.0.
+Tested with WordPress 4.8.0, with compatibility fix for patching "Align" select of Attachment Display Settings.
 
 ### 1.0.6 ###
 Keeps backward-compatibility for linked thumbnails.

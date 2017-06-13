@@ -1,4 +1,4 @@
-/* global jQuery, wp, ajaxurl, module, test, equal, strictEqual, media_responses, gopp_fixtures */
+/* global jQuery, wp, ajaxurl, module, test, equal, strictEqual, media_responses, gopp_fixtures, location */
 
 jQuery( function( $ ) {
 	'use strict';
@@ -110,42 +110,45 @@ jQuery( function( $ ) {
 
 		$thumbnail = $( '.thumbnail img', $attachment_details );
 		strictEqual( $thumbnail.length, 1, 'thumbnail found' );
-		/*
-		notOk( $thumbnail.hasClass( 'icon' ), 'not icon thumbnail' );
-		strictEqual( $thumbnail.prop( 'src' ), media_responses[0].sizes.thumbnail.url, 'pdf thumbnail' );
 
-		$alt_text = $( 'label[data-setting="alt"]', $attachment_details );
-		strictEqual( $alt_text.length, 1, 'alt found' );
 
-		$attachment_display_settings = $( '.attachment-display-settings', frame.$el );
-		strictEqual( $attachment_display_settings.length, 1, 'Attachment Display Settings found' );
+		if ( gopp_fixtures.full() ) {
 
-		$align = $( 'select.alignment', $attachment_display_settings );
-		strictEqual( $align.length, 1, 'align select found' );
+			notOk( $thumbnail.hasClass( 'icon' ), 'not icon thumbnail' );
+			strictEqual( $thumbnail.prop( 'src' ), media_responses[0].sizes.thumbnail.url, 'pdf thumbnail' );
 
-		$size_options = $( 'select.size option', $attachment_display_settings );
-		notEqual( $size_options.length, 0, 'size options found' );
+			$alt_text = $( 'label[data-setting="alt"]', $attachment_details );
+			strictEqual( $alt_text.length, 1, 'alt found' );
 
-		$document_link_only = $size_options.eq( 0 );
-		strictEqual( $document_link_only.val(), '', 'Document Link Only size option value' );
-		strictEqual( $document_link_only.html().trim(), gopp_plugin_params.document_link_only, 'Document Link Only size option html' );
+			$attachment_display_settings = $( '.attachment-display-settings', frame.$el );
+			strictEqual( $attachment_display_settings.length, 1, 'Attachment Display Settings found' );
 
-		$preview.click(); // Unselect.
+			$align = $( 'select.alignment', $attachment_display_settings );
+			strictEqual( $align.length, 1, 'align select found' );
 
-		// Second.
+			$size_options = $( 'select.size option', $attachment_display_settings );
+			notEqual( $size_options.length, 0, 'size options found' );
 
-		$preview = $previews.eq( 1 );
+			$document_link_only = $size_options.eq( 0 );
+			strictEqual( $document_link_only.val(), '', 'Document Link Only size option value' );
+			strictEqual( $document_link_only.html().trim(), gopp_plugin_params.document_link_only, 'Document Link Only size option html' );
 
-		$preview.click(); // Select.
+			$preview.click(); // Unselect.
 
-		$attachment_details = $( '.attachment-details', frame.$el );
-		strictEqual( $attachment_details.length, 1, 'Attachment Details found' );
+			// Second.
 
-		$thumbnail = $( '.thumbnail img', $attachment_details );
-		strictEqual( $thumbnail.length, 1, '2nd thumbnail found' );
-		notOk( $thumbnail.hasClass( 'icon' ), 'not icon thumbnail' );
-		strictEqual( $thumbnail.prop( 'src' ), media_responses[1].sizes.full.url, 'jpg thumbnail' );
-		*/
+			$preview = $previews.eq( 1 );
+
+			$preview.click(); // Select.
+
+			$attachment_details = $( '.attachment-details', frame.$el );
+			strictEqual( $attachment_details.length, 1, 'Attachment Details found' );
+
+			$thumbnail = $( '.thumbnail img', $attachment_details );
+			strictEqual( $thumbnail.length, 1, '2nd thumbnail found' );
+			notOk( $thumbnail.hasClass( 'icon' ), 'not icon thumbnail' );
+			strictEqual( $thumbnail.prop( 'src' ), media_responses[1].sizes.full.url, 'jpg thumbnail' );
+		}
 
 		// Reset.
 		gopp_fixtures.load_sync( '#media-templates-container', 'fixtures/generated-media-templates.html' );
@@ -185,42 +188,43 @@ jQuery( function( $ ) {
 		strictEqual( $attachment_details.length, 1, 'Attachment Details found' );
 
 		$alt_text = $( 'label[data-setting="alt"]', $attachment_details );
-		/*
-		strictEqual( $alt_text.length, 1, 'alt found' );
-		$alt_text.val( 'alt text' );
-		$alt_text.change();
 
-		$attachment_display_settings = $( '.attachment-display-settings', frame.$el );
-		strictEqual( $attachment_display_settings.length, 1, 'Attachment Display Settings found' );
+		if ( gopp_fixtures.full() ) {
+			strictEqual( $alt_text.length, 1, 'alt found' );
+			$alt_text.val( 'alt text' );
+			$alt_text.change();
 
-		$align = $( 'select.alignment', $attachment_display_settings );
-		strictEqual( $align.length, 1, 'align select found' );
-		$( 'option[value="left"]', $align ).prop( 'selected', true );
-		$align.change();
+			$attachment_display_settings = $( '.attachment-display-settings', frame.$el );
+			strictEqual( $attachment_display_settings.length, 1, 'Attachment Display Settings found' );
 
-		$link_to = $( 'select.link-to', $attachment_display_settings );
-		strictEqual( $link_to.length, 1, 'link to select found' );
-		$( 'option[value="file"]', $link_to ).prop( 'selected', true );
-		$link_to.change();
+			$align = $( 'select.alignment', $attachment_display_settings );
+			strictEqual( $align.length, 1, 'align select found' );
+			$( 'option[value="left"]', $align ).prop( 'selected', true );
+			$align.change();
 
-		$size = $( 'select.size', $attachment_display_settings );
-		strictEqual( $size.length, 1, 'size select found' );
-		$( 'option[value="thumbnail"]', $size ).prop( 'selected', true );
-		$size.change();
+			$link_to = $( 'select.link-to', $attachment_display_settings );
+			strictEqual( $link_to.length, 1, 'link to select found' );
+			$( 'option[value="file"]', $link_to ).prop( 'selected', true );
+			$link_to.change();
 
-		$insert_button = $( 'button.media-button-insert', frame.$el );
-		strictEqual( $size.length, 1, 'insert button found' );
+			$size = $( 'select.size', $attachment_display_settings );
+			strictEqual( $size.length, 1, 'size select found' );
+			$( 'option[value="thumbnail"]', $size ).prop( 'selected', true );
+			$size.change();
 
-		$insert_button.click();
-		notEqual( gopp_fixtures.last_post_data, null, 'attachment sent data' );
-		strictEqual( gopp_fixtures.last_post_data.action, 'send-attachment-to-editor', 'attachment sent action' );
-		strictEqual( gopp_fixtures.last_post_data.attachment.alt, 'alt text', 'attachment sent alt text' );
-		strictEqual( gopp_fixtures.last_post_data.attachment.align, 'left', 'attachment sent align left' );
-		strictEqual( gopp_fixtures.last_post_data.attachment.link_to, 'file', 'attachment sent link to file' );
-		strictEqual( gopp_fixtures.last_post_data.attachment['image-size'], 'thumbnail', 'attachment sent image size thumbnail' );
-		strictEqual( gopp_fixtures.last_post_data.attachment.post_title, media_responses[0].title, 'attachment sent title' );
-		strictEqual( gopp_fixtures.last_post_data.attachment.url, media_responses[0].url, 'attachment sent url' );
-		*/
+			$insert_button = $( 'button.media-button-insert', frame.$el );
+			strictEqual( $size.length, 1, 'insert button found' );
+
+			$insert_button.click();
+			notEqual( gopp_fixtures.last_post_data, null, 'attachment sent data' );
+			strictEqual( gopp_fixtures.last_post_data.action, 'send-attachment-to-editor', 'attachment sent action' );
+			strictEqual( gopp_fixtures.last_post_data.attachment.alt, 'alt text', 'attachment sent alt text' );
+			strictEqual( gopp_fixtures.last_post_data.attachment.align, 'left', 'attachment sent align left' );
+			strictEqual( gopp_fixtures.last_post_data.attachment.link_to, 'file', 'attachment sent link to file' );
+			strictEqual( gopp_fixtures.last_post_data.attachment['image-size'], 'thumbnail', 'attachment sent image size thumbnail' );
+			strictEqual( gopp_fixtures.last_post_data.attachment.post_title, media_responses[0].title, 'attachment sent title' );
+			strictEqual( gopp_fixtures.last_post_data.attachment.url, media_responses[0].url, 'attachment sent url' );
+		}
 
 		// Reset.
 		gopp_fixtures.load_sync( '#media-templates-container', 'fixtures/generated-media-templates.html' );
@@ -238,89 +242,89 @@ jQuery( function( $ ) {
 
 		ok( result, 'post patch success' );
 
-		/*
 		// PDF - no image actions.
 
-		metadata = {
-			attachment_id: media_responses[0].id,
-			caption: '',
-			customHeight: media_responses[0].sizes.thumbnail.height,
-			customWidth: media_responses[0].sizes.thumbnail.width,
-			align: 'left',
-			extraClasses: '',
-			link: false,
-			linkUrl: media_responses[0].url,
-			linkClassName: '',
-			linkTargetBlank: false,
-			linkRel: '',
-			size: 'thumbnail',
-			title: '',
-			url: media_responses[0].sizes.thumbnail.url
-		};
+		if ( gopp_fixtures.full() ) {
+			metadata = {
+				attachment_id: media_responses[0].id,
+				caption: '',
+				customHeight: media_responses[0].sizes.thumbnail.height,
+				customWidth: media_responses[0].sizes.thumbnail.width,
+				align: 'left',
+				extraClasses: '',
+				link: false,
+				linkUrl: media_responses[0].url,
+				linkClassName: '',
+				linkTargetBlank: false,
+				linkRel: '',
+				size: 'thumbnail',
+				title: '',
+				url: media_responses[0].sizes.thumbnail.url
+			};
 
-		frame = wp.media({
-			frame: 'image',
-			state: 'image-details',
-			metadata: metadata
-		} );
+			frame = wp.media({
+				frame: 'image',
+				state: 'image-details',
+				metadata: metadata
+			} );
 
-		wp.media.events.trigger( 'editor:frame-create', { frame: frame } );
+			wp.media.events.trigger( 'editor:frame-create', { frame: frame } );
 
-		frame.open();
+			frame.open();
 
-		$image_details = $( '.image-details', frame.$el );
-		strictEqual( $image_details.length, 1, 'Image Details found' );
+			$image_details = $( '.image-details', frame.$el );
+			strictEqual( $image_details.length, 1, 'Image Details found' );
 
-		$img = $( '.image img', $image_details );
-		strictEqual( $img.length, 1, 'pdf image found' );
+			$img = $( '.image img', $image_details );
+			strictEqual( $img.length, 1, 'pdf image found' );
 
-		$image_actions = $( '.image .actions', $image_details );
-		strictEqual( $image_actions.length, 0, 'no actions' );
+			$image_actions = $( '.image .actions', $image_details );
+			strictEqual( $image_actions.length, 0, 'no actions' );
 
-		frame.close();
-		frame.detach();
+			frame.close();
+			frame.detach();
 
-		// JPEG - have image action(s).
+			// JPEG - have image action(s).
 
-		metadata = {
-			attachment_id: media_responses[1].id,
-			caption: '',
-			customHeight: media_responses[1].sizes.full.height,
-			customWidth: media_responses[1].sizes.full.width,
-			align: 'left',
-			extraClasses: '',
-			link: false,
-			linkUrl: media_responses[1].url,
-			linkClassName: '',
-			linkTargetBlank: false,
-			linkRel: '',
-			size: 'full',
-			title: '',
-			url: media_responses[1].sizes.full.url
-		};
+			metadata = {
+				attachment_id: media_responses[1].id,
+				caption: '',
+				customHeight: media_responses[1].sizes.full.height,
+				customWidth: media_responses[1].sizes.full.width,
+				align: 'left',
+				extraClasses: '',
+				link: false,
+				linkUrl: media_responses[1].url,
+				linkClassName: '',
+				linkTargetBlank: false,
+				linkRel: '',
+				size: 'full',
+				title: '',
+				url: media_responses[1].sizes.full.url
+			};
 
-		frame = wp.media({
-			frame: 'image',
-			state: 'image-details',
-			metadata: metadata
-		} );
+			frame = wp.media({
+				frame: 'image',
+				state: 'image-details',
+				metadata: metadata
+			} );
 
-		wp.media.events.trigger( 'editor:frame-create', { frame: frame } );
+			wp.media.events.trigger( 'editor:frame-create', { frame: frame } );
 
-		frame.open();
+			frame.open();
 
-		$image_details = $( '.image-details', frame.$el );
-		strictEqual( $image_details.length, 1, 'Image Details found' );
+			$image_details = $( '.image-details', frame.$el );
+			strictEqual( $image_details.length, 1, 'Image Details found' );
 
-		$img = $( '.image img', $image_details );
-		strictEqual( $img.length, 1, 'jpeg image found' );
+			$img = $( '.image img', $image_details );
+			strictEqual( $img.length, 1, 'jpeg image found' );
 
-		$image_actions = $( '.image .actions', $image_details );
-		notEqual( $image_actions.length, 0, 'actions found' );
+			$image_actions = $( '.image .actions', $image_details );
+			notEqual( $image_actions.length, 0, 'actions found' );
 
-		frame.close();
-		frame.detach();
-		*/
+			frame.close();
+			frame.detach();
+		}
 
 		// Reset.
 		gopp_fixtures.load_sync( '#media-templates-container', 'fixtures/generated-media-templates.html' );

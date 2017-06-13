@@ -4,11 +4,18 @@ sudo: false
 
 php:
 - 7.0
+- 7.1
+- 5.6
 
 env:
 - WP_VERSION=nightly
 - WP_VERSION=latest
 - WP_VERSION=4.7.5
+- WP_VERSION=4.7.4
+- WP_VERSION=4.7.3
+- WP_VERSION=4.7.2
+- WP_VERSION=4.7.1
+- WP_VERSION=4.7
 
 matrix:
   allow_failures:
@@ -28,7 +35,7 @@ script:
 - WP_TESTS_DIR=/tmp/wordpress-tests-lib phpunit
 - curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && php wp-cli.phar --info
 - ln -s /tmp/wordpress src
-- php wp-cli.phar core install --path=src --url=example.org --title='Test Blog' --admin_user=admin --admin_email=admin@example.org --debug
+- php wp-cli.phar core install --path=src --url=example.com --title='Test Blog' --admin_user=admin --admin_email=admin@example.com --debug
 - WP_TESTS_DIR=/tmp/wordpress-tests-lib php wp-cli.phar gopp gen_js_fixtures --require=tools/gen_js_command.php --path=src --debug
 - WP_TESTS_DIR=/tmp/wordpress-tests-lib grunt --verbose test_qunit
 

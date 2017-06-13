@@ -113,7 +113,7 @@ module.exports = function( grunt ) { //The wrapper function
 
 	// Creating a custom task
 	grunt.registerTask( 'generate_fixtures', function () {
-		shell.exec( 'WP_TESTS_DIR=' + ( process.env.WP_TESTS_DIR || wp_tests_dir ) + ' php wp-cli.phar gopp gen_js_fixtures --require=tools/gen_js_command.php --debug' );
+		shell.exec( 'WP_TESTS_DIR=' + ( process.env.WP_TESTS_DIR || wp_tests_dir ) + ' php wp-cli.phar gopp gen_js_fixtures --require=tools/gen_js_command.php --path=src --debug' );
 	} );
 
 	grunt.registerTask( 'phpunit', function () {
