@@ -12,7 +12,7 @@ $tests_dirname = $wp_tests_dir ? $wp_tests_dir : ( $develop_dirname . '/tests/ph
 
 gjf_log( "(===begin " . $basename );
 
-gjf_log( "gjf: wp_dirname=$wp_dirname, tests_dirname=$tests_dirname, error_log=" . ini_get( 'error_log' ) );
+gjf_log( "gjf: dirdirname=$dirdirname, wp_dirname=$wp_dirname, tests_dirname=$tests_dirname" );
 
 // Hack to work on multi-site.
 $_SERVER['HTTP_HOST'] = '192.168.1.64'; // Needs to match DOMAIN_CURRENT_SITE in wp-config.php
@@ -30,9 +30,7 @@ require ABSPATH . 'wp-admin/includes/image.php';
 require $tests_dirname . '/includes/factory.php';
 
 function gjf_log( $msg ) {
-	$stderr = fopen( 'php://stderr', 'w' );
-	fprintf( $stderr, "[%s] %s\n", date( 'r' ), $msg );
-	fclose( $stderr );
+	fprintf( STDERR, "[%s] %s\n", date( 'r' ), $msg );
 }
 
 function gjf_replace_urls( $str ) {
