@@ -10,7 +10,7 @@ $wp_dirname = file_exists( 'src/wp-config.php' ) && file_exists( 'src/wp-load.ph
 $wp_tests_dir = getenv( 'WP_TESTS_DIR' );
 $tests_dirname = $wp_tests_dir ? $wp_tests_dir : ( $develop_dirname . '/tests/phpunit' );
 
-error_log( "(===begin " . $basename );
+gjf_log( "(===begin " . $basename );
 
 // Hack to work on multi-site.
 $_SERVER['HTTP_HOST'] = '192.168.1.64'; // Needs to match DOMAIN_CURRENT_SITE in wp-config.php
@@ -26,6 +26,11 @@ function wp_nonce_tick() {
 require $wp_dirname . '/wp-load.php';
 require ABSPATH . 'wp-admin/includes/image.php';
 require $tests_dirname . '/includes/factory.php';
+
+function gjf_log( $msg ) {
+	printf( "[%s] %s\n", date( 'r' ), $msg );
+	error_log( $msg );
+}
 
 function gjf_replace_urls( $str ) {
 	static $url_replaces = null;
@@ -65,6 +70,7 @@ function gjf_normalize_fixture( $response, $id, $file ) {
 }
 
 function gjf_put_contents( $output_file, $new_contents ) {
+	gjf_log( "gjf_put_contents: output_file=$output_file" );
 	$old_contents = file_exists( $output_file ) ? file_get_contents( $output_file ) : '';
 	if ( $new_contents !== $old_contents ) {
 		if ( false === file_put_contents( $output_file, $new_contents ) ) {
@@ -230,4 +236,4 @@ remove_filter( 'query', 'gjf_query' );
 
 gjf_put_contents( $dirdirname . '/tests/qunit/fixtures/generated-regen_pdf_preview.html', $new_content );
 
-error_log( ")===end " . $basename );
+gjf_log( ")===end " . $basename );
