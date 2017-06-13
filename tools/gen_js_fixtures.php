@@ -12,6 +12,8 @@ $tests_dirname = $wp_tests_dir ? $wp_tests_dir : ( $develop_dirname . '/tests/ph
 
 gjf_log( "(===begin " . $basename );
 
+gjf_log( "gjf: wp_dirname=$wp_dirname, tests_dirname=$tests_dirname, error_log=" . ini_get( 'error_log' ) );
+
 // Hack to work on multi-site.
 $_SERVER['HTTP_HOST'] = '192.168.1.64'; // Needs to match DOMAIN_CURRENT_SITE in wp-config.php
 $_SERVER['REQUEST_URI'] = preg_replace( '/^\/var\/www(\/[^\/]+\/).+$/', '$1', $dirdirname ); // Needs to match PATH_CURRENT_SITE in wp-config.php
@@ -28,8 +30,7 @@ require ABSPATH . 'wp-admin/includes/image.php';
 require $tests_dirname . '/includes/factory.php';
 
 function gjf_log( $msg ) {
-	printf( "[%s] %s\n", date( 'r' ), $msg );
-	error_log( $msg );
+	error_log( sprintf( "[%s] %s\n", date( 'r' ), $msg ), 4 );
 }
 
 function gjf_replace_urls( $str ) {
@@ -72,10 +73,14 @@ function gjf_normalize_fixture( $response, $id, $file ) {
 function gjf_put_contents( $output_file, $new_contents ) {
 	gjf_log( "gjf_put_contents: output_file=$output_file" );
 	$old_contents = file_exists( $output_file ) ? file_get_contents( $output_file ) : '';
-	if ( $new_contents !== $old_contents ) {
+	if ( $new_contents === $old_contents ) {
+		gjf_log( "gjf_put_contents: no change output_file=$output_file" );
+	} else {
 		if ( false === file_put_contents( $output_file, $new_contents ) ) {
+			gjf_log( "gjf_put_contents: ERROR: Failed to write output_file=$output_file" );
 			exit( 1 );
 		}
+		gjf_log( "gjf_put_contents: wrote output_file=$output_file" );
 	}
 }
 
