@@ -113,7 +113,11 @@ module.exports = function( grunt ) { //The wrapper function
 
 	// Creating a custom task
 	grunt.registerTask( 'generate_fixtures', function () {
-		shell.exec( 'WP_TESTS_DIR=' + ( process.env.WP_TESTS_DIR || wp_tests_dir ) + ' php tools/gen_js_fixtures.php' );
+		shell.exec( 'WP_TESTS_DIR=' + ( process.env.WP_TESTS_DIR || wp_tests_dir ) + ' php tools/gen_js_fixtures.php', function ( code, stdout, stderr ) {
+			console.log( 'Exit code:', code );
+			console.log( 'Program output:', stdout );
+			console.log( 'Program stderr:', stderr );
+		} );
 	} );
 
 	grunt.registerTask( 'phpunit', function () {
