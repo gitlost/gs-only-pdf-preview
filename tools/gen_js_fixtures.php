@@ -30,7 +30,7 @@ require ABSPATH . 'wp-admin/includes/image.php';
 require $tests_dirname . '/includes/factory.php';
 
 function gjf_log( $msg ) {
-	fprintf( STDERR, "[%s] %s\n", date( 'r' ), $msg );
+	error_log( $msg );
 }
 
 function gjf_replace_urls( $str ) {
