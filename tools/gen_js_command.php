@@ -27,6 +27,12 @@ class GOPP_Generate_JS_Fixtures_Command extends WP_CLI_Command {
 		$tests_dirname = $wp_tests_dir ? $wp_tests_dir : ( $develop_dirname . '/tests/phpunit' );
 		WP_CLI::debug( "tests_dirname: $tests_dirname", "gen_js_fixtures" );
 
+		// Hack to work on multi-site.
+		$_SERVER['HTTP_HOST'] = 'example.com'; // Needs to match DOMAIN_CURRENT_SITE in wp-config.php
+		$_SERVER['REQUEST_URI'] = preg_replace( '/^\/var\/www(\/[^\/]+\/).+$/', '$1', $dirdirname ); // Needs to match PATH_CURRENT_SITE in wp-config.php
+
+		$_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
+
 		require $tests_dirname . '/includes/factory.php';
 
 		WP_CLI::debug( "wp_enqueue_media", "gen_js_fixtures" );
