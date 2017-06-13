@@ -78,10 +78,12 @@ jQuery( function( $ ) {
 	} );
 
 	test( 'post_patch select', function() {
-		var prev_media_editor_send_attachment = wp.media.editor.send.attachment;
+		var result, prev_media_editor_send_attachment = wp.media.editor.send.attachment;
 		var options, frame, $previews, $preview, $attachment_details, $attachment_display_settings, $thumbnail, $alt_text, $align, $size_options, $document_link_only;
 
-		ok( gopp_plugin.post_patch(), 'post patch success' );
+		result = gopp_plugin.post_patch();
+
+		ok( result, 'post patch success' );
 
 		options = {
 			frame: 'post',
@@ -154,10 +156,12 @@ jQuery( function( $ ) {
 	} );
 
 	test( 'post_patch send_attachment', function() {
-		var prev_media_editor_send_attachment = wp.media.editor.send.attachment;
+		var result, prev_media_editor_send_attachment = wp.media.editor.send.attachment;
 		var options, frame, $previews, $preview, $attachment_details, $attachment_display_settings, $alt_text, $align, $link_to, $size, $insert_button;
 
-		ok( gopp_plugin.post_patch(), 'post patch success' );
+		result = gopp_plugin.post_patch();
+
+		ok( result, 'post patch success' );
 
 		options = {
 			frame: 'post',
@@ -227,11 +231,14 @@ jQuery( function( $ ) {
 	} );
 
 	test( 'post_patch image-details', function() {
-		var prev_media_editor_send_attachment = wp.media.editor.send.attachment;
+		var result, prev_media_editor_send_attachment = wp.media.editor.send.attachment;
 		var metadata, frame, $image_details, $img, $image_actions;
 
-		ok( gopp_plugin.post_patch(), 'post patch success' );
+		result = gopp_plugin.post_patch();
 
+		ok( result, 'post patch success' );
+
+		/*
 		// PDF - no image actions.
 
 		metadata = {
@@ -313,6 +320,7 @@ jQuery( function( $ ) {
 
 		frame.close();
 		frame.detach();
+		*/
 
 		// Reset.
 		gopp_fixtures.load_sync( '#media-templates-container', 'fixtures/generated-media-templates.html' );
