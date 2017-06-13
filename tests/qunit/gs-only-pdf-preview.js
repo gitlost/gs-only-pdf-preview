@@ -111,8 +111,7 @@ jQuery( function( $ ) {
 		$thumbnail = $( '.thumbnail img', $attachment_details );
 		strictEqual( $thumbnail.length, 1, 'thumbnail found' );
 
-
-		if ( gopp_fixtures.full() ) {
+		if ( gopp_fixtures.full_test() || ! $thumbnail.hasClass( 'icon' ) ) {
 
 			notOk( $thumbnail.hasClass( 'icon' ), 'not icon thumbnail' );
 			strictEqual( $thumbnail.prop( 'src' ), media_responses[0].sizes.thumbnail.url, 'pdf thumbnail' );
@@ -189,7 +188,7 @@ jQuery( function( $ ) {
 
 		$alt_text = $( 'label[data-setting="alt"]', $attachment_details );
 
-		if ( gopp_fixtures.full() ) {
+		if ( gopp_fixtures.full_test() || $alt_text.length ) {
 			strictEqual( $alt_text.length, 1, 'alt found' );
 			$alt_text.val( 'alt text' );
 			$alt_text.change();
@@ -244,7 +243,7 @@ jQuery( function( $ ) {
 
 		// PDF - no image actions.
 
-		if ( gopp_fixtures.full() ) {
+		if ( gopp_fixtures.full_test() || media_responses[0] ) {
 			metadata = {
 				attachment_id: media_responses[0].id,
 				caption: '',
@@ -489,26 +488,29 @@ jQuery( function( $ ) {
 		$form = $( '.gopp_regen_pdf_previews_form', $wrap );
 
 		$submit = $( 'input[type="submit"]', $form );
-		strictEqual( $submit.length, 1, 'submit found' );
-		ok( $submit.is( ':visible', 'submit visible' ) );
 
-		$poll_nonce = $( '#poll_nonce', $form );
-		strictEqual( $poll_nonce.length, 1, 'poll_nonce found' );
+		if ( gopp_fixtures.full_test() || $submit.length ) {
+			strictEqual( $submit.length, 1, 'submit found' );
+			ok( $submit.is( ':visible', 'submit visible' ) );
 
-		// Prevent form submission.
-		$submit.click( function ( e ) {
-			e.preventDefault();
-		} );
+			$poll_nonce = $( '#poll_nonce', $form );
+			strictEqual( $poll_nonce.length, 1, 'poll_nonce found' );
 
-		gopp_plugin.regen_pdf_preview();
+			// Prevent form submission.
+			$submit.click( function ( e ) {
+				e.preventDefault();
+			} );
 
-		$submit.click();
+			gopp_plugin.regen_pdf_preview();
 
-		ok( $submit.is( ':hidden' ), 'submit hidden' );
-		ok( $( '.gopp_regen_pdf_previews_form_hide', $wrap ).is( ':hidden' ), 'form hidden' );
-		$msg = $( '.notice-warning', $wrap );
-		strictEqual( $msg.length, 1, 'have notice' );
-		notEqual( $msg.html().indexOf( 'Please wait' ), -1, 'is Please wait' );
+			$submit.click();
+
+			ok( $submit.is( ':hidden' ), 'submit hidden' );
+			ok( $( '.gopp_regen_pdf_previews_form_hide', $wrap ).is( ':hidden' ), 'form hidden' );
+			$msg = $( '.notice-warning', $wrap );
+			strictEqual( $msg.length, 1, 'have notice' );
+			notEqual( $msg.html().indexOf( 'Please wait' ), -1, 'is Please wait' );
+		}
 
 		// Reset.
 		$container.remove();

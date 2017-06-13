@@ -118,7 +118,7 @@ var ajaxurl = ajaxurl || window._wpUtilSettings.ajax.url; // Dummy ajaxurl.
 		}
 	};
 
-	gopp_fixtures.full = function () {
+	gopp_fixtures.full_test = function () {
 		if ( window.location && window.location.search && -1 !== window.location.search.indexOf( 'full=1' ) ) {
 			return true;
 		}
