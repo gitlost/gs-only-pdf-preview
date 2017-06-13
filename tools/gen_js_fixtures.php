@@ -18,6 +18,8 @@ gjf_log( "gjf: dirdirname=$dirdirname, wp_dirname=$wp_dirname, tests_dirname=$te
 $_SERVER['HTTP_HOST'] = '192.168.1.64'; // Needs to match DOMAIN_CURRENT_SITE in wp-config.php
 $_SERVER['REQUEST_URI'] = preg_replace( '/^\/var\/www(\/[^\/]+\/).+$/', '$1', $dirdirname ); // Needs to match PATH_CURRENT_SITE in wp-config.php
 
+$_SERVER['SERVER_PROTOCOL'] = 'HTTP/1.1';
+
 // Override to keep nonces constant.
 function wp_nonce_tick() {
 	$time = strtotime( '2017-03-22 00:00:00' );
@@ -184,11 +186,16 @@ require ABSPATH . 'wp-admin/includes/post.php';
 require ABSPATH . 'wp-admin/includes/class-wp-screen.php';
 require ABSPATH . 'wp-admin/includes/screen.php';
 require ABSPATH . 'wp-admin/includes/template.php';
-require ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+if ( ! class_exists( 'WP_List_Table' ) ) {
+	require ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
+}
 require ABSPATH . 'wp-admin/includes/list-table.php';
 
-require $dirdirname . '/gs-only-pdf-preview.php';
+if ( ! defined( 'GOPP_PLUGIN_VERSION' ) ) {
+	require $dirdirname . '/gs-only-pdf-preview.php';
+}
 
+global $hook_suffix;
 // Need edit post privs.
 wp_set_current_user( 1 );
 
