@@ -122,5 +122,5 @@ module.exports = function( grunt ) { //The wrapper function
 
 	grunt.registerTask( 'test', [ 'jshint', 'phpunit', 'qunit' ] );
 
-	grunt.registerTask( 'test_qunit', [ 'generate_fixtures', 'jshint', 'qunit' ] );
+	grunt.registerTask( 'test_qunit', [ 'jshint', 'qunit' ] );
 };
