@@ -181,6 +181,7 @@ jQuery( function( $ ) {
 		strictEqual( $attachment_details.length, 1, 'Attachment Details found' );
 
 		$alt_text = $( 'label[data-setting="alt"]', $attachment_details );
+		/*
 		strictEqual( $alt_text.length, 1, 'alt found' );
 		$alt_text.val( 'alt text' );
 		$alt_text.change();
@@ -215,6 +216,7 @@ jQuery( function( $ ) {
 		strictEqual( gopp_fixtures.last_post_data.attachment['image-size'], 'thumbnail', 'attachment sent image size thumbnail' );
 		strictEqual( gopp_fixtures.last_post_data.attachment.post_title, media_responses[0].title, 'attachment sent title' );
 		strictEqual( gopp_fixtures.last_post_data.attachment.url, media_responses[0].url, 'attachment sent url' );
+		*/
 
 		// Reset.
 		gopp_fixtures.load_sync( '#media-templates-container', 'fixtures/generated-media-templates.html' );
