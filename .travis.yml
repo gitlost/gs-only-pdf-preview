@@ -10,6 +10,7 @@ php:
 env:
 - WP_VERSION=nightly
 - WP_VERSION=latest
+- WP_VERSION=4.7.5
 
 matrix:
   allow_failures:
