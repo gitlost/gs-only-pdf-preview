@@ -27,10 +27,13 @@ function wp_nonce_tick() {
 
 	return ceil( $time / ( $nonce_life / 2 ) );
 }
+gjf_log( "gjf: scandir=" . print_r( scandir( $wp_dirname ), true ) );
 gjf_log( "gjf: require " . $wp_dirname . '/wp-load.php' );
 if ( ! file_exists( $wp_dirname . '/wp-load.php' ) ) {
 	gjf_log( "gjf: ! file_exists " . $wp_dirname . '/wp-load.php' );
-	gjf_log( "gjf: scandir=" . print_r( scandir( $wp_dirname ), true ) );
+}
+if ( ! file_exists( $wp_dirname . '/wp-config.php' ) ) {
+	gjf_log( "gjf: ! file_exists " . $wp_dirname . '/wp-config.php' );
 }
 require $wp_dirname . '/wp-load.php';
 gjf_log( "gjf: require " . ABSPATH . 'wp-admin/includes/image.php' );
