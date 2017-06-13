@@ -25,8 +25,11 @@ function wp_nonce_tick() {
 
 	return ceil( $time / ( $nonce_life / 2 ) );
 }
+gjf_log( "gjf: require " . $wp_dirname . '/wp-load.php' );
 require $wp_dirname . '/wp-load.php';
+gjf_log( "gjf: require " . ABSPATH . 'wp-admin/includes/image.php' );
 require ABSPATH . 'wp-admin/includes/image.php';
+gjf_log( "gjf: require " . $tests_dirname . '/includes/factory.php' );
 require $tests_dirname . '/includes/factory.php';
 
 function gjf_log( $msg ) {
@@ -84,10 +87,12 @@ function gjf_put_contents( $output_file, $new_contents ) {
 	}
 }
 
+gjf_log( "gjf: wp_enqueue_media" );
 wp_enqueue_media();
 
 // Generate generated-media.js
 
+gjf_log( "gjf: wp_print_scripts" );
 ob_start();
 
 wp_print_scripts();
@@ -162,6 +167,7 @@ gjf_put_contents( $dirdirname . '/tests/qunit/fixtures/generated-media.js', $new
 
 // Generate generated-media-templates.html
 
+gjf_log( "gjf: wp_print_media_templates" );
 ob_start();
 
 wp_print_media_templates();
@@ -172,6 +178,7 @@ gjf_put_contents( $dirdirname . '/tests/qunit/fixtures/generated-media-templates
 
 // Generate generated-media-list-table.html
 
+gjf_log( "gjf: generated-media-list-table.html" );
 require ABSPATH . 'wp-admin/includes/comment.php';
 require ABSPATH . 'wp-admin/includes/post.php';
 require ABSPATH . 'wp-admin/includes/class-wp-screen.php';
