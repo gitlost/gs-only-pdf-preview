@@ -243,7 +243,7 @@ jQuery( function( $ ) {
 
 		// PDF - no image actions.
 
-		if ( gopp_fixtures.full_test() || media_responses[0] ) {
+		if ( gopp_fixtures.full_test() || ( media_responses[0] && media_responses[0].sizes && media_responses[0].sizes.thumbnail ) ) {
 			metadata = {
 				attachment_id: media_responses[0].id,
 				caption: '',
