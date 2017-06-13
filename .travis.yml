@@ -28,7 +28,8 @@ script:
 - WP_TESTS_DIR=/tmp/wordpress-tests-lib phpunit
 - curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && php wp-cli.phar --info
 - ln -s /tmp/wordpress src
-- WP_TESTS_DIR=/tmp/wordpress-tests-lib php wp-cli.phar gopp gen_js_fixtures --require=tools/gen_js_command.php --path=/tmp/wordpress --debug
+- php wp-cli.phar core install --path=src --url=example.org --title='Test Blog' --admin_user=admin --admin_email=admin@example.org --debug
+- WP_TESTS_DIR=/tmp/wordpress-tests-lib php wp-cli.phar gopp gen_js_fixtures --require=tools/gen_js_command.php --path=src --debug
 - WP_TESTS_DIR=/tmp/wordpress-tests-lib grunt --verbose test_qunit
 
 after_success:
