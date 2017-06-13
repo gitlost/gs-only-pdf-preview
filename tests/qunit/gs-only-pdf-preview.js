@@ -510,6 +510,9 @@ jQuery( function( $ ) {
 			$msg = $( '.notice-warning', $wrap );
 			strictEqual( $msg.length, 1, 'have notice' );
 			notEqual( $msg.html().indexOf( 'Please wait' ), -1, 'is Please wait' );
+		} else {
+			// Need at least one assertion.
+			ok( true, 'empty test' );
 		}
 
 		// Reset.
