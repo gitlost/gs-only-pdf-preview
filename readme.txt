@@ -3,7 +3,7 @@ Contributors: gitlost
 Tags: Ghostscript, PDF, PDF Preview, Ghostscript Only
 Requires at least: 4.7.0
 Tested up to: 4.8.0
-Stable tag: 1.0.7
+Stable tag: 1.0.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -139,6 +139,9 @@ or for [WP-CLI](https://wp-cli.org/) users:
 
 == Changelog ==
 
+= 1.0.8 (X Jul 2017) =
+* Enqueue "gs-only-pdf-preview.js" on front-end to patch Media Library if present for page builders (thanks Frank Gomez (@frank6tg)!).
+
 = 1.0.7 (13 Jun 2017) =
 * Fix regex for patching "Align" select of Attachment Display Settings after core changeset [40640].
 * Rejig tests.
@@ -185,6 +188,9 @@ or for [WP-CLI](https://wp-cli.org/) users:
 * Initial github version.
 
 == Upgrade Notice ==
+
+= 1.0.8 =
+Patches Media Library for front-end use in page builders.
 
 = 1.0.7 =
 Tested with WordPress 4.8.0, with compatibility fix for patching "Align" select of Attachment Display Settings.

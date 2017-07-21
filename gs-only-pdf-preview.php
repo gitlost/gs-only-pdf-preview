@@ -3,7 +3,7 @@
  * Plugin Name: GS Only PDF Preview
  * Plugin URI: https://github.com/gitlost/gs-only-pdf-preview
  * Description: Uses Ghostscript directly to generate PDF previews.
- * Version: 1.0.7
+ * Version: 1.0.8
  * Author: gitlost
  * Author URI: https://profiles.wordpress.org/gitlost
  * License: GPLv2
@@ -16,7 +16,7 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 // These need to be synced with "readme.txt".
-define( 'GOPP_PLUGIN_VERSION', '1.0.7' ); // Sync also "package.json" and "language/gs-only-pdf-preview.pot".
+define( 'GOPP_PLUGIN_VERSION', '1.0.8' ); // Sync also "package.json" and "language/gs-only-pdf-preview.pot".
 define( 'GOPP_PLUGIN_WP_AT_LEAST_VERSION', '4.7.0' );
 define( 'GOPP_PLUGIN_WP_UP_TO_VERSION', '4.8.0' );
 
@@ -62,6 +62,10 @@ class GS_Only_PDF_Preview {
 					add_action( 'wp_ajax_gopp_media_row_action', array( __CLASS__, 'gopp_media_row_action' ) );
 					add_action( 'wp_ajax_gopp_poll_regen_pdf_previews', array( __CLASS__,  'gopp_poll_regen_pdf_previews' ) );
 				}
+			}
+		} else {
+			if ( ! ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+				add_action( 'wp_enqueue_scripts', array( __CLASS__, 'wp_enqueue_scripts' ) );
 			}
 		}
 	}
@@ -573,6 +577,27 @@ class GS_Only_PDF_Preview {
 			$params = apply_filters( 'gopp_plugin_params', $params );
 			wp_localize_script( 'gs-only-pdf-preview', 'gopp_plugin_params', $params );
 		}
+	}
+
+	/**
+	 * Called on 'wp_enqueue_scripts' action.
+	 * Patches Media Library if present on front-end (for page builders).
+	 */
+	static function wp_enqueue_scripts() {
+		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+		wp_enqueue_script( 'gs-only-pdf-preview', plugins_url( "js/gs-only-pdf-preview{$suffix}.js", __FILE__ ), array( 'jquery', 'jquery-migrate' ), GOPP_PLUGIN_VERSION );
+		// Our parameters.
+		$params = array(
+			'val' => array( // Gets around stringification of direct localize elements.
+				'is_debug' => defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG && defined( 'GOPP_PLUGIN_DEBUG' ) && GOPP_PLUGIN_DEBUG,
+				'is_regen_pdf_preview' => false,
+				'is_upload' => false,
+				'is_post' => true,
+			),
+			'document_link_only' => __( 'Document Link Only', 'gs-only-pdf-preview' ),
+		);
+		$params = apply_filters( 'gopp_plugin_params', $params );
+		wp_localize_script( 'gs-only-pdf-preview', 'gopp_plugin_params', $params );
 	}
 
 	/**
