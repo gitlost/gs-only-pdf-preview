@@ -518,6 +518,12 @@ class GOPP_Image_Editor_GS extends WP_Image_Editor {
 		} else {
 			$ret .= ' -sstdout=/dev/null'; // Lessen noise.
 		}
+		
+		// Add compatibility for Ghostscript >=9.50.0
+		if( isset( wp_upload_dir()['basedir'] ) ) {
+			$ret .= ' -I' . self::escapeshellarg( wp_upload_dir()['basedir'] );
+		}
+		
 		$ret .= ' --'; // No more options.
 		$ret .= ' ' . self::escapeshellarg( $this->file );
 
